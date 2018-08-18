@@ -1,5 +1,7 @@
 package ClientInfo;
 
+// individual client info screen
+
 public class ClientInfo {
     /* Client info consists of: name, location, phone number, product, quantity, total price, price per unit,
      * ClientPriceAdjust is positive if client owes and negative if client is owed,
