@@ -1,5 +1,5 @@
 
-//please
+//please please commit
 
 class ClientInfo {
 	/* Client info consists of: name, location, phone number, product, quantity, total price, price per unit,
