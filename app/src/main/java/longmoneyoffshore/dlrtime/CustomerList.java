@@ -9,6 +9,8 @@ import android.view.View;
 
 public class CustomerList extends AppCompatActivity {
 
+    //what is the problem?
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
