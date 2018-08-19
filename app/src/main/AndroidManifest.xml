@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CustomerList"
+            android:name=".CustomerListActivity"
             android:label="@string/title_activity_customer_list"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

@@ -45,8 +45,12 @@ public class ClientInfo {
 
     };
 
-    enum ClientSeen {seen, notseen, issue}; // 0 means not seen, 1 means seen, 2 means incomplete transaction
+    enum ClientSeen {seen(0), notseen(1), issue(2);
 
+    private int clientSeenStatus;
 
+   // ClientSeen (int )
 
+    int wasClientSeen () {return }
+    }; // 0 means not seen, 1 means seen, 2 means incomplete transaction
 }
