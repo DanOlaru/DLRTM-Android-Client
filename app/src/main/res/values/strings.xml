@@ -17,4 +17,5 @@
         completions."
     </string>
     <string name="title_activity_individual_client_acc">IndividualClientAccActivity</string>
+    <string name="map">Map</string>
 </resources>
