@@ -34,6 +34,9 @@ import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
+//Dan
+import android.content.Intent;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -64,8 +67,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -92,6 +98,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        
     }
 
     private void populateAutoComplete() {
@@ -333,7 +340,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                finish();
+                //finish();
+                //Intent myIntent = new Intent (LoginActivity.this, ListOfOrdersActivity.class);
+                //myIntent.putExtra();
+                //LoginActivity.this.startActivity (myIntent);
+
+
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

@@ -28,11 +28,3 @@ class ClientInfo {
 	
 }
 
-
-
-public class DLRTimeMain {
-	public static void main (String[] args) {
-	//enter into the code
-		
-	}
-}
