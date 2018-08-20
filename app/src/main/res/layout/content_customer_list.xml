@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ListOfOrdersActivity"
-    tools:showIn="@layout/activity_customer_list">
+    tools:showIn="@layout/activity_list_of_orders">
 
     <Button
         android:id="@+id/Map"
