@@ -341,9 +341,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success) {
                 //finish();
-                //Intent myIntent = new Intent (LoginActivity.this, ListOfOrdersActivity.class);
+                Intent myIntent = new Intent (LoginActivity.this, ListOfOrdersActivity.class);
                 //myIntent.putExtra();
-                //LoginActivity.this.startActivity (myIntent);
+                LoginActivity.this.startActivity (myIntent);
 
 
             } else {
