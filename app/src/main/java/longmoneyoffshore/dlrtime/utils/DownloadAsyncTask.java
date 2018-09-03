@@ -1,6 +1,7 @@
 package longmoneyoffshore.dlrtime.utils;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +33,9 @@ public class DownloadAsyncTask extends AsyncTask<String, Void, String> {
     // onPostExecute displays the results of the AsyncTask.
     @Override
     protected void onPostExecute(String result) {
+
+//        Log.d("Contenct JSON"," Json: " +result);
+
         // remove the unnecessary parts from the response and construct a JSON
         int start = result.indexOf("{", result.indexOf("{") + 1);
         int end = result.lastIndexOf("}");
@@ -39,6 +43,8 @@ public class DownloadAsyncTask extends AsyncTask<String, Void, String> {
 
         try {
             JSONObject table = new JSONObject(jsonResponse);
+
+//            Log.d("Table content JSON"," Table: " +table.toString());
             callback.onResult(table);
         } catch (JSONException e) {
             e.printStackTrace();

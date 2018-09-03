@@ -33,8 +33,11 @@ public class ClientAdapter extends ArrayAdapter<Client> {
             LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = vi.inflate(R.layout.client_item, null);
         }
+
         Client o = clients.get(position);
-        if (o != null) {
+
+        if (o != null)
+        {
             TextView pos = (TextView) v.findViewById(R.id.position);
             TextView name = (TextView) v.findViewById(R.id.name);
             TextView wins = (TextView) v.findViewById(R.id.wins);

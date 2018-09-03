@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -67,7 +68,7 @@ public class OrderListActivity extends AppCompatActivity {
             public void onResult(JSONObject object) {
                 processJson(object); // Feeds with the retrieved data
             }
-        }).execute("https://spreadsheets.google.com/tq?key=1yyTcjWA6RAUwkI7sKOevWXAJfpITs__Zb0TwilihDCw");
+        }).execute("https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY");
 
 
 
@@ -78,22 +79,32 @@ public class OrderListActivity extends AppCompatActivity {
         try {
             JSONArray rows = object.getJSONArray("rows");
 
-            for (int r = 0; r < rows.length(); ++r) {
+            Log.d("Rows lENGTH","lENGTH: " + rows.length());
+
+            for (int r = 0; r < rows.length(); ++r)
+            {
                 JSONObject row = rows.getJSONObject(r);
                 JSONArray columns = row.getJSONArray("c");
 
+                Log.d("Rows Json","Content: " + columns.toString());
+
                 String name = columns.getJSONObject(0).getString("v");
+
+                Log.d("Fist value","1  " + name);
+
                 String phone = columns.getJSONObject(1).getString("v");
-                String location = columns.getJSONObject(3).getString("v");
-                int productId = columns.getJSONObject(4).getInt("v");
-                int quantity = columns.getJSONObject(5).getInt("v");
-                int price = columns.getJSONObject(6).getInt("v");
-                int priceAdjust = columns.getJSONObject(7).getInt("v");
-                int urgency = columns.getJSONObject(8).getInt("v");
-                int value = columns.getJSONObject(9).getInt("v");
-                String status = columns.getJSONObject(10).getString("v");
+                String location = columns.getJSONObject(2).getString("v");
+                String productId = columns.getJSONObject(3).getString("v");
+                int quantity = columns.getJSONObject(4).getInt("v");
+                int price = columns.getJSONObject(5).getInt("v");
+                int priceAdjust = columns.getJSONObject(6).getInt("v");
+                int urgency = columns.getJSONObject(7).getInt("v");
+                int value = columns.getJSONObject(8).getInt("v");
+                String status = columns.getJSONObject(9).getString("v");
 
                 Client client = new Client(name, phone, location, productId, quantity, price, priceAdjust, urgency, value, status);
+
+               Log.d("Client", "Client " + client.toString());
 
                 clients.add(client);
             }

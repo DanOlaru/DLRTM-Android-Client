@@ -14,7 +14,7 @@ public class Client {
     private String clientName;
     private String clientPhoneNo; // It's a string because the sequence of numbers does not have any logic behind it
     private String clientLocation;
-    private int clientProductID; // what the customer is buying
+    private String clientProductID; // what the customer is buying
     private int clientQuantity; //how much the customer is buying
     private int clientPrice;
     private int clientPriceAdjust;
@@ -32,7 +32,7 @@ public class Client {
     // 2° constructor
 
 
-    public Client(String clientName, String clientPhoneNo, String clientLocation, int clientProductID, int clientQuantity, int clientPrice, int clientPriceAdjust, int clientUrgency, int clientValue, String clientStatus) {
+    public Client(String clientName, String clientPhoneNo, String clientLocation, String clientProductID, int clientQuantity, int clientPrice, int clientPriceAdjust, int clientUrgency, int clientValue, String clientStatus) {
         this.clientName = clientName;
         this.clientPhoneNo = clientPhoneNo;
         this.clientLocation = clientLocation;
@@ -71,11 +71,11 @@ public class Client {
         this.clientLocation = clientLocation;
     }
 
-    public int getClientProductID() {
+    public String getClientProductID() {
         return clientProductID;
     }
 
-    public void setClientProductID(int clientProductID) {
+    public void setClientProductID(String clientProductID) {
         this.clientProductID = clientProductID;
     }
 
