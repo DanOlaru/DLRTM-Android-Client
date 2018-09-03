@@ -1,4 +1,4 @@
-package GoogleSheetConnection;
+package longmoneyoffshore.dlrtime.utils;
 
 import android.os.AsyncTask;
 
@@ -12,10 +12,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class DownloadActivity extends AsyncTask<String, Void, String> {
+import longmoneyoffshore.dlrtime.utils.AsyncResult;
+
+public class DownloadAsyncTask extends AsyncTask<String, Void, String> {
 
     AsyncResult callback;
-    public DownloadActivity(AsyncResult callback) {
+    public DownloadAsyncTask(AsyncResult callback) {
         this.callback = callback;
     }
     @Override
