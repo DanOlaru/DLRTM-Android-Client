@@ -12,19 +12,74 @@
     tools:context=".IndividualClientOrderActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/orderName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/title_activity_individual_client_order" />
 
+
+    <!-- here we insert into each field the values read from the Google Sheets document
+    passed as an instance of the ClientInfo class
+    -->
     <TextView
-        android:id="@+id/customerName"
+        android:id="@+id/clientName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/"
-        />
+        android:text="Cust_Name" />
 
+    <TextView
+        android:id="@+id/clientPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cust_Phone/" />
 
+    <TextView
+        android:id="@+id/clientLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cust_Location/" />
+
+    <TextView
+        android:id="@+id/productId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Prod_Id/" />
+
+    <TextView
+        android:id="@+id/productQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Prod_Quant/" />
+
+    <TextView
+        android:id="@+id/productPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Prod_Price/" />
+
+    <TextView
+        android:id="@+id/priceAdjust"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Price_Adj/" />
+
+    <TextView
+        android:id="@+id/clientUrgency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Client_Urgency/" />
+
+    <TextView
+        android:id="@+id/clientValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Client_Val/" />
+
+    <TextView
+        android:id="@+id/clientStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Client_Status/" />
 
     <include layout="@layout/content_individual_client_acc" />
 

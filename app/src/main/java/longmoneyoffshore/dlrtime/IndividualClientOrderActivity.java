@@ -16,13 +16,24 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_individual_client_order);
 
         //begin by Dan
+
+        /*
+        // set customer name
         String cust_name = (String) savedInstanceState.getString();
         final TextView customer_name = (TextView) findViewById(R.id.customerName);
-
         customer_name.setText(cust_name);
 
-        //end by Dan
 
+        //set phone number
+
+        String ph_number = (String) savedInstanceState.getString();
+        final TextView phone_number = (TextView) findViewById(R.id.phoneNumber);
+
+        phone_number.setText(ph_number);
+
+
+        //end by Dan
+        */
 
 
 

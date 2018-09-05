@@ -20,8 +20,8 @@
         completions."
     </string>
 
-    <string name="title_activity_individual_client_acc">Individual Order</string>
-    <string name="map">Map</string>
+    <string name="title_activity_individual_client_acc">Order Info</string>
+    <string name="map_bttn">Map</string>
 
 
     <!-- Strings related to Individual Client Order Activity -->

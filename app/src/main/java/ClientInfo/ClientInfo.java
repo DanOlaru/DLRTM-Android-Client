@@ -14,14 +14,18 @@ public class ClientInfo {
 
     String ClientName;
 
-    long ClientPhoneNo; // perhaps int[]?
+    String ClientPhone; // perhaps int[]?
 
     String ClientLocation;
 
     String ClientProductID; // what the customer is buying
+
     int ClientQuantity; //how much the customer is buying
+
     int ClientPrice;
-    int ClientPricePerUnit = ClientPrice / ClientQuantity;
+
+    int ClientPricePerUnit = ClientPrice / ClientQuantity; //internal info
+
     int ClientPriceAdjust;
 
 
@@ -50,9 +54,20 @@ public class ClientInfo {
         seen(0), notseen(1), issue(2);
 
         private int clientSeenStatus=0;
+        String issueComment;
 
         ClientSeen (int clStat) {clientSeenStatus=clStat;}
 
-        int wasClientSeen () {return clientSeenStatus;}
+        ClientSeen (int clStat, String issueCmt) { //overloaded constructor that takes the comment regarding the issue with the order
+            clientSeenStatus = clStat;
+            issueComment = issueCmt;
+        }
+
+        String wasClientSeen () {
+            if (clientSeenStatus == 0) return "0";
+            else if (clientSeenStatus == 1) return "1";
+            else return "2" + issueComment;
+        }
+
     }; // 0 means not seen, 1 means seen, 2 means incomplete transaction
 }
