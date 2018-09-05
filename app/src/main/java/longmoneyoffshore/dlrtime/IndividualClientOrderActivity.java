@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 
 public class IndividualClientOrderActivity extends AppCompatActivity {
 
@@ -13,6 +14,18 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_individual_client_order);
+
+        //begin by Dan
+        String cust_name = (String) savedInstanceState.getString();
+        final TextView customer_name = (TextView) findViewById(R.id.customerName);
+
+        customer_name.setText(cust_name);
+
+        //end by Dan
+
+
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
