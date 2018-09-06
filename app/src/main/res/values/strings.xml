@@ -26,7 +26,31 @@
 
     <!-- Strings related to Individual Client Order Activity -->
 
-    <string name="title_activity_individual_client_order"> Customer Info </string>
+    <string name="title_activity_individual_client_order"> Order Info </string>
+    <string name="individual_client_name"> Client Name </string>
+    <string name="client_phone"> Phone # </string>
+    <string name="client_location"> Client Location </string>
+    <string name="product_id"> Product ID </string>
+    <string name="product_quantity"> Product Quantity </string>
+    <string name="product_price"> Product Price </string>
+    <string name="price_adjust"> Price Adjust </string>
+    <string name="client_urgency"> Client Urgency </string>
+    <string name="client_value"> Client Value </string>
+    <string name="order_status"> Order Status </string>
+
+
+
+
+
+    <string name="make_call"> Call </string>
+    <string name="issue_or_cancel"> Issue / Cancel </string>
+    <string name="back_button"> Back </string>
+
+    <string name="comment_or_issue_hint"> Include comments / issues here </string>
+
+
+
+
 
 
 </resources>
