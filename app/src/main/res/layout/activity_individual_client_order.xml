@@ -95,7 +95,7 @@
                     android:layout_marginRight="0sp"
                     android:layout_marginStart="0sp"
                     android:layout_marginTop="0sp"
-                    android:background="    null"
+                    android:background="null"
                     android:padding="0sp"
                     android:paddingBottom="0dp"
                     android:paddingEnd="0dp"
