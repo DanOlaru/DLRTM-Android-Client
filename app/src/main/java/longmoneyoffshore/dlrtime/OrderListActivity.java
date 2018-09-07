@@ -71,6 +71,65 @@ public class OrderListActivity extends AppCompatActivity {
         }).execute("https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY");
 
 
+        /*
+
+        //Dan: code from website example
+
+        // Click this button to pass data to target activity.
+
+
+        Button passDataSourceButton = (Button)findViewById(R.id.passDataSourceButton);
+
+        passDataSourceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //click on the button by the side of that specific order
+
+                Client thisOrder = new Client(); //this has to be populated with the data from the specific row which was clicked
+
+                Intent individualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
+                intent.putExtra("order", thisOrder);
+                startActivity(individualOrder);
+            }
+        });
+
+        // Click this button to pass data to target activity and
+        // then wait for target activity to return result data back.
+        Button passDataReturnResultSourceButton = (Button)findViewById(R.id.passDataReturnResultSourceButton);
+        passDataReturnResultSourceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PassingDataSourceActivity.this, PassingDataTargetActivity.class);
+                intent.putExtra("message", "This message comes from PassingDataSourceActivity's second button");
+                startActivityForResult(intent, REQUEST_CODE_1);
+            }
+        });
+    }
+
+    // This method is invoked when target activity return result data back.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
+        super.onActivityResult(requestCode, resultCode, dataIntent);
+
+        // The returned result data is identified by requestCode.
+        // The request code is specified in startActivityForResult(intent, REQUEST_CODE_1); method.
+        switch (requestCode)
+        {
+            // This request code is set by startActivityForResult(intent, REQUEST_CODE_1) method.
+            case REQUEST_CODE_1:
+                TextView textView = (TextView)findViewById(R.id.resultDataTextView);
+                if(resultCode == RESULT_OK)
+                {
+                    String messageReturn = dataIntent.getStringExtra("message_return");
+                    textView.setText(messageReturn);
+                }
+        }
+    }
+
+        *
+        * */
+
 
     }
 
@@ -116,4 +175,5 @@ public class OrderListActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 }

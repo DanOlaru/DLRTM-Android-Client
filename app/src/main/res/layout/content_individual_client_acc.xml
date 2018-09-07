@@ -1,6 +1,3 @@
-<!--what does this layout do?-->
-
-
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,3 +9,6 @@
     tools:showIn="@layout/activity_individual_client_order">
 
 </android.support.constraint.ConstraintLayout>
+
+
+    <!--what does this layout do?-->
