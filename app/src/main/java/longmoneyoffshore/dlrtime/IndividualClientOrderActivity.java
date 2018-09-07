@@ -8,12 +8,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
+import longmoneyoffshore.dlrtime.utils.Client;
+
 public class IndividualClientOrderActivity extends AppCompatActivity {
+
+    private Client myClient = new Client();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_individual_client_order);
+
+        TextView orederInfoTextView = findViewById(R.id.orderName);
+
+//        orederInfoTextView.setText();
 
         //begin by Dan
 
@@ -37,8 +46,8 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
 
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
