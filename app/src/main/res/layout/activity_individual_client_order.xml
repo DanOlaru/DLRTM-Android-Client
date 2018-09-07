@@ -9,9 +9,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
 
-    tools:context=".IndividualClientOrderActivity">
+    tools:context=".IndividualClientOrderActivity"
+    >
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:id="@+id/individualOrderAttributes"
 
         android:layout_width="wrap_content"
@@ -23,13 +24,17 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TableRow>
+            <TableRow
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                >
 
                 <TextView
                     android:id="@+id/orderName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/title_activity_individual_client_order" />
+                    android:text="@string/title_activity_individual_client_order"
+                    android:textSize="8sp" />
                 <!--another table element here displaying the actual field info -->
                 <EditText
                     android:id="@+id/orderNameClient"
@@ -57,9 +62,15 @@
                 <EditText
                     android:id="@+id/orderNameClnt"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
 
-                    android:textSize="@dimen/activity_vertical_margin" />
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:autoText="false"
+                    android:background="null"
+                    android:contextClickable="false"
+                    android:editable="true"
+                    android:elegantTextHeight="false"
+                    android:textSize="8sp" />
 
             </TableRow>
 
@@ -76,9 +87,24 @@
                     android:id="@+id/orderPhoneClnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="info from GSheet"
+                    android:layout_margin="0sp"
 
-                    android:textSize="@dimen/activity_vertical_margin" />
+                    android:layout_marginBottom="0sp"
+                    android:layout_marginEnd="0sp"
+                    android:layout_marginLeft="0sp"
+                    android:layout_marginRight="0sp"
+                    android:layout_marginStart="0sp"
+                    android:layout_marginTop="0sp"
+                    android:background="    null"
+                    android:padding="0sp"
+                    android:paddingBottom="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingTop="0dp"
+                    android:text="info from GSheet"
+                    android:textSize="8sp" />
 
             </TableRow>
 
@@ -95,11 +121,12 @@
                     android:id="@+id/orderLocationClnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:selectAllOnFocus="false"
+                    android:background="null"
 
+                    android:selectAllOnFocus="false"
                     android:singleLine="true"
                     android:text="GSheet"
-                    android:textSize="@dimen/activity_vertical_margin" />
+                    android:textSize="8sp" />
             </TableRow>
 
             <TableRow>
@@ -115,9 +142,10 @@
                     android:id="@+id/orderProductIDClnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GSheet"
+                    android:background="null"
 
-                    android:textSize="@dimen/activity_vertical_margin" />
+                    android:text="GSheet"
+                    android:textSize="8sp" />
             </TableRow>
 
             <TableRow>
@@ -133,9 +161,10 @@
                     android:id="@+id/orderProductQuantClnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GSheet"
+                    android:background="null"
 
-                    android:textSize="@dimen/activity_vertical_margin" />
+                    android:text="GSheet"
+                    android:textSize="8sp" />
             </TableRow>
 
             <TableRow>
@@ -150,9 +179,10 @@
                     android:id="@+id/orderProductPriceClnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GSheet"
+                    android:background="null"
 
-                    android:textSize="@dimen/activity_vertical_margin" />
+                    android:text="GSheet"
+                    android:textSize="8sp" />
             </TableRow>
 
             <TableRow>
@@ -167,9 +197,10 @@
                     android:id="@+id/orderPriceAdjClnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GSheet"
+                    android:background="null"
 
-                    android:textSize="@dimen/activity_vertical_margin" />
+                    android:text="GSheet"
+                    android:textSize="8sp" />
             </TableRow>
 
 
@@ -183,8 +214,12 @@
 
                 <RatingBar
                     android:id="@+id/clientUrgencyRatingBar"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:layout_margin="0dp"
+                    android:background="null"
+                    android:padding="0dp" />
 
             </TableRow>
 
@@ -198,6 +233,7 @@
 
                 <RatingBar
                     android:id="@+id/clientValueRatingBar"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
@@ -216,14 +252,16 @@
                     android:id="@+id/orderStatusClnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GSheet"
+                    android:background="null"
 
-                    android:textSize="@dimen/activity_vertical_margin" />
+                    android:text="GSheet"
+                    android:textSize="8sp" />
             </TableRow>
 
         </TableLayout>
 
     </FrameLayout>
+
 
     <FrameLayout
 
@@ -232,33 +270,44 @@
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right">
+        android:layout_gravity="center"
+        >
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_weight="1"
+            android:orientation="horizontal"
+
+            >
 
             <Button
+                android:id="@+id/make_call"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/make_call" />
+                android:text="@string/make_call"
+                android:textSize="8sp" />
 
             <Button
+                android:id="@+id/issue_or_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="@string/issue_or_cancel"
-                android:layout_gravity="center"/>
+                android:textSize="8sp" />
 
             <Button
+                android:id="@+id/back_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
 
-                android:text="@string/back_button" />
+                android:layout_height="wrap_content"
+                android:text="@string/back_button"
+                android:textSize="8sp" />
         </LinearLayout>
 
 
     </FrameLayout>
+
 
 
     <FrameLayout
@@ -276,8 +325,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="top"
-                android:textAlignment="gravity"
-                android:hint="@string/comment_or_issue_hint" />
+                android:hint="@string/comment_or_issue_hint"
+                android:textAlignment="gravity" />
         </android.support.design.widget.TextInputLayout>
 
     </FrameLayout>
