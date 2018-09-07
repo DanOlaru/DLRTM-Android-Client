@@ -203,8 +203,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="top"
-                android:textAlignment="gravity"
-                android:hint="@string/comment_or_issue_hint" />
+                android:textAlignment="gravity" />
         </android.support.design.widget.TextInputLayout>
 
     </FrameLayout>

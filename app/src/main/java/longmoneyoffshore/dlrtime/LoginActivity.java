@@ -49,10 +49,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 /**
- * A login screen that offers login via email/password.
- */
-public class LoginActivity extends AppCompatActivity implements  View.OnClickListener {
-
+* Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
+* profile.
+*/
+public class LoginActivity extends AppCompatActivity implements
+        View.OnClickListener {
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
@@ -77,7 +78,6 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build();
         // [END configure_signin]
@@ -87,11 +87,12 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         // [END build_client]
 
-
+        // [START customize_button]
         // Set the dimensions of the sign-in button.
         SignInButton signInButton = findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
+        // [END customize_button]
     }
 
     @Override
@@ -137,11 +138,8 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     }
     // [END handleSignInResult]
 
+    // [START signIn]
     private void signIn() {
-        /*Starting the intent prompts the user to select a Google account
-        to sign in with. If you requested scopes beyond profile, email,
-        and openid, the user is also prompted to grant access to the requested
-        resources.*/
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -176,14 +174,11 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     // [END revokeAccess]
 
     private void updateUI(@Nullable GoogleSignInAccount account) {
-        Log.d("Login", "I am in the if area");
-
         if (account != null) {
             mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
 
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-            Log.d("Log","account");
         } else {
             mStatusTextView.setText(R.string.signed_out);
 
@@ -207,4 +202,3 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         }
     }
 }
-

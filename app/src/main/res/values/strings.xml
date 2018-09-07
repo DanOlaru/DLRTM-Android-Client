@@ -95,7 +95,7 @@
     <!-- TODO(user): replace with your real server client ID -->
     <!-- Server Client ID.  This should be a valid Web OAuth 2.0 Client ID obtained
          from https://console.developers.google.com/ -->
-    <string name="server_client_id">17227574658-i4tmn3k22tmevimucbjoc3mv69b8qqso.apps.googleusercontent.com </string>
-    <string name="comment_or_issue_hint">TO CONTROL</string>
+
+    <string name="v">17227574658-i4tmn3k22tmevimucbjoc3mv69b8qqso.apps.googleusercontent.com </string>
 
 </resources>
