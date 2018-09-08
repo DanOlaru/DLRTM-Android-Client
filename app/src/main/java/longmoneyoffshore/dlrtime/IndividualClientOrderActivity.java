@@ -47,19 +47,7 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
         Intent passedIntent = getIntent();
         Client myPassedClient = (Client) passedIntent.getExtras("order");
 
-
-        //after any modifications are performed by the user from the Individual Client Order screen
-        // the modifications are saved in the myPassedClient object and sent back to the invoking activity
-        //which is OrderListActivity.
-
-        Intent passBackClient = new Intent (IndividualClientOrderActivity.this, OrderListActivity.class);
-
-        passBackClient.putExtra("edited_order", passedIntent);
-
-        setResult (RESULT_OK, passBackClient);
-
-        */
-
+*/
 
         //is casting necessary here?
 
@@ -96,73 +84,28 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
         orderStatusClientField = findViewById(R.id.orderStatusClnt);
         orderStatusClientField.setText(myPassedClient.getClientStatus());
 
-        // orderInfoField.setText(myPassedClient.g);
 
+        //after any modifications are performed by the user from the Individual Client Order screen
+        // the modifications are saved in the myPassedClient object and sent back to the invoking activity
+        //which is OrderListActivity.
+
+        /*
+
+        Intent passBackClient = new Intent (IndividualClientOrderActivity.this, OrderListActivity.class);
+
+        passBackClient.putExtra("edited_order", passedIntent);
+
+        setResult (RESULT_OK, passBackClient);
+        */
 
 
         /*
-        // set customer name
-        String cust_name = (String) savedInstanceState.getString();
-        final TextView customer_name = (TextView) findViewById(R.id.customerName);
-        customer_name.setText(cust_name);
 
-
-        //set phone number
-
-        String ph_number = (String) savedInstanceState.getString();
-        final TextView phone_number = (TextView) findViewById(R.id.phoneNumber);
-
-        phone_number.setText(ph_number);
+        //Dan: receive text modifications from text box
 
 
 
 
-        //Dan: code from website example
-
-
-        // Click this button to pass data to target activity.
-        Button passDataSourceButton = (Button)findViewById(R.id.passDataSourceButton);
-        passDataSourceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(PassingDataSourceActivity.this, PassingDataTargetActivity.class);
-                intent.putExtra("message", "This message comes from PassingDataSourceActivity's first button");
-                startActivity(intent);
-            }
-        });
-
-        // Click this button to pass data to target activity and
-        // then wait for target activity to return result data back.
-        Button passDataReturnResultSourceButton = (Button)findViewById(R.id.passDataReturnResultSourceButton);
-        passDataReturnResultSourceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(PassingDataSourceActivity.this, PassingDataTargetActivity.class);
-                intent.putExtra("message", "This message comes from PassingDataSourceActivity's second button");
-                startActivityForResult(intent, REQUEST_CODE_1);
-            }
-        });
-    }
-
-    // This method is invoked when target activity return result data back.
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
-        super.onActivityResult(requestCode, resultCode, dataIntent);
-
-        // The returned result data is identified by requestCode.
-        // The request code is specified in startActivityForResult(intent, REQUEST_CODE_1); method.
-        switch (requestCode)
-        {
-            // This request code is set by startActivityForResult(intent, REQUEST_CODE_1) method.
-            case REQUEST_CODE_1:
-                TextView textView = (TextView)findViewById(R.id.resultDataTextView);
-                if(resultCode == RESULT_OK)
-                {
-                    String messageReturn = dataIntent.getStringExtra("message_return");
-                    textView.setText(messageReturn);
-                }
-        }
-    }
 
 
         //end by Dan
@@ -185,3 +128,21 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
     }
 
 }
+
+
+/*
+ // set customer name
+ String cust_name = (String) savedInstanceState.getString();
+ final TextView customer_name = (TextView) findViewById(R.id.customerName);
+ customer_name.setText(cust_name);
+
+
+ //set phone number
+
+ String ph_number = (String) savedInstanceState.getString();
+ final TextView phone_number = (TextView) findViewById(R.id.phoneNumber);
+
+ phone_number.setText(ph_number);
+
+ */
+
