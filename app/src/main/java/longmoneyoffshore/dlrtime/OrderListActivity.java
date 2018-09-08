@@ -77,10 +77,11 @@ public class OrderListActivity extends AppCompatActivity {
 
         // Click this button to pass data to target activity.
 
+        // the item clicked on will ultimately not be a button, but the line in the table of orders
 
-        Button passDataSourceButton = (Button)findViewById(R.id.passDataSourceButton);
+        Button passDataReturnResultButton = (Button)findViewById(R.id.passDataReturnResultButton);
 
-        passDataSourceButton.setOnClickListener(new View.OnClickListener() {
+        passDataReturnResultSourceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -89,27 +90,20 @@ public class OrderListActivity extends AppCompatActivity {
                 Client thisOrder = new Client(); //this has to be populated with the data from the specific row which was clicked
 
                 Intent individualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
-                intent.putExtra("order", thisOrder);
-                startActivity(individualOrder);
-            }
-        });
+                individualOrder.putExtra("order", thisOrder);
 
-        // Click this button to pass data to target activity and
-        // then wait for target activity to return result data back.
-        Button passDataReturnResultSourceButton = (Button)findViewById(R.id.passDataReturnResultSourceButton);
-        passDataReturnResultSourceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(PassingDataSourceActivity.this, PassingDataTargetActivity.class);
-                intent.putExtra("message", "This message comes from PassingDataSourceActivity's second button");
-                startActivityForResult(intent, REQUEST_CODE_1);
+                int reqCode = 1; //what should be the predefined value?
+
+                startActivityForResult(individualOrder, reqCode);
+
             }
         });
     }
 
-    // This method is invoked when target activity return result data back.
+    // This method is invoked when target activity returns result data.
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
         super.onActivityResult(requestCode, resultCode, dataIntent);
 
         // The returned result data is identified by requestCode.
@@ -118,17 +112,21 @@ public class OrderListActivity extends AppCompatActivity {
         {
             // This request code is set by startActivityForResult(intent, REQUEST_CODE_1) method.
             case REQUEST_CODE_1:
-                TextView textView = (TextView)findViewById(R.id.resultDataTextView);
+                //TextView textView = (TextView)findViewById(R.id.resultDataTextView);
+
                 if(resultCode == RESULT_OK)
                 {
-                    String messageReturn = dataIntent.getStringExtra("message_return");
-                    textView.setText(messageReturn);
+                    //old code
+                    //String messageReturn = dataIntent.getStringExtra("message_return");
+                    //textView.setText(messageReturn);
+
+                    //new code sets the new/ edited data on the OrderListActivity and passes it back to the google sheets document
                 }
         }
     }
 
-        *
-        * */
+      //end code by Dan
+      */
 
 
     }

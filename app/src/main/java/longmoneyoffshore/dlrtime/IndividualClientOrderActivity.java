@@ -45,7 +45,19 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
         /*
         // Get the transferred data from source activity.
         Intent passedIntent = getIntent();
-        Client myPassedClient = (Client) intent.getExtras("order");
+        Client myPassedClient = (Client) passedIntent.getExtras("order");
+
+
+        //after any modifications are performed by the user from the Individual Client Order screen
+        // the modifications are saved in the myPassedClient object and sent back to the invoking activity
+        //which is OrderListActivity.
+
+        Intent passBackClient = new Intent (IndividualClientOrderActivity.this, OrderListActivity.class);
+
+        passBackClient.putExtra("edited_order", passedIntent);
+
+        setResult (RESULT_OK, passBackClient);
+
         */
 
 

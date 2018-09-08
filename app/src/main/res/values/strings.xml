@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <string name="app_name">DLRTime</string>
+    <string name="app_name">DLRTime — Digital Logistics Resource Time </string>
 
 
     <!-- Dan - authorization into google sign in-->
@@ -45,18 +45,12 @@
     <string name="order_status"> Order Status </string>
 
 
-
-
-
     <string name="make_call"> Call </string>
     <string name="issue_or_cancel"> Issue / Cancel </string>
     <string name="back_button"> Back </string>
+    <string name="sign_out_text">Sign Out</string>
 
     <string name="comment_or_issue_hint"> Include comments / issues here </string>
-
-
-
-
 
 
 </resources>

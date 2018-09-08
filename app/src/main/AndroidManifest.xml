@@ -38,26 +38,28 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".LoginActivity">
+        <activity android:name="longmoneyoffshore.dlrtime.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
         </activity>
 
-        <activity android:name=".MapsRouteActivity">
+        <activity android:name="longmoneyoffshore.dlrtime.MapsRouteActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".OrderListActivity">
+        <activity android:name="longmoneyoffshore.dlrtime.OrderListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".IndividualClientOrderActivity">
+        <activity android:name="longmoneyoffshore.dlrtime.IndividualClientOrderActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
