@@ -127,3 +127,33 @@ public class Client {
         this.clientStatus = clientStatus;
     }
 }
+
+
+/*
+public class MyParcelableClientsList implements Parcelable {
+     private int mData;
+
+     public int describeContents() {
+         return 0;
+     }
+
+     public void writeToParcel(Parcel out, int flags) {
+         out.writeInt(mData);
+     }
+
+     public static final Parcelable.Creator<MyParcelableClientsList> CREATOR
+             = new Parcelable.Creator<MyParcelableClientsList>() {
+         public MyParcelableClientsList createFromParcel(Parcel in) {
+             return new MyParcelableClientsList(in);
+         }
+
+         public MyParcelable[] newArray(int size) {
+             return new MyParcelable[size];
+         }
+     };
+
+     private MyParcelable(Parcel in) {
+         mData = in.readInt();
+     }
+ }
+* */

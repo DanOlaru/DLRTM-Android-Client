@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import android.support.v7.widget.Toolbar;
@@ -19,7 +20,7 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
     //Dan's code
 
     //create dummy data set
-    private Client myPassedClient = new Client ("Johnnt Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
+    private Client myPassedClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
 
 
     //individual variables for the display table
@@ -31,8 +32,8 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
     EditText orderProductQuantField;
     EditText orderProductPriceField;
     EditText orderPriceAdjustField;
-    EditText orderUrgencyField;
-    EditText orderValueClientField;
+    RatingBar orderUrgencyField;
+    RatingBar orderValueClientField;
     EditText orderStatusClientField;
 
     @Override
@@ -47,6 +48,37 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
         Intent passedIntent = getIntent();
         Client myPassedClient = (Client) passedIntent.getExtras("order");
 
+
+        //read Parcelable implementation
+
+        public class MyParcelable implements Parcelable {
+             private int mData;
+
+             public int describeContents() {
+                 return 0;
+             }
+
+             public void writeToParcel(Parcel out, int flags) {
+                 out.writeInt(mData);
+             }
+
+             public static final Parcelable.Creator<MyParcelable> CREATOR
+                     = new Parcelable.Creator<MyParcelable>() {
+                 public MyParcelable createFromParcel(Parcel in) {
+                     return new MyParcelable(in);
+                 }
+
+                 public MyParcelable[] newArray(int size) {
+                     return new MyParcelable[size];
+                 }
+             };
+
+             private MyParcelable(Parcel in) {
+                 mData = in.readInt();
+             }
+ }
+
+
 */
 
         //is casting necessary here?
@@ -54,36 +86,57 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
         orderNameField = (EditText) findViewById(R.id.orderNameClient);
         orderNameField.setText(myPassedClient.getClientName());
 
-        orderNameClientField = findViewById(R.id.orderNameClnt);
+        orderNameClientField = (EditText) findViewById(R.id.orderNameClnt);
         orderNameClientField.setText(myPassedClient.getClientName());
 
-        orderPhoneClientField = findViewById(R.id.orderPhoneClnt);
+        orderPhoneClientField = (EditText) findViewById(R.id.orderPhoneClnt);
         orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
 
-        orderLocationClientField = findViewById(R.id.orderLocationClnt);
+        orderLocationClientField = (EditText) findViewById(R.id.orderLocationClnt);
         orderLocationClientField.setText(myPassedClient.getClientLocation());
 
-        orderProductIdField = findViewById(R.id.orderProductIDClnt);
+        orderProductIdField = (EditText) findViewById(R.id.orderProductIDClnt);
         orderProductIdField.setText(myPassedClient.getClientProductID());
 
-        orderProductQuantField = findViewById(R.id.orderProductQuantClnt);
-        orderProductQuantField.setText(myPassedClient.getClientQuantity());
+        orderProductQuantField = (EditText) findViewById(R.id.orderProductQuantClnt);
+        orderProductQuantField.setText(Integer.toString(myPassedClient.getClientQuantity()));
 
-        orderProductPriceField = findViewById(R.id.orderProductPriceClnt);
-        orderProductPriceField.setText(myPassedClient.getClientPrice());
+        orderProductPriceField = (EditText) findViewById(R.id.orderProductPriceClnt);
+        orderProductPriceField.setText(Integer.toString(myPassedClient.getClientPrice()));
 
-        orderPriceAdjustField = findViewById(R.id.orderPriceAdjClnt);
-        orderPriceAdjustField.setText(myPassedClient.getClientPriceAdjust());
+        orderPriceAdjustField = (EditText) findViewById(R.id.orderPriceAdjClnt);
+        orderPriceAdjustField.setText(Integer.toString(myPassedClient.getClientPriceAdjust()));
 
-        //orderUrgencyField = findViewById(R.id.orderUrgencyClnt);
-        //orderUrgencyField.setText(myPassedClient.getClientUrgency());
+        orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
+        orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+                myPassedClient.setClientUrgency ((int) ratingBar.getRating());
+            }
+        });
 
-        //orderValueClientField = findViewById(R.id.orderValueClnt);
-        //orderValueClientField.setText(myPassedClient.getClientValue());
 
-        orderStatusClientField = findViewById(R.id.orderStatusClnt);
+        orderValueClientField = (RatingBar) findViewById(R.id.orderValueClnt);
+        orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+                myPassedClient.setClientValue ((int) ratingBar.getRating());
+            }
+        });
+
+
+        //orderStatusClientField = (EditText) findViewById(R.id.orderStatusClnt);
+
+        orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
         orderStatusClientField.setText(myPassedClient.getClientStatus());
 
+
+        //Dan: receive text modifications from text box
+
+        //set on click listener here
+
+        String retrievedClientStatus = orderStatusClientField.getText().toString();
+        myPassedClient.setClientStatus(retrievedClientStatus);
 
         //after any modifications are performed by the user from the Individual Client Order screen
         // the modifications are saved in the myPassedClient object and sent back to the invoking activity
@@ -99,17 +152,9 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
         */
 
 
-        /*
-
-        //Dan: receive text modifications from text box
-
-
-
-
 
 
         //end by Dan
-        */
 
 
 

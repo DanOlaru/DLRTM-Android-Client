@@ -9,6 +9,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
 
+    android:theme="@style/Theme.Black.NoTitleBar.Fullscreen.AppNoActionBar"
+
     tools:context=".IndividualClientOrderActivity">
 
     <LinearLayout
@@ -68,7 +70,9 @@
 
                         android:layout_height="wrap_content"
                         android:layout_margin="0dp"
-                        android:background="null"
+
+                        android:background="@null"
+
                         android:contextClickable="false"
                         android:elegantTextHeight="false"
                         android:inputType="text"
@@ -97,7 +101,8 @@
                         android:layout_marginRight="0sp"
                         android:layout_marginStart="0sp"
                         android:layout_marginTop="0sp"
-                        android:background="null"
+                        android:background="@null"
+
                         android:inputType="text"
                         android:padding="0sp"
                         android:paddingBottom="0dp"
@@ -124,7 +129,7 @@
                         android:id="@+id/orderLocationClnt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="null"
+                        android:background="@null"
 
                         android:inputType="text"
                         android:selectAllOnFocus="false"
@@ -146,7 +151,7 @@
                         android:id="@+id/orderProductIDClnt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="null"
+                        android:background="@null"
 
                         android:inputType="text"
                         android:text="GSheet"
@@ -166,7 +171,7 @@
                         android:id="@+id/orderProductQuantClnt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="null"
+                        android:background="@null"
 
                         android:inputType="text"
                         android:text="GSheet"
@@ -185,7 +190,7 @@
                         android:id="@+id/orderProductPriceClnt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="null"
+                        android:background="@null"
 
                         android:inputType="text"
                         android:text="GSheet"
@@ -204,7 +209,7 @@
                         android:id="@+id/orderPriceAdjClnt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="null"
+                        android:background="@null"
 
                         android:inputType="text"
                         android:text="GSheet"
@@ -221,13 +226,13 @@
                         android:text="@string/client_urgency" />
 
                     <RatingBar
-                        android:id="@+id/clientUrgencyRatingBar"
+                        android:id="@+id/orderUrgencyClnt"
                         style="@style/Widget.AppCompat.RatingBar.Small"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_margin="0dp"
-                        android:background="null"
-                        android:padding="0dp"
+                        android:numStars="5"
+
                         />
 
                 </TableRow>
@@ -241,10 +246,12 @@
                         android:text="@string/client_value" />
 
                     <RatingBar
-                        android:id="@+id/clientValueRatingBar"
+                        android:id="@+id/orderValueClnt"
                         style="@style/Widget.AppCompat.RatingBar.Small"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        />
 
 
                 </TableRow>
@@ -257,14 +264,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/order_status" />
 
-                    <EditText
-                        android:id="@+id/orderStatusClnt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="null"
 
-                        android:text="GSheet"
-                        android:textSize="8sp" />
                 </TableRow>
 
             </TableLayout>
@@ -322,11 +322,12 @@
     <FrameLayout
 
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/individualOrderIssueOrComment"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <EditText
+            android:id="@+id/individualOrderIssueOrComment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textMultiLine"

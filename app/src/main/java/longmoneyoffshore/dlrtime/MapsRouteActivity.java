@@ -1,3 +1,6 @@
+
+/*
+
 package longmoneyoffshore.dlrtime;
 
 import android.support.v4.app.FragmentActivity;
@@ -34,6 +37,8 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
+/*
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -44,3 +49,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }
+
+
+*/
