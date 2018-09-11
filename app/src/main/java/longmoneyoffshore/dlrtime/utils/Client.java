@@ -61,6 +61,20 @@ public class Client {
         this.clientStatus = thisClient.getClientStatus();
     }
 
+    public Client (ClientParcel thisClientParcel) //Client Object constructor back from Parcelable form
+    {
+        this.clientName = thisClientParcel.getClientName();
+        this.clientPhoneNo = thisClientParcel.getClientPhoneNo();
+        this.clientLocation = thisClientParcel.getClientLocation();
+        this.clientProductID = thisClientParcel.getClientProductID();
+        this.clientQuantity = thisClientParcel.getClientQuantity();
+        this.clientPrice = thisClientParcel.getClientPrice();
+        this.clientPriceAdjust = thisClientParcel.getClientPriceAdjust();
+        this.clientUrgency = thisClientParcel.getClientUrgency();
+        this.clientValue = thisClientParcel.getClientValue();
+        this.clientStatus = thisClientParcel.getClientStatus();
+    }
+
     /****************Getter and setter - methods use to access the private attributes of a class **/
 
     public String getClientName() {

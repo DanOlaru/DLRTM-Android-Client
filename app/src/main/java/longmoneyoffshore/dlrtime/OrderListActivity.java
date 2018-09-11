@@ -89,13 +89,15 @@ public class OrderListActivity extends AppCompatActivity {
 
                 Client thisOrder = new Client(); //this has to be populated with the data from the specific row which was clicked
 
-                Intent individualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
-                individualOrder.putExtra("order", thisOrder);
+                ClientParcel thisOrderParcel = new ClientParcel(thisOrder); // using constructor from Client object
+
+                Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
+
+                thisIndividualOrder.putExtra("order", thisOrderParcel);
 
                 int reqCode = 1; //what should be the predefined value?
 
-                startActivityForResult(individualOrder, reqCode);
-
+                startActivityForResult(thisIndividualOrder, reqCode);
             }
         });
     }

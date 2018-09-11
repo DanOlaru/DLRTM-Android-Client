@@ -12,7 +12,12 @@ import android.widget.TextView;
 
 import android.support.v7.widget.Toolbar;
 
+//local imports — Dan
+
+import android.content.Intent;
 import longmoneyoffshore.dlrtime.utils.Client;
+import longmoneyoffshore.dlrtime.utils.ClientParcel;
+
 
 
 public class IndividualClientOrderActivity extends AppCompatActivity {
@@ -20,7 +25,7 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
     //Dan's code
 
     //create dummy data set
-    private Client myPassedClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
+    //private Client myPassedClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
 
 
     //individual variables for the display table
@@ -43,43 +48,14 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
 
         //by Dan
 
-        /*
         // Get the transferred data from source activity.
         Intent passedIntent = getIntent();
-        Client myPassedClient = (Client) passedIntent.getExtras("order");
+        Bundle passedData = passedIntent.getExtras();
+        ClientParcel myPassedClientParcel = (ClientParcel) passedData.getParcelable("order");
+
+        Client myPassedClient = new Client (myPassedClientParcel);
 
 
-        //read Parcelable implementation
-
-        public class MyParcelable implements Parcelable {
-             private int mData;
-
-             public int describeContents() {
-                 return 0;
-             }
-
-             public void writeToParcel(Parcel out, int flags) {
-                 out.writeInt(mData);
-             }
-
-             public static final Parcelable.Creator<MyParcelable> CREATOR
-                     = new Parcelable.Creator<MyParcelable>() {
-                 public MyParcelable createFromParcel(Parcel in) {
-                     return new MyParcelable(in);
-                 }
-
-                 public MyParcelable[] newArray(int size) {
-                     return new MyParcelable[size];
-                 }
-             };
-
-             private MyParcelable(Parcel in) {
-                 mData = in.readInt();
-             }
- }
-
-
-*/
 
         //is casting necessary here?
 
@@ -108,21 +84,26 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
         orderPriceAdjustField.setText(Integer.toString(myPassedClient.getClientPriceAdjust()));
 
         orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
+
+        /* — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets
         orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
                 myPassedClient.setClientUrgency ((int) ratingBar.getRating());
             }
-        });
+        }); */
 
 
         orderValueClientField = (RatingBar) findViewById(R.id.orderValueClnt);
+
+
+        /*
         orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
                 myPassedClient.setClientValue ((int) ratingBar.getRating());
             }
-        });
+        }); */
 
 
         //orderStatusClientField = (EditText) findViewById(R.id.orderStatusClnt);
