@@ -13,8 +13,11 @@
 
 
     <style name="DLRTimeSecondTheme" parent="Theme.Black.NoTitleBar.Fullscreen.AppNoActionBar">
-
+        <item name="colorPrimary">@color/buttonYellow</item>
+        <item name="colorPrimaryDark">@color/buttonYellow</item>
+        <item name="colorAccent">@color/buttonYellow</item>
     </style>
+
 
     <!--
     <style name="DLRTimeTheme.NoActionBar">

@@ -45,6 +45,22 @@ public class Client {
         this.clientStatus = clientStatus;
     }
 
+    // 3° constructor from this same type of object — Dan
+
+    public Client (Client thisClient)
+    {
+        this.clientName = thisClient.getClientName();
+        this.clientPhoneNo = thisClient.getClientPhoneNo();
+        this.clientLocation = thisClient.getClientLocation();
+        this.clientProductID = thisClient.getClientProductID();
+        this.clientQuantity = thisClient.getClientQuantity();
+        this.clientPrice = thisClient.getClientPrice();
+        this.clientPriceAdjust = thisClient.getClientPriceAdjust();
+        this.clientUrgency = thisClient.getClientUrgency();
+        this.clientValue = thisClient.getClientValue();
+        this.clientStatus = thisClient.getClientStatus();
+    }
+
     /****************Getter and setter - methods use to access the private attributes of a class **/
 
     public String getClientName() {
