@@ -50,7 +50,8 @@
     <string name="back_button"> Back </string>
     <string name="sign_out_text">Sign Out</string>
 
-    <string name="comment_or_issue_hint"> Include comments / issues here </string>
+    <string name="comment_or_issue_hint"> Order status / comments / issues </string>
+    <string name="commit_order_feedback"> Send </string>
 
 
 </resources>
