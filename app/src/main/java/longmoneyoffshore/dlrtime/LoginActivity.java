@@ -1,43 +1,15 @@
 package longmoneyoffshore.dlrtime;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
+import android.content.Intent;
+import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
-
-//Dan
-import android.content.Intent;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -45,8 +17,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.drive.DriveClient;
+import com.google.android.gms.drive.DriveResourceClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+//Dan
 
 /**
 * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
@@ -61,6 +38,19 @@ public class LoginActivity extends AppCompatActivity implements
     private GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
 
+    private SignInButton signInButton;
+    private Button signOutBtn;
+    private Button disconnectBtn;
+
+    //Google Drive access
+    private static final int REQUEST_CODE_SIGN_IN = 0;
+    private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
+    private static final int REQUEST_CODE_CREATOR = 2;
+
+    private DriveClient mDriveClient;
+    private DriveResourceClient mDriveResourceClient;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,10 +64,18 @@ public class LoginActivity extends AppCompatActivity implements
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.disconnect_button).setOnClickListener(this);
 
+
+        // Button listeners - to implement in the future
+//        signInButton = findViewById(R.id.sign_in_button);
+//        signOutBtn = findViewById(R.id.sign_out_button);
+//        disconnectBtn = findViewById(R.id.disconnect_button);
+
+
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(Drive.SCOPE_FILE)
                 .requestEmail()
                 .build();
         // [END configure_signin]
@@ -113,11 +111,23 @@ public class LoginActivity extends AppCompatActivity implements
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
+        if (requestCode == REQUEST_CODE_SIGN_IN) {
+
+            Log.i(TAG, "Sign in request code");
+            // Called after user is signed in.
+            if (resultCode == RESULT_OK) {
+                Log.i(TAG, "Signed in successfully.");
+
+                //Launch of SheetsListActivity
+                Intent intent = new Intent(this, SheetsListActivity.class);
+                startActivity(intent);
+//                intent.putExtra("googleDrive", mDriveClient);
+
+                // The Task returned from this call is always completed, no need to attach
+//                // a listener.
+//                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+//                handleSignInResult(task);
+            }
         }
     }
     // [END onActivityResult]
@@ -141,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements
     // [START signIn]
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN);
     }
     // [END signIn]
 
