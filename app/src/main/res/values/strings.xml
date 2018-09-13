@@ -47,6 +47,8 @@
     <string name="title_text">Google Sign-In\nQuickstart</string>
 
     <string name="signed_in_fmt">Signed in as: %s</string>
+    <string name="signed_in_fmt2">Signed in as: %s</string>
+
     <string name="signed_in">Signed in</string>
     <string name="signing_in">Signing in…</string>
     <string name="signed_out">Signed out</string>

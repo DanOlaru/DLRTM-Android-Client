@@ -101,7 +101,17 @@ public class LoginActivity extends AppCompatActivity implements
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
+//        updateUI(account);
+
+        if (account != null)
+        {
+            //Launch of SheetsListActivity
+            Intent intent = new Intent(this, SheetsListActivity.class);
+            startActivity(intent);
+
+        }
+
+
         // [END on_start_sign_in]
     }
 
@@ -189,12 +199,6 @@ public class LoginActivity extends AppCompatActivity implements
 
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-
-            /*************** Launch of OrderListActivity ********/
-            Intent myIntent = new Intent(this, OrderListActivity.class);
-            myIntent.putExtra("username",account.getDisplayName());
-            myIntent.putExtra("username",account.getDisplayName());
-
 
         } else {
             mStatusTextView.setText(R.string.signed_out);
