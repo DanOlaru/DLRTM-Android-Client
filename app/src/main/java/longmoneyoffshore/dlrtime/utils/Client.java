@@ -1,6 +1,5 @@
 package longmoneyoffshore.dlrtime.utils;
 
-
 public class Client {
     /* Client info consists of: name, location, phone number, product, quantity, total price, price per unit,
      * ClientPriceAdjust is positive if client owes and negative if client is owed,
@@ -31,7 +30,6 @@ public class Client {
 
     // 2° constructor
 
-
     public Client(String clientName, String clientPhoneNo, String clientLocation, String clientProductID, int clientQuantity, int clientPrice, int clientPriceAdjust, int clientUrgency, int clientValue, String clientStatus) {
         this.clientName = clientName;
         this.clientPhoneNo = clientPhoneNo;
@@ -47,32 +45,49 @@ public class Client {
 
     // 3° constructor from this same type of object — Dan
 
-    public Client (Client thisClient)
+    public Client (Client fromClient)
     {
-        this.clientName = thisClient.getClientName();
-        this.clientPhoneNo = thisClient.getClientPhoneNo();
-        this.clientLocation = thisClient.getClientLocation();
-        this.clientProductID = thisClient.getClientProductID();
-        this.clientQuantity = thisClient.getClientQuantity();
-        this.clientPrice = thisClient.getClientPrice();
-        this.clientPriceAdjust = thisClient.getClientPriceAdjust();
-        this.clientUrgency = thisClient.getClientUrgency();
-        this.clientValue = thisClient.getClientValue();
-        this.clientStatus = thisClient.getClientStatus();
+        this.clientName = fromClient.getClientName();
+        this.clientPhoneNo = fromClient.getClientPhoneNo();
+        this.clientLocation = fromClient.getClientLocation();
+        this.clientProductID = fromClient.getClientProductID();
+        this.clientQuantity = fromClient.getClientQuantity();
+        this.clientPrice = fromClient.getClientPrice();
+        this.clientPriceAdjust = fromClient.getClientPriceAdjust();
+        this.clientUrgency = fromClient.getClientUrgency();
+        this.clientValue = fromClient.getClientValue();
+        this.clientStatus = fromClient.getClientStatus();
     }
 
-    public Client (ClientParcel thisClientParcel) //Client Object constructor back from Parcelable form
+    public Client (ClientParcel fromClientParcel) //Client Object constructor back from Parcelable form
     {
-        this.clientName = thisClientParcel.getClientName();
-        this.clientPhoneNo = thisClientParcel.getClientPhoneNo();
-        this.clientLocation = thisClientParcel.getClientLocation();
-        this.clientProductID = thisClientParcel.getClientProductID();
-        this.clientQuantity = thisClientParcel.getClientQuantity();
-        this.clientPrice = thisClientParcel.getClientPrice();
-        this.clientPriceAdjust = thisClientParcel.getClientPriceAdjust();
-        this.clientUrgency = thisClientParcel.getClientUrgency();
-        this.clientValue = thisClientParcel.getClientValue();
-        this.clientStatus = thisClientParcel.getClientStatus();
+        this.clientName = fromClientParcel.getClientName();
+        this.clientPhoneNo = fromClientParcel.getClientPhoneNo();
+        this.clientLocation = fromClientParcel.getClientLocation();
+        this.clientProductID = fromClientParcel.getClientProductID();
+        this.clientQuantity = fromClientParcel.getClientQuantity();
+        this.clientPrice = fromClientParcel.getClientPrice();
+        this.clientPriceAdjust = fromClientParcel.getClientPriceAdjust();
+        this.clientUrgency = fromClientParcel.getClientUrgency();
+        this.clientValue = fromClientParcel.getClientValue();
+        this.clientStatus = fromClientParcel.getClientStatus();
+
+
+        //or like this???
+        /*
+        Client localReturnClient = fromClientParcel.returnClientFromParcel();
+
+        this.clientName = localReturnClient.getClientName();
+        this.clientPhoneNo = localReturnClient.getClientPhoneNo();
+        this.clientLocation = localReturnClient.getClientLocation();
+        this.clientProductID = localReturnClient.getClientProductID();
+        this.clientQuantity = localReturnClient.getClientQuantity();
+        this.clientPrice = localReturnClient.getClientPrice();
+        this.clientPriceAdjust = localReturnClient.getClientPriceAdjust();
+        this.clientUrgency = localReturnClient.getClientUrgency();
+        this.clientValue = localReturnClient.getClientValue();
+        this.clientStatus = localReturnClient.getClientStatus();
+        */
     }
 
     /****************Getter and setter - methods use to access the private attributes of a class **/
@@ -97,7 +112,7 @@ public class Client {
         return clientLocation;
     }
 
-    public void setClientLocation(String clientLocation) {
+    public void setClientLoucation(String clientLocation) {
         this.clientLocation = clientLocation;
     }
 
@@ -157,33 +172,3 @@ public class Client {
         this.clientStatus = clientStatus;
     }
 }
-
-
-/*
-public class MyParcelableClientsList implements Parcelable {
-     private int mData;
-
-     public int describeContents() {
-         return 0;
-     }
-
-     public void writeToParcel(Parcel out, int flags) {
-         out.writeInt(mData);
-     }
-
-     public static final Parcelable.Creator<MyParcelableClientsList> CREATOR
-             = new Parcelable.Creator<MyParcelableClientsList>() {
-         public MyParcelableClientsList createFromParcel(Parcel in) {
-             return new MyParcelableClientsList(in);
-         }
-
-         public MyParcelable[] newArray(int size) {
-             return new MyParcelable[size];
-         }
-     };
-
-     private MyParcelable(Parcel in) {
-         mData = in.readInt();
-     }
- }
-* */

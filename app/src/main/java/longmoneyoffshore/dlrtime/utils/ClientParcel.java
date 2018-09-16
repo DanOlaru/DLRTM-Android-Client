@@ -9,18 +9,14 @@ import android.os.Parcelable;
 
 public class ClientParcel extends Client implements Parcelable {
 
-
     //internal Client object
     private Client internalClient;
 
 
-    public static final Parcelable.Creator<ClientParcel> CREATOR = new Parcelable.Creator<ClientParcel>() {
-        public ClientParcel createFromParcel (Parcel in) {
-            return new ClientParcel(in);
-        }
-        public ClientParcel[] newArray(int size) {
-            return new ClientParcel[size];
-        }
+    public static final Parceluable.Creator<ClientParcel> CREATOR = new Parcelable.Creator<ClientParcel>() {
+        public ClientParcel createFromParcel (Parcel in) { return new ClientParcel(in); }
+
+        public ClientParcel[] newArray(int size) { return new ClientParcel[size]; }
     };
 
 
@@ -33,41 +29,31 @@ public class ClientParcel extends Client implements Parcelable {
     public ClientParcel (Client thisClient) {
 
         // old version
-        //super (thisClient);
+        super (thisClient);
 
-        this.internalClient = thisClient;
+        this.internalClient = new Client (thisClient); //the local Client object is assigned a reference to the superclass part of its object/ the client info part
     }
-
-    public Client getClient () {
-        return internalClient;
-    }
-
-    public void setClient (Client passedClient) {
-        this.internalClient = passedClient;
-    }
-
-
 
     //Parcelation
     //is it supposed to be public or private?
     //the order matters?
 
     private ClientParcel(Parcel in) {
-            this.setClientName(in.readString());
-            this.setClientPhoneNo(in.readString());
-            this.setClientLocation(in.readString());
-            this.setClientProductID(in.readString());
-            this.setClientQuantity(in.readInt());
-            this.setClientPrice(in.readInt());
-            this.setClientPriceAdjust(in.readInt());
-            this.setClientUrgency(in.readInt());
-            this.setClientValue(in.readInt());
-            this.setClientStatus(in.readString());
+        this.setClientName(in.readString());
+        this.setClientPhoneNo(in.readString());
+        this.setClientLocation(in.readString());
+        this.setClientProductID(in.readString());
+        this.setClientQuantity(in.readInt());
+        this.setClientPrice(in.readInt());
+        this.setClientPriceAdjust(in.readInt());
+        this.setClientUrgency(in.readInt());
+        this.setClientValue(in.readInt());
+        this.setClientStatus(in.readString());
 
 
-            //or is this the correct way to represent / write / parcel the data internally????
+        //or is this the correct way to represent / write / parcel the data internally????
 
-            // this.internalClient.setClientName(in.readString()); //Is 'this' even necessary?
+        // this.internalClient.setClientName(in.readString()); //Is 'this' even necessary?
         //     this.internalClient.setClientPhoneNo(in.readString());
         //     this.internalClient.setClientLocation(in.readString());
         //     this.internalClient.setClientProductID(in.readString());
@@ -77,6 +63,20 @@ public class ClientParcel extends Client implements Parcelable {
         //     this.internalClient.setClientUrgency(in.readInt());
         //     this.internalClient.setClientValue(in.readInt());
         //     this.internalClient.setClientStatus(in.readString());
+    }
+
+
+    public Client getClient () {
+        return this.internalClient;
+    }
+
+    public void setClient (Client passedClient) {
+        this.internalClient = passedClient;
+    }
+
+
+    public Client returnClientFromParcel () {
+        return internalClient;
     }
 
 
