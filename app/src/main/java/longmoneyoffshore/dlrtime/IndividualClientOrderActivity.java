@@ -50,8 +50,11 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
 
         // Get the transferred data from source activity.
         Intent passedIntent = getIntent();
-        Bundle passedData = passedIntent.getExtras();
-        ClientParcel myPassedClientParcel = (ClientParcel) passedData.getParcelable("order");
+
+        ClientParcel myPassedClientParcel = (ClientParcel) passedIntent.getParcelableExtra("order");
+        //or??
+        //Bundle passedData = passedIntent.getExtras();
+        //ClientParcel myPassedClientParcel = (ClientParcel) passedData.getParcelable("order");
 
         Client myPassedClient = new Client (myPassedClientParcel);
 
