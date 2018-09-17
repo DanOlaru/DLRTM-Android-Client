@@ -59,37 +59,6 @@ public class Client {
         this.clientStatus = fromClient.getClientStatus();
     }
 
-    public Client (ClientParcel fromClientParcel) //Client Object constructor back from Parcelable form
-    {
-        this.clientName = fromClientParcel.getClientName();
-        this.clientPhoneNo = fromClientParcel.getClientPhoneNo();
-        this.clientLocation = fromClientParcel.getClientLocation();
-        this.clientProductID = fromClientParcel.getClientProductID();
-        this.clientQuantity = fromClientParcel.getClientQuantity();
-        this.clientPrice = fromClientParcel.getClientPrice();
-        this.clientPriceAdjust = fromClientParcel.getClientPriceAdjust();
-        this.clientUrgency = fromClientParcel.getClientUrgency();
-        this.clientValue = fromClientParcel.getClientValue();
-        this.clientStatus = fromClientParcel.getClientStatus();
-
-
-        //or like this???
-        /*
-        Client localReturnClient = fromClientParcel.returnClientFromParcel();
-
-        this.clientName = localReturnClient.getClientName();
-        this.clientPhoneNo = localReturnClient.getClientPhoneNo();
-        this.clientLocation = localReturnClient.getClientLocation();
-        this.clientProductID = localReturnClient.getClientProductID();
-        this.clientQuantity = localReturnClient.getClientQuantity();
-        this.clientPrice = localReturnClient.getClientPrice();
-        this.clientPriceAdjust = localReturnClient.getClientPriceAdjust();
-        this.clientUrgency = localReturnClient.getClientUrgency();
-        this.clientValue = localReturnClient.getClientValue();
-        this.clientStatus = localReturnClient.getClientStatus();
-        */
-    }
-
     /****************Getter and setter - methods use to access the private attributes of a class **/
 
     public String getClientName() {

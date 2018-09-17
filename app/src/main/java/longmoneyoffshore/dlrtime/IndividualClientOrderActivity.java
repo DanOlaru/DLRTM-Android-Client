@@ -17,10 +17,11 @@ import android.support.v7.widget.Toolbar;
 import android.content.Intent;
 import longmoneyoffshore.dlrtime.utils.Client;
 import longmoneyoffshore.dlrtime.utils.ClientParcel;
+import android.app.Activity;
 
 
 
-public class IndividualClientOrderActivity extends AppCompatActivity {
+public class IndividualClientOrderActivity extends Activity {
 
     //Dan's code
 
@@ -56,8 +57,7 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
         //Bundle passedData = passedIntent.getExtras();
         //ClientParcel myPassedClientParcel = (ClientParcel) passedData.getParcelable("order");
 
-        Client myPassedClient = new Client (myPassedClientParcel);
-
+        Client myPassedClient =  (Client) myPassedClientParcel;
 
 
         //is casting necessary here?
