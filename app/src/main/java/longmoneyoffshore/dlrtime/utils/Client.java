@@ -112,7 +112,7 @@ public class Client {
         return clientLocation;
     }
 
-    public void setClientLoucation(String clientLocation) {
+    public void setClientLocation(String clientLocation) {
         this.clientLocation = clientLocation;
     }
 

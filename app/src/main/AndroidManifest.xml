@@ -51,9 +51,9 @@
 
 
         <activity android:name="longmoneyoffshore.dlrtime.OrderListActivity">
-            <intent-filteru>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-            </intent-filteru>
+            </intent-filter>
         </activity>
 
 
@@ -73,7 +73,6 @@
                <action android:name="android.intent.action.MAIN" />
            </intent-filter>
        </activity>
-
        -->
 
     </application>

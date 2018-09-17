@@ -8,6 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:theme="@style/Theme.Black.NoTitleBar.Fullscreen.AppNoActionBar"
 
     tools:context=".IndividualClientOrderActivity">
 
@@ -49,6 +50,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
 
+                        android:hint="@string/title_activity_individual_client_order"
                         android:inputType="text"
                         android:selectAllOnFocus="true"
                         android:singleLine="true"
@@ -77,6 +79,8 @@
                         android:layout_margin="0dp"
 
                         android:background="@null"
+
+                        android:hint="@string/individual_client_name"
 
                         android:contextClickable="false"
                         android:elegantTextHeight="false"
@@ -294,7 +298,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/buttonYellow"
                 android:text="@string/make_call"
-                android:textSize="8sp" />
+                android:textSize="12dp" />
 
             <Button
                 android:id="@+id/issue_or_cancel"
@@ -303,7 +307,7 @@
                 android:layout_gravity="center"
                 android:background="@color/buttonYellow"
                 android:text="@string/issue_or_cancel"
-                android:textSize="8sp" />
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/back_button"
@@ -311,7 +315,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/buttonYellow"
                 android:text="@string/back_button"
-                android:textSize="8sp" />
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/sign_out"
@@ -319,7 +323,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/holo_purple"
                 android:text="@string/sign_out_text"
-                android:textSize="8sp" />
+                android:textSize="12sp" />
 
         </LinearLayout>
 

@@ -158,7 +158,6 @@ public class IndividualClientOrderActivity extends AppCompatActivity {
 
 }
 
-
 /*
  // set customer name
  String cust_name = (String) savedInstanceState.getString();

@@ -13,7 +13,7 @@ public class ClientParcel extends Client implements Parcelable {
     private Client internalClient;
 
 
-    public static final Parceluable.Creator<ClientParcel> CREATOR = new Parcelable.Creator<ClientParcel>() {
+    public static final Parcelable.Creator<ClientParcel> CREATOR = new Parcelable.Creator<ClientParcel>() {
         public ClientParcel createFromParcel (Parcel in) { return new ClientParcel(in); }
 
         public ClientParcel[] newArray(int size) { return new ClientParcel[size]; }
