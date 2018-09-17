@@ -60,7 +60,9 @@ public class IndividualClientOrderActivity extends Activity {
         Client myPassedClient =  (Client) myPassedClientParcel;
 
 
-        //is casting necessary here?
+        //create dummy data set
+        myPassedClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
+
 
         orderNameField = (EditText) findViewById(R.id.orderNameClient);
         orderNameField.setText(myPassedClient.getClientName());
