@@ -89,9 +89,7 @@ public class OrderListActivity extends AppCompatActivity {
 
                 Client thisOrder = new Client(); //this has to be populated with the data from the specific row which was clicked
 
-
                 //what method converts thisOrder into a Parcel?
-
 
                 ClientParcel thisOrderParcel = new ClientParcel(thisOrder); // using constructor from Client object
 

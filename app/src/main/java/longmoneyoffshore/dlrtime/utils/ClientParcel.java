@@ -9,10 +9,6 @@ import android.os.Parcelable;
 
 public class ClientParcel extends Client implements Parcelable {
 
-    //internal Client object
-    private Client internalClient;
-
-
     public static final Parcelable.Creator<ClientParcel> CREATOR = new Parcelable.Creator<ClientParcel>() {
         public ClientParcel createFromParcel (Parcel in) { return new ClientParcel(in); }
 
@@ -26,16 +22,9 @@ public class ClientParcel extends Client implements Parcelable {
     public ClientParcel () { }
 
     //constructor of ClientParcel from Client object — is this right? Does it do what I want it to do?
-    public ClientParcel (Client thisClient) {
-
-        // old version
-        super (thisClient);
-
-        this.internalClient = new Client (thisClient); //the local Client object is assigned a reference to the superclass part of its object/ the client info part
-    }
+    public ClientParcel (Client thisClient) { super (thisClient); }
 
     //Parcelation
-    //is it supposed to be public or private?
     //the order matters?
 
     private ClientParcel(Parcel in) {
@@ -53,7 +42,7 @@ public class ClientParcel extends Client implements Parcelable {
 
         //or is this the correct way to represent / write / parcel the data internally????
 
-        // this.internalClient.setClientName(in.readString()); //Is 'this' even necessary?
+        //     this.internalClient.setClientName(in.readString()); //Is 'this' even necessary?
         //     this.internalClient.setClientPhoneNo(in.readString());
         //     this.internalClient.setClientLocation(in.readString());
         //     this.internalClient.setClientProductID(in.readString());
@@ -67,17 +56,10 @@ public class ClientParcel extends Client implements Parcelable {
 
 
     public Client getClient () {
-        return this.internalClient;
+        return this.getClient(); //this or super?
     }
 
-    public void setClient (Client passedClient) {
-        this.internalClient = passedClient;
-    }
-
-
-    public Client returnClientFromParcel () {
-        return internalClient;
-    }
+    public Client returnClientFromParcel () { return this.getClient(); }
 
 
     //writing to parcel
@@ -111,9 +93,7 @@ public class ClientParcel extends Client implements Parcelable {
 
     //implement describeContents
     @Override
-    public int describeContents() {
-        return 0;
-    }
+    public int describeContents() { return 0; }
 
 
 }

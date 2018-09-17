@@ -171,4 +171,7 @@ public class Client {
     public void setClientStatus(String clientStatus) {
         this.clientStatus = clientStatus;
     }
+
+    //or do I have to make a new Client variable?
+    public Client getClient () {return this;}
 }
