@@ -15,6 +15,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="fill_vertical"
         android:baselineAligned="false">
 
         <FrameLayout
@@ -22,12 +23,14 @@
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
+
+            android:layout_gravity="top">
 
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
+                android:gravity="fill_vertical"
                 tools:ignore="UselessParent">
 
                 <TableRow
@@ -291,18 +294,21 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/make_call"
+                android:id="@+id/make_call_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="@color/buttonYellow"
                 android:text="@string/make_call"
-                android:textSize="12dp" />
+                android:textSize="12dp"
+                android:onClick="dialNumber"/>
 
             <Button
-                android:id="@+id/issue_or_cancel"
+                android:id="@+id/issue_or_cancel_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="@color/buttonYellow"
                 android:text="@string/issue_or_cancel"
                 android:textSize="12sp" />
@@ -311,20 +317,21 @@
                 android:id="@+id/back_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="@color/buttonYellow"
                 android:text="@string/back_button"
                 android:textSize="12sp" />
 
             <Button
-                android:id="@+id/sign_out"
+                android:id="@+id/sign_out_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="@android:color/holo_purple"
                 android:text="@string/sign_out_text"
                 android:textSize="12sp" />
 
         </LinearLayout>
-
 
 
     </LinearLayout>

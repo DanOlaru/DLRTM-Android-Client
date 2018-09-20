@@ -9,6 +9,9 @@ public class Client {
      * this is the data with which the core code operates, pulled off of the database
      */
 
+    //TODO: implement anonymizer prefix to be user-inputtable from Settings page (TBD)
+    public final String USanonymizerPrefix = "*67"; //US - default
+
     // Attributes
     private String clientName;
     private String clientPhoneNo; // It's a string because the sequence of numbers does not have any logic behind it
@@ -20,8 +23,10 @@ public class Client {
     private int clientUrgency;
     private int clientValue;
     private String clientStatus;
+    private String anonymizerPrefix = USanonymizerPrefix;
 
-        //Note: by convention only for the name of the classes the first letter is uppercase
+
+    //Note: by convention only for the name of the classes the first letter is uppercase
 
     /****************************************Constructors of the classs******************/
     // 1° constructor - the basic one
@@ -43,7 +48,23 @@ public class Client {
         this.clientStatus = clientStatus;
     }
 
-    // 3° constructor from this same type of object — Dan
+    // 3° constructor that also takes anonymizerPrefix
+
+    public Client(String clientName, String clientPhoneNo, String clientLocation, String clientProductID, int clientQuantity, int clientPrice, int clientPriceAdjust, int clientUrgency, int clientValue, String clientStatus, String anonymizerPrefix) {
+        this.clientName = clientName;
+        this.clientPhoneNo = clientPhoneNo;
+        this.clientLocation = clientLocation;
+        this.clientProductID = clientProductID;
+        this.clientQuantity = clientQuantity;
+        this.clientPrice = clientPrice;
+        this.clientPriceAdjust = clientPriceAdjust;
+        this.clientUrgency = clientUrgency;
+        this.clientValue = clientValue;
+        this.clientStatus = clientStatus;
+        this.anonymizerPrefix = anonymizerPrefix;
+    }
+
+    // 4° constructor from this same type of object — Dan
 
     public Client (Client fromClient)
     {
@@ -57,6 +78,9 @@ public class Client {
         this.clientUrgency = fromClient.getClientUrgency();
         this.clientValue = fromClient.getClientValue();
         this.clientStatus = fromClient.getClientStatus();
+
+        //latest change
+        this.anonymizerPrefix = fromClient.getAnonymizerPrefix();
     }
 
     /****************Getter and setter - methods use to access the private attributes of a class **/
@@ -141,6 +165,12 @@ public class Client {
         this.clientStatus = clientStatus;
     }
 
-    //or do I have to make a new Client variable?
+    //set and get AnonymizerPrefix which is added in front of the phone number if the caller ID needs to be private for any reason
+    public void setAnonymizerPrefix (String anonymizerPrefix) {this.anonymizerPrefix = anonymizerPrefix;}
+
+    public String getAnonymizerPrefix () {return this.anonymizerPrefix;}
+
+
+    //return a reference to this Client object
     public Client getClient () {return this;}
 }

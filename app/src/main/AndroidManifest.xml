@@ -50,18 +50,22 @@
 
 
 
-        <activity android:name="longmoneyoffshore.dlrtime.OrderListActivity">
+        <activity android:name="longmoneyoffshore.dlrtime.OrderListActivity"
+            android:parentActivityName=".LoginActivity">
             <intent-filter>
+                <!--no intent so far-->
                 <action android:name="android.intent.action.MAIN" />
+
             </intent-filter>
         </activity>
 
 
-        <activity android:name="longmoneyoffshore.dlrtime.IndividualClientOrderActivity">
+        <activity android:name="longmoneyoffshore.dlrtime.IndividualClientOrderActivity"
+            android:parentActivityName=".OrderListActivity">
 
             <intent-filter>
+                <!--no intent so far-->
                 <action android:name="android.intent.action.MAIN" />
-
 
             </intent-filter>
         </activity>

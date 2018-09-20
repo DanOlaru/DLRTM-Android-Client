@@ -10,8 +10,10 @@ import android.os.Parcelable;
 public class ClientParcel extends Client implements Parcelable {
 
     public static final Parcelable.Creator<ClientParcel> CREATOR = new Parcelable.Creator<ClientParcel>() {
+        @Override
         public ClientParcel createFromParcel (Parcel in) { return new ClientParcel(in); }
 
+        @Override
         public ClientParcel[] newArray(int size) { return new ClientParcel[size]; }
     };
 
@@ -38,6 +40,8 @@ public class ClientParcel extends Client implements Parcelable {
         this.setClientUrgency(in.readInt());
         this.setClientValue(in.readInt());
         this.setClientStatus(in.readString());
+        //
+        this.setAnonymizerPrefix(in.readString());
 
 
         //or is this the correct way to represent / write / parcel the data internally????
@@ -59,10 +63,26 @@ public class ClientParcel extends Client implements Parcelable {
         return this.getClient(); //this or super?
     }
 
-    public Client returnClientFromParcel () { return this.getClient(); }
+    public Client returnClientFromParcel () {
+
+        Client out = new Client();
+
+        out.setClientName(this.getClientName());
+        out.setClientPhoneNo(this.getClientPhoneNo());
+        out.setClientLocation(this.getClientLocation());
+        out.setClientProductID(this.getClientProductID());
+        out.setClientQuantity(this.getClientQuantity());
+        out.setClientPrice(this.getClientPrice());
+        out.setClientPriceAdjust(this.getClientPriceAdjust());
+        out.setClientUrgency(this.getClientUrgency());
+        out.setClientValue(this.getClientValue());
+        out.setClientStatus(this.getClientStatus());
+
+        return out;
+    }
 
 
-    //writing to parcel
+    //write object values to parcel for storage
     public void writeToParcel (Parcel outClient, int flags) {
 
         outClient.writeString(this.getClientName());
@@ -75,6 +95,8 @@ public class ClientParcel extends Client implements Parcelable {
         outClient.writeInt(this.getClientUrgency());
         outClient.writeInt(this.getClientValue());
         outClient.writeString(this.getClientStatus());
+        //
+        outClient.writeString(this.getAnonymizerPrefix());
 
 
         // or this??

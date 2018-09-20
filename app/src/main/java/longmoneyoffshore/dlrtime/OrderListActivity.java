@@ -22,6 +22,7 @@ import longmoneyoffshore.dlrtime.utils.AsyncResult;
 import longmoneyoffshore.dlrtime.utils.Client;
 import longmoneyoffshore.dlrtime.utils.DownloadAsyncTask;
 import longmoneyoffshore.dlrtime.utils.ClientAdapter;
+import longmoneyoffshore.dlrtime.utils.SignOutFunctionality;
 
 public class OrderListActivity extends AppCompatActivity {
 
@@ -58,6 +59,20 @@ public class OrderListActivity extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
+
+        //By Dan
+        //sign out button click references public public signOut method in utils
+        Button signOutButton = (Button) findViewById(R.id.sign_out_button);
+
+        //signOutButton.setOnClickListener(new View.OnClickListener() {
+        //    @Override
+        //    public void onClick(View v) {
+        //        SignOutFunctionality signOutObject = new SignOutFunctionality();
+        //        signOutObject.signOut(v);
+        //    }
+        //});
+
+        //end by Dan
     }
 
     public void buttonClickHandler(View view) {
