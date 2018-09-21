@@ -235,21 +235,26 @@
 
                 <TableRow>
 
+
                     <TextView
                         android:id="@+id/clientUrgency"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/client_urgency" />
 
-                    <RatingBar
-                        android:id="@+id/orderUrgencyClnt"
-                        style="@style/Widget.AppCompat.RatingBar.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="0dp"
-                        android:numStars="3"
-                        />
-
+                    <LinearLayout>
+                        <RatingBar
+                            android:id="@+id/orderUrgencyClnt"
+                            style="@style/Widget.AppCompat.RatingBar.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp"
+                            android:numStars="5"
+                            android:stepSize="0.1"
+                            android:clickable="true"
+                            android:isIndicator="true"
+                            />
+                    </LinearLayout>
 
                 </TableRow>
 
@@ -261,14 +266,16 @@
                         android:layout_height="wrap_content"
                         android:text="@string/client_value" />
 
-                    <RatingBar
-                        android:id="@+id/orderValueClnt"
-                        style="@style/Widget.AppCompat.RatingBar.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:numStars="5"
-                        />
-
+                    <LinearLayout>
+                        <RatingBar
+                            android:id="@+id/orderValueClnt"
+                            style="@style/Widget.AppCompat.RatingBar.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:numStars="5"
+                            android:clickable="true"
+                            />
+                    </LinearLayout>
 
                 </TableRow>
 
@@ -279,7 +286,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/order_status" />
-
 
                 </TableRow>
 

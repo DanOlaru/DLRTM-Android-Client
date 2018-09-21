@@ -107,23 +107,24 @@ public class IndividualClientOrderActivity extends Activity {
         orderPriceAdjustField = (EditText) findViewById(R.id.orderPriceAdjClnt);
         orderPriceAdjustField.setText(Integer.toString(myPassedClient.getClientPriceAdjust()));
 
-        orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
-
+        //Order Urgency
         //after any modifications are performed by the user from the Individual Client Order screen
         // the modifications are saved in the localFeedbackClient object and sent back to the invoking activity
         //which is OrderListActivity.
+        orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
 
         // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5
         orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
 
-                //localFeedbackClient.setClientUrgency(Math.round(v));
-                localFeedbackClient.setClientUrgency ((int) orderUrgencyField.getRating());
+                //TODO: which of these is correct?
+                //localFeedbackClient.setClientUrgency ((int) orderUrgencyField.getRating());
+                localFeedbackClient.setClientUrgency ((int) ratingBar.getRating());
             }
         });
 
-
+        //Client Value
         orderValueClientField = (RatingBar) findViewById(R.id.orderValueClnt);
 
         orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -138,6 +139,7 @@ public class IndividualClientOrderActivity extends Activity {
         orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
         orderStatusClientField.setText(myPassedClient.getClientStatus());
 
+        //user changes the text in statusClientField
 
         String retrievedClientStatus = orderStatusClientField.getText().toString();
         localFeedbackClient.setClientStatus(retrievedClientStatus);
@@ -178,6 +180,12 @@ public class IndividualClientOrderActivity extends Activity {
         //back_button takes me back to the previous Activity — presumably OrderListActivity
         Button backButton = (Button) findViewById(R.id.back_button);
         //TODO: the Back button makes sure that the data in the text boxes is saved and sent back to the previous activity / GSheets
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
 
         //TODO:sign out button click references public public signOut method in utils
