@@ -31,12 +31,10 @@ public class IndividualClientOrderActivity extends Activity {
 
     //Dan's code
 
-    //create dummy data set
-    //private Client myLocalClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
-
     //this Client object will take any modifications that are made in the IndividualClientOrder window and pass them back
     // to the OrderListActivity and back to GSheets
     private Client localFeedbackClient;
+    private Client myPassedClient;
 
     //individual variables for the display table
     EditText orderNameField;
@@ -60,27 +58,28 @@ public class IndividualClientOrderActivity extends Activity {
         //by Dan
         // Get the transferred data from source activity.
         Intent passedIntent = getIntent();
-        ClientParcel myPassedClientParcel = passedIntent.getParcelableExtra("order");
-        Client myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
-
+        //TODO: only commented this temporarily; This should work
+        //ClientParcel myPassedClientParcel = passedIntent.getParcelableExtra("order");
+        //myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
 
         //or??
         //Bundle passedData = passedIntent.getExtras();
         //ClientParcel myPassedClientParcel = (ClientParcel) passedData.getParcelable("order");
 
-        //TODO: we make the localFeedbackClient identical to the passed Client object, except any modifications that will be made
-        // which will be passed back to the invoking activity or perhaps the ASyncTask!!!
-
-        localFeedbackClient = new Client (myPassedClient);
-
-        //create dummy data set
+        // dummy data set
         myPassedClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
 
+        //TODO: initially localFeedbackClient is identical to the passed Client object. Any modifications made
+        // will be passed back using it to the invoking activity or perhaps the ASyncTask!!!
+        localFeedbackClient = new Client (myPassedClient);
+
+        //test only
+        //ClientParcel myPassedClientParcel = new ClientParcel(myPassedClient);
 
         //get the applicable anonymizerPrefix
         final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
-        //fill the fields with info from passed Client object
+        //fill the fields with values from passed Client object
 
         //TODO why are there 2 similar objects here — orderNameClient and orderNameClnt?
 
@@ -110,66 +109,49 @@ public class IndividualClientOrderActivity extends Activity {
 
         orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
 
+        //after any modifications are performed by the user from the Individual Client Order screen
+        // the modifications are saved in the localFeedbackClient object and sent back to the invoking activity
+        //which is OrderListActivity.
+
         // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5
         orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                localFeedbackClient.setClientUrgency ((int) ratingBar.getRating());
+
+                //localFeedbackClient.setClientUrgency(Math.round(v));
+                localFeedbackClient.setClientUrgency ((int) orderUrgencyField.getRating());
             }
         });
 
 
         orderValueClientField = (RatingBar) findViewById(R.id.orderValueClnt);
 
-        /*
         orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                myPassedClient.setClientValue ((int) ratingBar.getRating());
+                myPassedClient.setClientValue ((int) orderValueClientField.getRating());
             }
-        }); */
+        });
 
 
         //orderStatusClientField = (EditText) findViewById(R.id.orderStatusClnt);
-
         orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
         orderStatusClientField.setText(myPassedClient.getClientStatus());
 
 
-        //Dan: receive text modifications from text box
-
-        //set on click listener here
-
         String retrievedClientStatus = orderStatusClientField.getText().toString();
-        myPassedClient.setClientStatus(retrievedClientStatus);
+        localFeedbackClient.setClientStatus(retrievedClientStatus);
 
-        //after any modifications are performed by the user from the Individual Client Order screen
-        // the modifications are saved in the myPassedClient object and sent back to the invoking activity
-        //which is OrderListActivity.
-
-        /*
-
-        Intent passBackClient = new Intent (IndividualClientOrderActivity.this, OrderListActivity.class);
-
-        passBackClient.putExtra("edited_order", passedIntent);
-
-        setResult (RESULT_OK, passBackClient);
-        */
-
-
-        //implement sign-out button here
+        //TODO: implement sign-out button here
 
         //make_call button starts the dialer
         Button callButton = (Button) findViewById(R.id.make_call_button);
         //TODO: this button opens up the dialer with the customer's phone number so the call can be placed
 
-        // public void dialNumber(View view) {
-        //    }
-
-
         //get the context of this activity
         final ContextWrapper thisContextWrapper = new ContextWrapper(this);
 
+        //TODO: why can't I implement the call button onClickListener in onResume?
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,12 +164,10 @@ public class IndividualClientOrderActivity extends Activity {
                 ClientCaller thisClientCaller = new ClientCaller();
                 //instantiate context object
 
-
                 thisClientCaller.dialClient (basicNumberToCall, anonymizerPrefix, thisContextWrapper);
 
             }
         });
-
 
         //issue_or_cancel button sets the message 'Canceled' or 'Issue' or sets cursor / carel on the text box at the bottom of the page
         Button issueOrCancelButton = (Button) findViewById(R.id.issue_or_cancel_button);
@@ -212,13 +192,21 @@ public class IndividualClientOrderActivity extends Activity {
        //     }
        // });
 
-        Button commitCommentButton = (Button) findViewById(R.id.btnSubmit);
+       final Button commitCommentButton = (Button) findViewById(R.id.btnSubmit);
+       commitCommentButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
+           }
+       });
+
+
         //TODO: this button saves the comment typed into the comment box and feeds it back to OrderListActivity
 
         //end by Dan
 
 
-
+        //TODO: what is this code?
        // Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
        // setSupportActionBar(toolbar);
 
@@ -232,9 +220,57 @@ public class IndividualClientOrderActivity extends Activity {
 //            }
 //        });
 
+    }
+
+    //TODO Implement other lifecycle components to save the modified data upon destruction, and send it back to OrderListActivity and back to GSheets
+
+    @Override
+    protected void onStart() {
+        super.onStart(); //no need to pass savedInstanceState???
+
+        //anything else to implement here?
+    }
+
+    //is this method going to be necessary?
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //setContentView(R.id.activity_individual_client_order);
+
+        //get the applicable anonymizerPrefix — in case the user has changed it from the Settings activity
+        final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
+
+
+
+        /*
+
+        Intent passBackClient = new Intent (IndividualClientOrderActivity.this, OrderListActivity.class);
+
+        passBackClient.putExtra("edited_order", passedIntent);
+
+        setResult (RESULT_OK, passBackClient);
+        */
 
 
     }
+    
+
+    /*
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        mTextView.setText(savedInstanceState.getString(TEXT_VIEW_KEY));
+    }
+
+    // invoked when the activity may be temporarily destroyed, save the instance state here
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(GAME_STATE_KEY, mGameState);
+        outState.putString(TEXT_VIEW_KEY, mTextView.getText());
+
+        // call superclass to save any view hierarchy
+        super.onSaveInstanceState(outState);
+    }
+    */
 
 }
 
