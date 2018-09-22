@@ -1,9 +1,12 @@
 package longmoneyoffshore.dlrtime;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,7 +30,7 @@ import android.content.ContextWrapper;
 
 
 
-public class IndividualClientOrderActivity extends Activity {
+public class IndividualClientOrderActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     //Dan's code
 
@@ -146,6 +149,8 @@ public class IndividualClientOrderActivity extends Activity {
 
         //TODO: implement sign-out button here
 
+        //TODO: check if call button implementation is correct
+
         //make_call button starts the dialer
         Button callButton = (Button) findViewById(R.id.make_call_button);
         //TODO: this button opens up the dialer with the customer's phone number so the call can be placed
@@ -163,10 +168,10 @@ public class IndividualClientOrderActivity extends Activity {
                 String basicNumberToCall = numberToCall.getText().toString();
 
                 //instantiate caller object
-                ClientCaller thisClientCaller = new ClientCaller();
-                //instantiate context object
-
-                thisClientCaller.dialClient (basicNumberToCall, anonymizerPrefix, thisContextWrapper);
+                //ClientCaller thisClientCaller = new ClientCaller();
+                //thisClientCaller.dialClient (basicNumberToCall, anonymizerPrefix, thisContextWrapper);
+                //or??
+                ClientCaller.dialClient (basicNumberToCall, anonymizerPrefix, IndividualClientOrderActivity.this);
 
             }
         });

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import longmoneyoffshore.dlrtime.utils.AsyncResult;
 import longmoneyoffshore.dlrtime.utils.Client;
-import longmoneyoffshore.dlrtime.utils.ClientListViewModel;
 import longmoneyoffshore.dlrtime.utils.DownloadAsyncTask;
 import longmoneyoffshore.dlrtime.utils.ClientAdapter;
 import longmoneyoffshore.dlrtime.utils.SignOutFunctionality;
@@ -50,15 +49,6 @@ public class OrderListActivity extends AppCompatActivity {
             btnDownload.setEnabled(false);
         }
 
-        // TODO: Create a ViewModel the first time the system calls an activity's onCreate() method.
-        // Re-created activities receive the same MyViewModel instance created by the first activity.
-
-        /*
-        ClientListViewModel model = ViewModelProviders.of(this).get(ClientListViewModel.class);
-        model.getOrders().observe(this, ordersList -> {
-            // update UI
-        });
-        */
 
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
