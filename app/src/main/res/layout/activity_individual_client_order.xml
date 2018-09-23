@@ -251,8 +251,8 @@
                             android:layout_margin="0dp"
                             android:numStars="5"
                             android:stepSize="0.1"
-                            android:clickable="true"
-                            android:isIndicator="true"
+                            android:isIndicator="false"
+
                             />
                     </LinearLayout>
 
@@ -274,6 +274,7 @@
                             android:layout_height="wrap_content"
                             android:numStars="5"
                             android:clickable="true"
+                            android:isIndicator="false"
                             />
                     </LinearLayout>
 

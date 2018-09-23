@@ -60,7 +60,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_individual_client_order);
 
-        //by Dan
         // Get the transferred data from source activity.
         Intent passedIntent = getIntent();
         //TODO: only commented this temporarily; This should work
@@ -85,6 +84,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
         //fill the fields with values from passed Client object
+        //Display Data
 
         //TODO why are there 2 similar objects here — orderNameClient and orderNameClnt?
 
@@ -122,9 +122,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-
-                //TODO: which of these is correct?
-                //localFeedbackClient.setClientUrgency ((int) orderUrgencyField.getRating());
+                //orderUrgencyField.setOnRatingBarChangeListener();
                 localFeedbackClient.setClientUrgency ((int) ratingBar.getRating());
             }
         });
@@ -135,7 +133,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                myPassedClient.setClientValue ((int) orderValueClientField.getRating());
+                localFeedbackClient.setClientValue ((int) orderValueClientField.getRating());
             }
         });
 
@@ -151,14 +149,8 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
         //TODO: implement sign-out button here
 
-        //TODO: check if call button implementation is correct
-
         //make_call button starts the dialer
         Button callButton = (Button) findViewById(R.id.make_call_button);
-        //TODO: this button opens up the dialer with the customer's phone number so the call can be placed
-
-        //get the context of this activity
-        final ContextWrapper thisContextWrapper = new ContextWrapper(this);
 
         //TODO: why can't I implement the call button onClickListener in onResume?
         callButton.setOnClickListener(new View.OnClickListener() {
@@ -174,14 +166,9 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             }
         });
 
-        //issue_or_cancel button sets the message 'Canceled' or 'Issue' or sets cursor / carel on the text box at the bottom of the page
+        //this makes the text box at the bottom of the screen
+        //cycle through the possible messages to display upon clicking the Done/Issue/Cancel button
         final Button issueOrCancelButton = (Button) findViewById(R.id.issue_or_cancel_button);
-        //TODO:press it once and the status is changed from pending to done
-        //TODO:press it three times and the status is issue
-
-
-        //this affects the text box at the bottom of the screen
-        //the possible messages to display upon clicking the Done/Issue/Cancel button
         int statusOptionsLength = getResources().getStringArray (R.array.issue_or_cancel_options).length + 1;
 
         String[] temp_order_states = getResources().getStringArray (R.array.issue_or_cancel_options);
@@ -203,7 +190,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
             }
         });
-
 
         //back_button takes me back to the previous Activity — presumably OrderListActivity
         Button backButton = (Button) findViewById(R.id.back_button);
