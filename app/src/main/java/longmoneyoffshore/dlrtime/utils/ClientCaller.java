@@ -47,7 +47,7 @@ public class ClientCaller extends ActivityCompat implements ActivityCompat.OnReq
 
         String orderPhoneNum = String.format("tel: %s", callPrefix + basicNumberToCall);
 
-        Intent dialIntent = new Intent(Intent.ACTION_CALL);
+        Intent dialIntent = new Intent(Intent.ACTION_DIAL);
         dialIntent.setData(Uri.parse(orderPhoneNum));
 
         localDialIntent = dialIntent;

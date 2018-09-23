@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +29,7 @@ import longmoneyoffshore.dlrtime.utils.SignOutFunctionality;
 import longmoneyoffshore.dlrtime.utils.ClientCaller;
 import android.content.ContextWrapper;
 
+import org.w3c.dom.Text;
 
 
 public class IndividualClientOrderActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -167,19 +169,40 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 TextView numberToCall = (TextView) findViewById(R.id.orderPhoneClnt);
                 String basicNumberToCall = numberToCall.getText().toString();
 
-                //instantiate caller object
-                //ClientCaller thisClientCaller = new ClientCaller();
-                //thisClientCaller.dialClient (basicNumberToCall, anonymizerPrefix, thisContextWrapper);
-                //or??
                 ClientCaller.dialClient (basicNumberToCall, anonymizerPrefix, IndividualClientOrderActivity.this);
 
             }
         });
 
         //issue_or_cancel button sets the message 'Canceled' or 'Issue' or sets cursor / carel on the text box at the bottom of the page
-        Button issueOrCancelButton = (Button) findViewById(R.id.issue_or_cancel_button);
+        final Button issueOrCancelButton = (Button) findViewById(R.id.issue_or_cancel_button);
         //TODO:press it once and the status is changed from pending to done
         //TODO:press it three times and the status is issue
+
+
+        //this affects the text box at the bottom of the screen
+        //the possible messages to display upon clicking the Done/Issue/Cancel button
+        int statusOptionsLength = getResources().getStringArray (R.array.issue_or_cancel_options).length + 1;
+
+        String[] temp_order_states = getResources().getStringArray (R.array.issue_or_cancel_options);
+        String[] inclusive_order_states = new String [statusOptionsLength];
+
+        for (int i = 0; i<statusOptionsLength-1; i++) {inclusive_order_states[i] = temp_order_states[i];}
+
+        inclusive_order_states[statusOptionsLength-1] = localFeedbackClient.getClientStatus();
+
+        final String[] order_states = inclusive_order_states;
+
+        issueOrCancelButton.setOnClickListener(new View.OnClickListener() {
+            int click_counter=0;
+            @Override
+            public void onClick(View v) {
+                if (click_counter >= order_states.length) {click_counter = 0;}
+                orderStatusClientField.setText(order_states[click_counter++]);
+                //save setting for data feedback
+                localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
+            }
+        });
 
 
         //back_button takes me back to the previous Activity — presumably OrderListActivity
@@ -205,13 +228,14 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
        //     }
        // });
 
-       final Button commitCommentButton = (Button) findViewById(R.id.btnSubmit);
-       commitCommentButton.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
-           }
-       });
+        //pressing 'Submit' button commits any changes to the localFeedbackClient, which should happen automatically anyway
+        final Button commitCommentButton = (Button) findViewById(R.id.btnSubmit);
+        commitCommentButton.setOnClickListener(new View.OnClickListener() {
+               @Override
+            public void onClick(View v) {
+                   localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
+            }
+        });
 
 
         //TODO: this button saves the comment typed into the comment box and feeds it back to OrderListActivity
@@ -253,38 +277,56 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         //get the applicable anonymizerPrefix — in case the user has changed it from the Settings activity
         final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
-
-
         /*
-
         Intent passBackClient = new Intent (IndividualClientOrderActivity.this, OrderListActivity.class);
 
         passBackClient.putExtra("edited_order", passedIntent);
 
         setResult (RESULT_OK, passBackClient);
         */
-
-
     }
-    
 
     /*
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         mTextView.setText(savedInstanceState.getString(TEXT_VIEW_KEY));
     }
-
+*/
     // invoked when the activity may be temporarily destroyed, save the instance state here
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(GAME_STATE_KEY, mGameState);
-        outState.putString(TEXT_VIEW_KEY, mTextView.getText());
 
-        // call superclass to save any view hierarchy
+        outState.putString("orderNameClientField", localFeedbackClient.getClientName());
+        outState.putString("orderPhoneClientField",localFeedbackClient.getClientPhoneNo());
+        outState.putString("orderLocationClientField",localFeedbackClient.getClientLocation());
+        outState.putString("orderProductIdField", localFeedbackClient.getClientProductID());
+        outState.putInt("orderProductQuantField", localFeedbackClient.getClientQuantity());
+        outState.putInt("orderProductPriceField", localFeedbackClient.getClientPrice());
+        outState.putInt("orderPriceAdjustField", localFeedbackClient.getClientPriceAdjust());
+        outState.putInt("orderUrgencyField", localFeedbackClient.getClientUrgency());
+        outState.putInt("orderValueClientField", localFeedbackClient.getClientValue());
+        outState.putString("orderStatusClientField", localFeedbackClient.getClientStatus());
+
+        // call superclass to save view hierarchy
         super.onSaveInstanceState(outState);
     }
-    */
 
+    @Override
+    public void onRestoreInstanceState (Bundle savedInstanceState) {
+        localFeedbackClient.setClientName(savedInstanceState.getString("orderNameClientField"));
+        localFeedbackClient.setClientPhoneNo(savedInstanceState.getString("orderPhoneClientField"));
+        localFeedbackClient.setClientLocation(savedInstanceState.getString("orderLocationClientField"));
+        localFeedbackClient.setClientProductID(savedInstanceState.getString("orderProductIdField"));
+        localFeedbackClient.setClientQuantity(savedInstanceState.getInt("orderProductQuantField"));
+        localFeedbackClient.setClientPrice(savedInstanceState.getInt("orderProductPriceField"));
+        localFeedbackClient.setClientPriceAdjust(savedInstanceState.getInt("orderPriceAdjustField"));
+        localFeedbackClient.setClientUrgency(savedInstanceState.getInt("orderUrgencyField"));
+        localFeedbackClient.setClientValue(savedInstanceState.getInt("orderValueClientField"));
+        localFeedbackClient.setClientStatus(savedInstanceState.getString("orderStatusClientField"));
+
+        //extra
+        Log.d("Notif", "successfully retrieve instance state");
+    }
 }
 
 /*
