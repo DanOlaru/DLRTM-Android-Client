@@ -12,26 +12,35 @@
     tools:context="GoogleSheetConnection.MainActivity">
 -->
 
-    <ListView
-        android:layout_below="@+id/btnDownload"
-        android:id="@+id/listview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/btnDownload" android:enabled="false"
-        android:onClick="buttonClickHandler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="download table" />
-
-    <Button
-        android:id="@+id/sign_out"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/holo_purple"
-        android:text="@string/sign_out_text"
-        android:textSize="8sp" />
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/sign_out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_purple"
+            android:text="@string/sign_out_text"
+            android:gravity=""
+            android:textSize="8sp" />
+
+        <Button
+            android:id="@+id/btnDownload" android:enabled="false"
+            android:onClick="buttonClickHandler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="download table" />
+
+        <ListView
+            android:layout_below="@+id/btnDownload"
+            android:id="@+id/listview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
 
 
 </RelativeLayout>

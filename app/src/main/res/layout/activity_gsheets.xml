@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+    android:padding="16dp"
+
+    android:theme="@style/Theme.AppCompat"
+    tools:context="longmoneyoffshore.dlrtime.utils.GSheetsAdapter">
+
+    <Button
+        android:id="@+id/access_gsheets_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+
+        android:background="@color/buttonYellow"
+        android:text="@string/access_gsheets_button_text"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/messages_gsheets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_to_gsheets_mess"
+        />
+
+</LinearLayout>
+
+

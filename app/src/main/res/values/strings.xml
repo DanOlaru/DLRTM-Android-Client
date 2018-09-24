@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <string name="app_name">DLRTime — Digital Logistics Resource Time </string>
+    <string name="app_name">DLRTM — Digital Logistics Resource Time Management </string>
 
 
     <!-- Dan - authorization into google sign in-->
@@ -59,6 +59,14 @@
 
     <string name="comment_or_issue_hint"> Order status / comments / issues </string>
     <string name="commit_order_feedback"> Send </string>
+
+
+    <!--strings related to GSheets Activity-->
+    <string name = "access_gsheets_button_text"> Access GSheets </string>
+    <string name="login_to_gsheets_mess"> Retrieve orders Info  </string>
+
+
+
 
 
 </resources>
