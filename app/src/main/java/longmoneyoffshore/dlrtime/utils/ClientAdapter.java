@@ -46,7 +46,6 @@ public class ClientAdapter extends ArrayAdapter<Client> {
             TextView orderProductID = (TextView) v.findViewById(R.id.order_product_id);
             TextView orderStatus = (TextView) v.findViewById(R.id.order_status);
 
-
             orderName.setText(String.valueOf(o.getClientName()) + "|");
             orderLocation.setText(String.valueOf(o.getClientLocation()) + "|");
             orderPhoneNum.setText(String.valueOf(o.getClientPhoneNo()) + "|");

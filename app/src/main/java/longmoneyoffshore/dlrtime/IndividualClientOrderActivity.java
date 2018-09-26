@@ -34,8 +34,6 @@ import org.w3c.dom.Text;
 
 public class IndividualClientOrderActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    //Dan's code
-
     //this Client object will take any modifications that are made in the IndividualClientOrder window and pass them back
     // to the OrderListActivity and back to GSheets
     private Client localFeedbackClient;
@@ -78,8 +76,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         //get the applicable anonymizerPrefix
         final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
-        //fill the fields with values from passed Client object
-        //Display Data
 
         //TODO why are there 2 similar objects here — orderNameClient and orderNameClnt?
 
@@ -99,18 +95,14 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderProductIdField.setText(myPassedClient.getClientProductID());
 
         orderProductQuantField = (EditText) findViewById(R.id.orderProductQuantClnt);
-        orderProductQuantField.setText(Integer.toString(myPassedClient.getClientQuantity()));
+        orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
 
         orderProductPriceField = (EditText) findViewById(R.id.orderProductPriceClnt);
-        orderProductPriceField.setText(Integer.toString(myPassedClient.getClientPrice()));
+        orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
 
         orderPriceAdjustField = (EditText) findViewById(R.id.orderPriceAdjClnt);
-        orderPriceAdjustField.setText(Integer.toString(myPassedClient.getClientPriceAdjust()));
+        orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
 
-        //Order Urgency
-        //after any modifications are performed by the user from the Individual Client Order screen
-        // the modifications are saved in the localFeedbackClient object and sent back to the invoking activity
-        //which is OrderListActivity.
         orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
 
         // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5
@@ -118,7 +110,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
                 //orderUrgencyField.setOnRatingBarChangeListener();
-                localFeedbackClient.setClientUrgency ((int) ratingBar.getRating());
+                localFeedbackClient.setClientUrgency ((float) ratingBar.getRating());
             }
         });
 
@@ -128,19 +120,38 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                localFeedbackClient.setClientValue ((int) orderValueClientField.getRating());
+                localFeedbackClient.setClientValue ((float) orderValueClientField.getRating());
             }
         });
 
-
-        //orderStatusClientField = (EditText) findViewById(R.id.orderStatusClnt);
         orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
         orderStatusClientField.setText(myPassedClient.getClientStatus());
 
-        //user changes the text in statusClientField
+        //TODO: this button saves the comment typed into the comment box and feeds it back to OrderListActivity
+        //All modifications performed by the user from the Individual Client Order screen
+        //are saved in the localFeedbackClient object and sent back to the invoking activity OrderListActivity.
+        //when 'Submit' button is tapped. Ideally this will happen automatically automatically
+        final Button commitCommentButton = (Button) findViewById(R.id.btnSubmit);
+        commitCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //localFeedbackClient.setClientName(String.valueOf(orderNameClientField.getText()));
+                //or? TODO: Which is better?
 
-        String retrievedClientStatus = orderStatusClientField.getText().toString();
-        localFeedbackClient.setClientStatus(retrievedClientStatus);
+                localFeedbackClient.setClientName(orderNameClientField.getText().toString());
+                localFeedbackClient.setClientPhoneNo(orderPhoneClientField.getText().toString());
+                localFeedbackClient.setClientLocation(orderLocationClientField.getText().toString());
+                localFeedbackClient.setClientProductID(orderProductIdField.getText().toString());
+                localFeedbackClient.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
+                localFeedbackClient.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
+                localFeedbackClient.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
+                localFeedbackClient.setClientUrgency(orderUrgencyField.getRating());
+                localFeedbackClient.setClientValue(orderValueClientField.getRating());
+                localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
+
+                Log.d("return client modifs", localFeedbackClient.getClientStatus());
+            }
+        });
 
         //TODO: implement sign-out button here
 
@@ -182,16 +193,26 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 if (click_counter >= order_states.length) {click_counter = 0;}
                 orderStatusClientField.setText(order_states[click_counter++]);
                 //save setting for data feedback
-                localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
+                //localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
             }
         });
 
         //back_button takes me back to the previous Activity — presumably OrderListActivity
         Button backButton = (Button) findViewById(R.id.back_button);
-        //TODO: the Back button makes sure that the data in the text boxes is saved and sent back to the previous activity / GSheets
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO: the Back button makes sure that the data in the text boxes is saved and sent back to the previous activity / GSheets
+
+
+                //the localFeedbackClient gets passed to the OrderListActivity
+                ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
+                Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
+                feedbackIntent.putExtra("edited order", localFeedbackParcel);
+                setResult(IndividualClientOrderActivity.RESULT_OK, feedbackIntent);
+
+                Log.d("ret_fr ICOR_Cl_Status",localFeedbackParcel.getClientStatus());
+                finish();
 
             }
         });
@@ -209,17 +230,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
        //     }
        // });
 
-        //pressing 'Submit' button commits any changes to the localFeedbackClient, which should happen automatically anyway
-        final Button commitCommentButton = (Button) findViewById(R.id.btnSubmit);
-        commitCommentButton.setOnClickListener(new View.OnClickListener() {
-               @Override
-            public void onClick(View v) {
-                   localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
-            }
-        });
 
-
-        //TODO: this button saves the comment typed into the comment box and feeds it back to OrderListActivity
 
 
 
@@ -257,25 +268,17 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         //get the applicable anonymizerPrefix — in case the user has changed it from the Settings activity
         final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
-        /*
-        Intent passBackClient = new Intent (IndividualClientOrderActivity.this, OrderListActivity.class);
-
-        passBackClient.putExtra("edited_order", passedIntent);
-
-        setResult (RESULT_OK, passBackClient);
-        */
     }
 
     @Override
     protected void onPause () {
         super.onPause();
-        //TODO: where to correctly implement this?
-        //the localFeedbackClient gets passed to the OrderListActivity?
 
-        ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
-        Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
-        feedbackIntent.putExtra("modified order", localFeedbackParcel);
-        setResult(IndividualClientOrderActivity.RESULT_OK, feedbackIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     /*
@@ -283,7 +286,8 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         mTextView.setText(savedInstanceState.getString(TEXT_VIEW_KEY));
     }
-*/
+    */
+
     // invoked when the activity may be temporarily destroyed, save the instance state here
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -292,11 +296,11 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         outState.putString("orderPhoneClientField",localFeedbackClient.getClientPhoneNo());
         outState.putString("orderLocationClientField",localFeedbackClient.getClientLocation());
         outState.putString("orderProductIdField", localFeedbackClient.getClientProductID());
-        outState.putInt("orderProductQuantField", localFeedbackClient.getClientQuantity());
-        outState.putInt("orderProductPriceField", localFeedbackClient.getClientPrice());
-        outState.putInt("orderPriceAdjustField", localFeedbackClient.getClientPriceAdjust());
-        outState.putInt("orderUrgencyField", localFeedbackClient.getClientUrgency());
-        outState.putInt("orderValueClientField", localFeedbackClient.getClientValue());
+        outState.putFloat("orderProductQuantField", localFeedbackClient.getClientQuantity());
+        outState.putFloat("orderProductPriceField", localFeedbackClient.getClientPrice());
+        outState.putFloat("orderPriceAdjustField", localFeedbackClient.getClientPriceAdjust());
+        outState.putFloat("orderUrgencyField", localFeedbackClient.getClientUrgency());
+        outState.putFloat("orderValueClientField", localFeedbackClient.getClientValue());
         outState.putString("orderStatusClientField", localFeedbackClient.getClientStatus());
 
         // call superclass to save view hierarchy
@@ -309,31 +313,15 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         localFeedbackClient.setClientPhoneNo(savedInstanceState.getString("orderPhoneClientField"));
         localFeedbackClient.setClientLocation(savedInstanceState.getString("orderLocationClientField"));
         localFeedbackClient.setClientProductID(savedInstanceState.getString("orderProductIdField"));
-        localFeedbackClient.setClientQuantity(savedInstanceState.getInt("orderProductQuantField"));
-        localFeedbackClient.setClientPrice(savedInstanceState.getInt("orderProductPriceField"));
-        localFeedbackClient.setClientPriceAdjust(savedInstanceState.getInt("orderPriceAdjustField"));
-        localFeedbackClient.setClientUrgency(savedInstanceState.getInt("orderUrgencyField"));
-        localFeedbackClient.setClientValue(savedInstanceState.getInt("orderValueClientField"));
+        localFeedbackClient.setClientQuantity(savedInstanceState.getFloat("orderProductQuantField"));
+        localFeedbackClient.setClientPrice(savedInstanceState.getFloat("orderProductPriceField"));
+        localFeedbackClient.setClientPriceAdjust(savedInstanceState.getFloat("orderPriceAdjustField"));
+        localFeedbackClient.setClientUrgency(savedInstanceState.getFloat("orderUrgencyField"));
+        localFeedbackClient.setClientValue(savedInstanceState.getFloat("orderValueClientField"));
         localFeedbackClient.setClientStatus(savedInstanceState.getString("orderStatusClientField"));
 
         //extra
-        Log.d("Notif", "successfully retrieve instance state");
+        Log.d("Notif", "successfully retrieved instance state");
     }
 }
-
-/*
- // set customer name
- String cust_name = (String) savedInstanceState.getString();
- final TextView customer_name = (TextView) findViewById(R.id.customerName);
- customer_name.setText(cust_name);
-
-
- //set phone number
-
- String ph_number = (String) savedInstanceState.getString();
- final TextView phone_number = (TextView) findViewById(R.id.phoneNumber);
-
- phone_number.setText(ph_number);
-
- */
 

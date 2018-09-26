@@ -26,6 +26,21 @@ import longmoneyoffshore.dlrtime.utils.DownloadAsyncTask;
 import longmoneyoffshore.dlrtime.utils.ClientAdapter;
 import longmoneyoffshore.dlrtime.utils.SignOutFunctionality;
 
+//Dan - test
+import com.google.api.client.auth.oauth2.Credential;
+//import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+//import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.ValueRange;
+
 
 public class OrderListActivity extends AppCompatActivity {
 
@@ -65,7 +80,7 @@ public class OrderListActivity extends AppCompatActivity {
 //        });
 
         //By Dan
-        //sign out button click references public public signOut method in utils
+        //TODO: sign out button click references public public signOut method in utils
         Button signOutButton = (Button) findViewById(R.id.sign_out_button);
 
         //signOutButton.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +119,7 @@ public class OrderListActivity extends AppCompatActivity {
 
                 Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
 
-                ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder); // using constructor from Client object
+                ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
 
                 Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
 
@@ -126,23 +141,22 @@ public class OrderListActivity extends AppCompatActivity {
 
         // The returned result data is identified by requestCode.
         // The request code is specified in startActivityForResult(intent, REQUEST_CODE_1); method.
-        switch (requestCode)
-        {
-            // This request code is set by startActivityForResult(intent, REQUEST_CODE_1) method.
-            case REQUEST_CODE_1:
-                //TextView textView = (TextView)findViewById(R.id.resultDataTextView);
 
-                if(resultCode == RESULT_OK)
-                {
-                    //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
-                    Client returnLocalClient = (Client) returnIntent.getParcelableExtra("modified order");
+        Log.d("return_resultcode ", String.valueOf(resultCode));
 
-                    //clients - is modified to take returnLocalClient at the positionOnListClicked
-                    //the listview is re-shown
-                    clients.set(positionOnListClicked, returnLocalClient);
-                    final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
-                    listview.setAdapter(reAdapter);
-                }
+        if(resultCode == RESULT_OK) {
+
+            //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
+            Client returnLocalClient = (Client) returnIntent.getParcelableExtra("edited order");
+
+            Log.d("return client YO", returnLocalClient.getClientStatus());
+
+            //clients - is modified to take returnLocalClient at the positionOnListClicked
+            //the listview is re-shown
+            clients.set(positionOnListClicked, returnLocalClient);
+            final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
+            listview.setAdapter(reAdapter);
+
         }
     }
 
@@ -181,14 +195,22 @@ public class OrderListActivity extends AppCompatActivity {
             }
 
             //TODO: clear the listview every time before reloading the sheets content so we don't get the same content repeated
-
-            //I'll move this to the onCreate activity
+            //should this be in the onCreate activity?
             final ClientAdapter adapter = new ClientAdapter(this, R.layout.client_item, clients);
             listview.setAdapter(adapter);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private ClientAdapter passBackOrderChanges () {
+
+        //clients.set(positionOnListClicked, returnLocalClient);
+        //final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
+        //listview.setAdapter(reAdapter);
+        ClientAdapter dummy = new ClientAdapter(this, R.layout.client_item, clients);
+        return dummy;
     }
 
 }

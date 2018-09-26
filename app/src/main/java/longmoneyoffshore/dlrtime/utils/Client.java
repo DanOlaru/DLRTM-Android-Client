@@ -17,11 +17,11 @@ public class Client {
     private String clientPhoneNo; // It's a string because the sequence of numbers does not have any logic behind it
     private String clientLocation;
     private String clientProductID; // what the customer is buying
-    private int clientQuantity; //how much the customer is buying
-    private int clientPrice;
-    private int clientPriceAdjust;
-    private int clientUrgency;
-    private int clientValue;
+    private float clientQuantity; //how much the customer is buying
+    private float clientPrice;
+    private float clientPriceAdjust;
+    private float clientUrgency;
+    private float clientValue;
     private String clientStatus;
     private String anonymizerPrefix = USanonymizerPrefix;
 
@@ -117,43 +117,43 @@ public class Client {
         this.clientProductID = clientProductID;
     }
 
-    public int getClientQuantity() {
+    public float getClientQuantity() {
         return clientQuantity;
     }
 
-    public void setClientQuantity(int clientQuantity) {
+    public void setClientQuantity(float clientQuantity) {
         this.clientQuantity = clientQuantity;
     }
 
-    public int getClientPrice() {
+    public float getClientPrice() {
         return clientPrice;
     }
 
-    public void setClientPrice(int clientPrice) {
+    public void setClientPrice(float clientPrice) {
         this.clientPrice = clientPrice;
     }
 
-    public int getClientPriceAdjust() {
+    public float getClientPriceAdjust() {
         return clientPriceAdjust;
     }
 
-    public void setClientPriceAdjust(int clientPriceAdjust) {
+    public void setClientPriceAdjust(float clientPriceAdjust) {
         this.clientPriceAdjust = clientPriceAdjust;
     }
 
-    public int getClientUrgency() {
+    public float getClientUrgency() {
         return clientUrgency;
     }
 
-    public void setClientUrgency(int clientUrgency) {
+    public void setClientUrgency(float clientUrgency) {
         this.clientUrgency = clientUrgency;
     }
 
-    public int getClientValue() {
+    public float getClientValue() {
         return clientValue;
     }
 
-    public void setClientValue(int clientValue) {
+    public void setClientValue(float clientValue) {
         this.clientValue = clientValue;
     }
 

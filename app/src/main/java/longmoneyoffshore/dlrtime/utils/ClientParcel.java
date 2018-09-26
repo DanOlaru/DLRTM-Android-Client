@@ -34,28 +34,14 @@ public class ClientParcel extends Client implements Parcelable {
         this.setClientPhoneNo(in.readString());
         this.setClientLocation(in.readString());
         this.setClientProductID(in.readString());
-        this.setClientQuantity(in.readInt());
-        this.setClientPrice(in.readInt());
-        this.setClientPriceAdjust(in.readInt());
-        this.setClientUrgency(in.readInt());
-        this.setClientValue(in.readInt());
+        this.setClientQuantity(in.readFloat());
+        this.setClientPrice(in.readFloat());
+        this.setClientPriceAdjust(in.readFloat());
+        this.setClientUrgency(in.readFloat());
+        this.setClientValue(in.readFloat());
         this.setClientStatus(in.readString());
         //
         this.setAnonymizerPrefix(in.readString());
-
-
-        //or is this the correct way to represent / write / parcel the data internally????
-
-        //     this.internalClient.setClientName(in.readString()); //Is 'this' even necessary?
-        //     this.internalClient.setClientPhoneNo(in.readString());
-        //     this.internalClient.setClientLocation(in.readString());
-        //     this.internalClient.setClientProductID(in.readString());
-        //     this.internalClient.setClientQuantity(in.readInt());
-        //     this.internalClient.setClientPrice(in.readInt());
-        //     this.internalClient.setClientPriceAdjust(in.readInt());
-        //     this.internalClient.setClientUrgency(in.readInt());
-        //     this.internalClient.setClientValue(in.readInt());
-        //     this.internalClient.setClientStatus(in.readString());
     }
 
 
@@ -81,7 +67,6 @@ public class ClientParcel extends Client implements Parcelable {
         return out;
     }
 
-
     //write object values to parcel for storage
     public void writeToParcel (Parcel outClient, int flags) {
 
@@ -89,28 +74,14 @@ public class ClientParcel extends Client implements Parcelable {
         outClient.writeString(this.getClientPhoneNo());
         outClient.writeString(this.getClientLocation());
         outClient.writeString(this.getClientProductID());
-        outClient.writeInt(this.getClientQuantity());
-        outClient.writeInt(this.getClientPrice());
-        outClient.writeInt(this.getClientPriceAdjust());
-        outClient.writeInt(this.getClientUrgency());
-        outClient.writeInt(this.getClientValue());
+        outClient.writeFloat(this.getClientQuantity());
+        outClient.writeFloat(this.getClientPrice());
+        outClient.writeFloat(this.getClientPriceAdjust());
+        outClient.writeFloat(this.getClientUrgency());
+        outClient.writeFloat(this.getClientValue());
         outClient.writeString(this.getClientStatus());
         //
         outClient.writeString(this.getAnonymizerPrefix());
-
-
-        // or this??
-
-        //     outClient.writeString(this.internalClient.getClientName()); //do I use 'this' or 'internalClient'???
-        //     outClient.writeString(this.internalClient.getClientPhoneNo());
-        //     outClient.writeString(this.internalClient.getClientLocation());
-        //     outClient.writeInt(this.internalClient.getClientProductID());
-        //     this.internalClient.setClientQuantity(in.readInt());
-        //     this.internalClient.setClientPrice(in.readInt());
-        //     this.internalClient.setClientPriceAdjust(in.readInt());
-        //     this.internalClient.setClientUrgency(in.readInt());
-        //     this.internalClient.setClientValue(in.readInt());
-        //     this.internalClient.setClientStatus(in.readString());
     }
 
     //implement describeContents
