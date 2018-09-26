@@ -66,6 +66,18 @@
     <string name="login_to_gsheets_mess"> Retrieve orders Info  </string>
 
 
+    <!--strings related to OrdersListActivity-->
+    <string name="download_orders_list"> Download table</string>
+    
+    
+    <!-- client_item strings-->
+    <string name="order_name_field">Name| </string>
+    <string name="order_location_field">Address| </string>
+    <string name="order_phone_field">Phone #| </string>
+    <string name="order_price_field">$ |</string>
+    <string name="order_price_adjust_field">±$| </string>
+    <string name="order_product_id_field">ID| </string>
+    <string name="order_status_field">Status</string>
 
 
 

@@ -54,7 +54,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
     RatingBar orderValueClientField;
     EditText orderStatusClientField;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,23 +61,19 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
         // Get the transferred data from source activity.
         Intent passedIntent = getIntent();
-        //TODO: only commented this temporarily; This should work
-        //ClientParcel myPassedClientParcel = passedIntent.getParcelableExtra("order");
-        //myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
+        ClientParcel myPassedClientParcel = passedIntent.getParcelableExtra("order");
+        myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
 
         //or??
         //Bundle passedData = passedIntent.getExtras();
         //ClientParcel myPassedClientParcel = (ClientParcel) passedData.getParcelable("order");
 
         // dummy data set
-        myPassedClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
+        //myPassedClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
 
-        //TODO: initially localFeedbackClient is identical to the passed Client object. Any modifications made
+        //initially localFeedbackClient is identical to the passed Client object. Any modifications made
         // will be passed back using it to the invoking activity or perhaps the ASyncTask!!!
         localFeedbackClient = new Client (myPassedClient);
-
-        //test only
-        //ClientParcel myPassedClientParcel = new ClientParcel(myPassedClient);
 
         //get the applicable anonymizerPrefix
         final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
@@ -226,7 +221,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
         //TODO: this button saves the comment typed into the comment box and feeds it back to OrderListActivity
 
-        //end by Dan
 
 
         //TODO: what is this code?
@@ -270,6 +264,18 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
         setResult (RESULT_OK, passBackClient);
         */
+    }
+
+    @Override
+    protected void onPause () {
+        super.onPause();
+        //TODO: where to correctly implement this?
+        //the localFeedbackClient gets passed to the OrderListActivity?
+
+        ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
+        Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
+        feedbackIntent.putExtra("modified order", localFeedbackParcel);
+        setResult(IndividualClientOrderActivity.RESULT_OK, feedbackIntent);
     }
 
     /*
