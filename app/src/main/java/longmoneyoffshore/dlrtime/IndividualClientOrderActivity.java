@@ -217,7 +217,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             }
         });
 
-
         //TODO:sign out button click references public public signOut method in utils
         Button signOutButton = (Button) findViewById(R.id.sign_out_button);
 
