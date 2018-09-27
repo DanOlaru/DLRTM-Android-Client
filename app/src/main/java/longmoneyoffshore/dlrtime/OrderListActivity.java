@@ -172,8 +172,6 @@ public class OrderListActivity extends AppCompatActivity {
 
     private ClientAdapter passBackOrderChanges () {
 
-        //return modifications to GSheets
-
         //clients.set(positionOnListClicked, returnLocalClient);
         //final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
         //listview.setAdapter(reAdapter);
