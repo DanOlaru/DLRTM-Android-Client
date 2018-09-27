@@ -68,8 +68,9 @@
 
 
     <!--strings related to OrdersListActivity-->
-    <string name="download_orders_list"> Download Orders</string>
+    <string name="download_orders_list">Sync Orders</string>
     <string name="make_new_order">Make New</string>
+    <string name="go_to_map">Go To Map</string>
     
     
     <!-- client_item strings-->

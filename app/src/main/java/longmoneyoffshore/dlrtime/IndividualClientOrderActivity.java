@@ -31,7 +31,6 @@ import android.content.ContextWrapper;
 
 import org.w3c.dom.Text;
 
-
 public class IndividualClientOrderActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     //this Client object will take any modifications that are made in the IndividualClientOrder window and pass them back
@@ -72,11 +71,8 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         //get the applicable anonymizerPrefix
         final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
-
-        //TODO why are there 2 similar objects here — orderNameClient and orderNameClnt?
-
-        orderNameField = (EditText) findViewById(R.id.orderNameClient); //is this necessary?
-        orderNameField.setText(myPassedClient.getClientName());
+        //orderNameField = (EditText) findViewById(R.id.orderNameClient); //is this necessary?
+        //orderNameField.setText(myPassedClient.getClientName());
 
         orderNameClientField = (EditText) findViewById(R.id.orderNameClnt);
         orderNameClientField.setText(myPassedClient.getClientName());
@@ -126,30 +122,16 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderStatusClientField.setText(myPassedClient.getClientStatus());
 
         //TODO: this button saves the comment typed into the comment box and feeds it back to OrderListActivity
-        //All modifications performed by the user from the Individual Client Order screen
-        //are saved in the localFeedbackClient object and sent back to the invoking activity OrderListActivity.
-        //when 'Submit' button is tapped. Ideally this will happen automatically automatically
+        /*
         final Button commitCommentButton = (Button) findViewById(R.id.btnSubmit);
         commitCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //localFeedbackClient.setClientName(String.valueOf(orderNameClientField.getText()));
-                //or? TODO: Which is better?
 
-                localFeedbackClient.setClientName(orderNameClientField.getText().toString());
-                localFeedbackClient.setClientPhoneNo(orderPhoneClientField.getText().toString());
-                localFeedbackClient.setClientLocation(orderLocationClientField.getText().toString());
-                localFeedbackClient.setClientProductID(orderProductIdField.getText().toString());
-                localFeedbackClient.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
-                localFeedbackClient.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
-                localFeedbackClient.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
-                localFeedbackClient.setClientUrgency(orderUrgencyField.getRating());
-                localFeedbackClient.setClientValue(orderValueClientField.getRating());
-                localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
+                commitFeedbackClient();
 
-                Log.d("return client modifs", localFeedbackClient.getClientStatus());
             }
-        });
+        }); */
 
         //TODO: implement sign-out button here
 
@@ -195,13 +177,14 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             }
         });
 
-        //back_button takes me back to the previous Activity — presumably OrderListActivity
+        //back_button takes the user back to the OrderListActivity
         Button backButton = (Button) findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: the Back button makes sure that the data in the text boxes is saved and sent back to the previous activity / GSheets
-                //the localFeedbackClient gets passed to the OrderListActivity
+
+                commitFeedbackClient();
+
                 ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
                 Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
                 feedbackIntent.putExtra("edited order", localFeedbackParcel);
@@ -210,7 +193,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 Log.i("back_butt_ICOR",localFeedbackParcel.getClientStatus());
                 Log.d("onStop Cl_urgency", String.valueOf(localFeedbackParcel.getClientUrgency()));
                 finish();
-
             }
         });
 
@@ -244,6 +226,22 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
     }
 
     //TODO Implement other lifecycle components to save the modified data upon destruction, and send it back to OrderListActivity and back to GSheets
+
+    private void commitFeedbackClient () {
+        localFeedbackClient.setClientName(orderNameClientField.getText().toString());
+        localFeedbackClient.setClientPhoneNo(orderPhoneClientField.getText().toString());
+        localFeedbackClient.setClientLocation(orderLocationClientField.getText().toString());
+        localFeedbackClient.setClientProductID(orderProductIdField.getText().toString());
+        localFeedbackClient.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
+        localFeedbackClient.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
+        localFeedbackClient.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
+        localFeedbackClient.setClientUrgency(orderUrgencyField.getRating());
+        localFeedbackClient.setClientValue(orderValueClientField.getRating());
+        localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
+
+        Log.d("return client modifs", localFeedbackClient.getClientStatus());
+
+    }
 
     @Override
     protected void onStart() {

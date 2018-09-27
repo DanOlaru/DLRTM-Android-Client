@@ -12,13 +12,10 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-
 import longmoneyoffshore.dlrtime.utils.AsyncResult;
 import longmoneyoffshore.dlrtime.utils.Client;
 import longmoneyoffshore.dlrtime.utils.ClientParcel;
@@ -47,9 +44,10 @@ public class OrderListActivity extends AppCompatActivity {
     private static final String DEBUG_TAG = "HttpExample";
     private static final int REQUEST_CODE_1 = 1;
 
-    ArrayList<Client> clients = new ArrayList<Client>();
+    private ArrayList<Client> clients = new ArrayList<Client>();
     private ListView listview;
     private Button btnDownload;
+    private Button signOutButton;
     private int positionOnListClicked;
 
     @Override
@@ -70,10 +68,8 @@ public class OrderListActivity extends AppCompatActivity {
             btnDownload.setEnabled(false);
         }
 
-
-        //By Dan
         //TODO: sign out button click references public public signOut method in utils
-        Button signOutButton = (Button) findViewById(R.id.sign_out_button);
+        signOutButton = (Button) findViewById(R.id.sign_out_button);
 
         //signOutButton.setOnClickListener(new View.OnClickListener() {
         //    @Override
@@ -82,12 +78,9 @@ public class OrderListActivity extends AppCompatActivity {
         //        signOutObject.signOut(v);
         //    }
         //});
-
-        //end by Dan
     }
 
     public void buttonClickHandler(View view) {
-
         // Start to retrieve data on another thread (as background activity)
         new DownloadAsyncTask(new AsyncResult() {
             @Override
@@ -95,13 +88,8 @@ public class OrderListActivity extends AppCompatActivity {
                 processJson(object); // Feeds with the retrieved data
             }
         }).execute("https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY");
+        //TODO: the login has to provide the sheet ID as string, which is passed to AsyncTask above this line
 
-
-        //TODO: not sure where the best place for this code is
-        //final ClientAdapter adapter = new ClientAdapter(this, R.layout.client_item, clients);
-        //listview.setAdapter(adapter);
-
-        // click a line to pass the data from the line in the table of orders to IndividualClientActivity.
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -115,7 +103,7 @@ public class OrderListActivity extends AppCompatActivity {
 
                 thisIndividualOrder.putExtra("order", clickedOrderParcel);
                 int reqCode = 1; //what should be the predefined value?
-                startActivityForResult(thisIndividualOrder, reqCode);
+                startActivityForResult(thisIndividualOrder,reqCode);
             }
         });
     }
@@ -126,11 +114,9 @@ public class OrderListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, returnIntent);
 
         // The returned result data is identified by requestCode.
-
         Log.d("return_resultcode ", String.valueOf(resultCode));
 
         if(resultCode == RESULT_OK) {
-
             //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
             Client returnLocalClient = (Client) returnIntent.getParcelableExtra("edited order");
 
@@ -170,14 +156,12 @@ public class OrderListActivity extends AppCompatActivity {
                 String status = columns.getJSONObject(9).getString("v");
 
                 Client client = new Client(name, phone, location, productId, quantity, price, priceAdjust, urgency, value, status);
-
-               Log.d("Client", "Client " + client.toString());
-
                 clients.add(client);
+                Log.d("Client", "Client " + client.toString());
             }
 
             //TODO: clear the listview every time before reloading the sheets content so we don't get the same content repeated
-            //should this be in the onCreate activity?
+            //is this code in the right onCreate place?
             final ClientAdapter adapter = new ClientAdapter(this, R.layout.client_item, clients);
             listview.setAdapter(adapter);
 
@@ -187,6 +171,8 @@ public class OrderListActivity extends AppCompatActivity {
     }
 
     private ClientAdapter passBackOrderChanges () {
+
+        //return modifications to GSheets
 
         //clients.set(positionOnListClicked, returnLocalClient);
         //final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);

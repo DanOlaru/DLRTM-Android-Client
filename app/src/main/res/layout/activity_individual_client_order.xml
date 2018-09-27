@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -33,10 +32,10 @@
                 android:gravity="fill_vertical"
                 tools:ignore="UselessParent">
 
+                <!--
                 <TableRow
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    >
+                    android:layout_width="wrap_content">
 
                     <TextView
                         android:id="@+id/orderName"
@@ -47,7 +46,6 @@
                         android:maxLines="1"
                         android:singleLine="true"
                         />
-                    <!--another table element here displaying the actual field info -->
                     <EditText
                         android:id="@+id/orderNameClient"
                         android:layout_width="wrap_content"
@@ -56,12 +54,10 @@
                         android:hint="@string/title_activity_individual_client_order"
                         android:inputType="text"
                         android:selectAllOnFocus="true"
-                        android:singleLine="true"
-
-                        />
+                        android:singleLine="true"/>
 
                 </TableRow>
-
+                -->
 
                 <!-- here we insert into each field the values read from the Google Sheets document
                 passed as an instance of the Client class
@@ -119,7 +115,7 @@
                         android:layout_marginTop="0sp"
                         android:background="@null"
 
-                        android:hint="@string/field_hint"
+                        android:hint="@string/client_phone"
                         android:inputType="text|phone"
                         android:padding="0sp"
                         android:paddingBottom="0dp"
@@ -150,7 +146,7 @@
                         android:inputType="text"
                         android:selectAllOnFocus="false"
                         android:singleLine="true"
-                        android:hint="@string/field_hint"
+                        android:hint="@string/client_location"
                         android:textSize="12sp" />
                 </TableRow>
 
@@ -170,7 +166,7 @@
                         android:background="@null"
 
                         android:inputType="text"
-                        android:hint="@string/field_hint"
+                        android:hint="@string/product_id"
                         android:textSize="12sp" />
                 </TableRow>
 
@@ -190,7 +186,7 @@
                         android:background="@null"
 
                         android:inputType="text"
-                        android:hint="@string/field_hint"
+                        android:hint="@string/product_quantity"
                         android:textSize="12sp" />
                 </TableRow>
 
@@ -209,7 +205,7 @@
                         android:background="@null"
 
                         android:inputType="text"
-                        android:hint="@string/field_hint"
+                        android:hint="@string/product_price"
                         android:textSize="12sp" />
                 </TableRow>
 
@@ -228,14 +224,12 @@
                         android:background="@null"
 
                         android:inputType="text"
-                        android:hint="@string/field_hint"
+                        android:hint="@string/price_adjust"
                         android:textSize="12sp" />
                 </TableRow>
 
 
                 <TableRow>
-
-
                     <TextView
                         android:id="@+id/clientUrgency"
                         android:layout_width="wrap_content"
@@ -251,9 +245,7 @@
                             android:layout_margin="0dp"
                             android:numStars="5"
                             android:stepSize="0.1"
-                            android:isIndicator="false"
-
-                            />
+                            android:isIndicator="false" />
                     </LinearLayout>
 
                 </TableRow>
@@ -274,34 +266,28 @@
                             android:layout_height="wrap_content"
                             android:numStars="5"
                             android:clickable="true"
-                            android:isIndicator="false"
-                            />
+                            android:isIndicator="false" />
                     </LinearLayout>
 
                 </TableRow>
 
                 <TableRow>
-
                     <TextView
                         android:id="@+id/orderStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/order_status" />
-
                 </TableRow>
 
             </TableLayout>
 
         </FrameLayout>
-
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_weight="1"
             android:orientation="vertical">
-
             <Button
                 android:id="@+id/make_call_button"
                 android:layout_width="wrap_content"
@@ -342,8 +328,6 @@
                 android:textSize="12sp" />
 
         </LinearLayout>
-
-
     </LinearLayout>
 
     <FrameLayout
@@ -351,7 +335,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <EditText
             android:id="@+id/individualOrderIssueOrComment"
@@ -363,10 +347,9 @@
             android:lines="5"
 
             android:gravity="top" />
-
-
     </FrameLayout>
 
+    <!--
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="match_parent"
@@ -376,12 +359,10 @@
         android:text="@string/commit_order_feedback"
         android:textColor="@android:color/white" />
 
-    <!--
     <include
         layout="@layout/content_individual_client_acc"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
         -->
 
 </LinearLayout>

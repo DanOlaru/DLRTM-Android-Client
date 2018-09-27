@@ -11,7 +11,8 @@
     <!--Dan -->
 
     <color name="buttonYellow">#ffd000</color>
-    <color name="buttonGrey">#c6d4b3</color>
+    <color name="buttonGrey">#b5d4b3</color>
     <color name="buttonGreen">#68a615</color>
+    <color name="buttonViolet">#94132f</color>
 
 </resources>

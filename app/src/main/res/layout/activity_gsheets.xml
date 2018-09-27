@@ -10,7 +10,7 @@
     android:padding="16dp"
 
     android:theme="@style/Theme.AppCompat"
-    tools:context="longmoneyoffshore.dlrtime.utils.GSheetsActivity">
+    tools:context="longmoneyoffshore.dlrtime.GSheetsActivity">
 
     <Button
         android:id="@+id/access_gsheets_button"
