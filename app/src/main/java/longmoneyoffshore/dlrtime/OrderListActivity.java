@@ -26,7 +26,7 @@ import longmoneyoffshore.dlrtime.utils.ClientAdapter;
 public class OrderListActivity extends AppCompatActivity {
 
     private static final String DEBUG_TAG = "HttpExample";
-    ArrayList<Client> clients = new ArrayList<Client>();
+    ArrayList<Client> clients = new ArrayList<Client>(); // The list of the clients
     ListView listview;
     Button btnDownload;
 
@@ -47,7 +47,6 @@ public class OrderListActivity extends AppCompatActivity {
         } else {
             btnDownload.setEnabled(false);
         }
-
 
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
