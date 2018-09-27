@@ -70,7 +70,6 @@ import java.util.Arrays;
 import java.util.List;
 import android.support.annotation.Nullable;
 
-
 //import com.google.api.client.extensions.android.http.AndroidHttp;
 //import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 //import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
@@ -82,7 +81,6 @@ import android.support.annotation.Nullable;
 //import com.google.api.services.sheets.v4.SheetsScopes;
 //import com.google.api.services.sheets.v4.model.*;
 
-// Dan: login via email/password.
 
 public class LoginActivity extends Activity implements View.OnClickListener {
 
@@ -573,5 +571,4 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
     }
 }
-
 */

@@ -148,16 +148,16 @@ public class OrderListActivity extends AppCompatActivity {
                 String phone = columns.getJSONObject(1).getString("v");
                 String location = columns.getJSONObject(2).getString("v");
                 String productId = columns.getJSONObject(3).getString("v");
-                int quantity = columns.getJSONObject(4).getInt("v");
-                int price = columns.getJSONObject(5).getInt("v");
-                int priceAdjust = columns.getJSONObject(6).getInt("v");
-                int urgency = columns.getJSONObject(7).getInt("v");
-                int value = columns.getJSONObject(8).getInt("v");
+                float quantity = Float.parseFloat(columns.getJSONObject(4).getString("v"));
+                float price = Float.parseFloat(columns.getJSONObject(5).getString("v"));
+                float priceAdjust = Float.parseFloat(columns.getJSONObject(6).getString("v"));
+                float urgency = Float.parseFloat(columns.getJSONObject(7).getString("v"));
+                float value = Float.parseFloat(columns.getJSONObject(8).getString("v"));
                 String status = columns.getJSONObject(9).getString("v");
 
                 Client client = new Client(name, phone, location, productId, quantity, price, priceAdjust, urgency, value, status);
                 clients.add(client);
-                Log.d("Client", "Client " + client.toString());
+                Log.d("ClientValu", String.valueOf(client.getClientQuantity()));
             }
 
             //TODO: clear the listview every time before reloading the sheets content so we don't get the same content repeated
