@@ -70,14 +70,6 @@ public class OrderListActivity extends AppCompatActivity {
             btnDownload.setEnabled(false);
         }
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
         //By Dan
         //TODO: sign out button click references public public signOut method in utils
@@ -118,29 +110,22 @@ public class OrderListActivity extends AppCompatActivity {
                 positionOnListClicked = position;
 
                 Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
-
                 ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
-
                 Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
 
                 thisIndividualOrder.putExtra("order", clickedOrderParcel);
-
                 int reqCode = 1; //what should be the predefined value?
-
                 startActivityForResult(thisIndividualOrder, reqCode);
-
             }
         });
     }
 
-
-    // This method  invoked when target activity returns result data.
+    // method invoked when target activity returns result data.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
         super.onActivityResult(requestCode, resultCode, returnIntent);
 
         // The returned result data is identified by requestCode.
-        // The request code is specified in startActivityForResult(intent, REQUEST_CODE_1); method.
 
         Log.d("return_resultcode ", String.valueOf(resultCode));
 
@@ -149,14 +134,11 @@ public class OrderListActivity extends AppCompatActivity {
             //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
             Client returnLocalClient = (Client) returnIntent.getParcelableExtra("edited order");
 
-            Log.d("return client YO", returnLocalClient.getClientStatus());
-
             //clients - is modified to take returnLocalClient at the positionOnListClicked
             //the listview is re-shown
             clients.set(positionOnListClicked, returnLocalClient);
             final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
             listview.setAdapter(reAdapter);
-
         }
     }
 

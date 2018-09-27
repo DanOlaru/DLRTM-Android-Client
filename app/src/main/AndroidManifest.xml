@@ -80,7 +80,7 @@
 
 
         <activity
-            android:name="longmoneyoffshore.dlrtime.utils.GSheetsAdapter"
+            android:name="longmoneyoffshore.dlrtime.utils.GSheetsActivity"
             android:label="GSheetsAPI" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

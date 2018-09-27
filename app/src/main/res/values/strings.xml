@@ -58,16 +58,18 @@
     <string name="field_hint">Gsheet</string>
 
     <string name="comment_or_issue_hint"> Order status / comments / issues </string>
-    <string name="commit_order_feedback"> Send </string>
+    <string name="commit_order_feedback"> Submit </string>
 
 
     <!--strings related to GSheets Activity-->
     <string name = "access_gsheets_button_text"> Access GSheets </string>
     <string name="login_to_gsheets_mess"> Retrieve orders Info  </string>
+    <string name="go_to_orders">Go To Orders List</string>
 
 
     <!--strings related to OrdersListActivity-->
-    <string name="download_orders_list"> Download table</string>
+    <string name="download_orders_list"> Download Orders</string>
+    <string name="make_new_order">Make New</string>
     
     
     <!-- client_item strings-->

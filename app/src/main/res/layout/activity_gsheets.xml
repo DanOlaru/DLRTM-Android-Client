@@ -10,7 +10,7 @@
     android:padding="16dp"
 
     android:theme="@style/Theme.AppCompat"
-    tools:context="longmoneyoffshore.dlrtime.utils.GSheetsAdapter">
+    tools:context="longmoneyoffshore.dlrtime.utils.GSheetsActivity">
 
     <Button
         android:id="@+id/access_gsheets_button"
@@ -27,8 +27,16 @@
         android:id="@+id/messages_gsheets"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/login_to_gsheets_mess"
-        />
+        android:text="@string/login_to_gsheets_mess" />
+
+    <Button
+        android:id="@+id/go_to_orders_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:background="@color/buttonGrey"
+        android:text="@string/go_to_orders"/>
 
 </LinearLayout>
 

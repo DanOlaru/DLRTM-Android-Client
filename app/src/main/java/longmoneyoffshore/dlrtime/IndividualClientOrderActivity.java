@@ -48,8 +48,8 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
     EditText orderProductQuantField;
     EditText orderProductPriceField;
     EditText orderPriceAdjustField;
-    RatingBar orderUrgencyField;
-    RatingBar orderValueClientField;
+    volatile RatingBar orderUrgencyField;
+    volatile RatingBar orderValueClientField;
     EditText orderStatusClientField;
 
     @Override
@@ -61,10 +61,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         Intent passedIntent = getIntent();
         ClientParcel myPassedClientParcel = passedIntent.getParcelableExtra("order");
         myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
-
-        //or??
-        //Bundle passedData = passedIntent.getExtras();
-        //ClientParcel myPassedClientParcel = (ClientParcel) passedData.getParcelable("order");
 
         // dummy data set
         //myPassedClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
@@ -104,6 +100,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
 
         orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
+        orderUrgencyField.setRating(myPassedClient.getClientUrgency());
 
         // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5
         orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -116,6 +113,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
         //Client Value
         orderValueClientField = (RatingBar) findViewById(R.id.orderValueClnt);
+        orderValueClientField.setRating(myPassedClientParcel.getClientValue());
 
         orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
@@ -203,15 +201,14 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             @Override
             public void onClick(View v) {
                 //TODO: the Back button makes sure that the data in the text boxes is saved and sent back to the previous activity / GSheets
-
-
                 //the localFeedbackClient gets passed to the OrderListActivity
                 ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
                 Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
                 feedbackIntent.putExtra("edited order", localFeedbackParcel);
                 setResult(IndividualClientOrderActivity.RESULT_OK, feedbackIntent);
 
-                Log.d("ret_fr ICOR_Cl_Status",localFeedbackParcel.getClientStatus());
+                Log.i("back_butt_ICOR",localFeedbackParcel.getClientStatus());
+                Log.d("onStop Cl_urgency", String.valueOf(localFeedbackParcel.getClientUrgency()));
                 finish();
 
             }
@@ -228,9 +225,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
        //             signOutObject.signOut(v);
        //     }
        // });
-
-
-
 
 
         //TODO: what is this code?
@@ -278,14 +272,21 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
     @Override
     protected void onStop() {
         super.onStop();
-    }
 
-    /*
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        mTextView.setText(savedInstanceState.getString(TEXT_VIEW_KEY));
+        //the localFeedbackClient gets passed to the OrderListActivity
+        /*
+        ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
+        Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
+        feedbackIntent.putExtra("edited order", localFeedbackParcel);
+        //setResult(IndividualClientOrderActivity.RESULT_OK, feedbackIntent);
+        setResult(OrderListActivity.RESULT_OK, feedbackIntent);
+
+        Log.d("!!onstop_Cl_Status",localFeedbackParcel.getClientStatus());
+        Log.d("onStop Cl_urgency", String.valueOf(localFeedbackClient.getClientUrgency()));
+        finish();
+        */
+
     }
-    */
 
     // invoked when the activity may be temporarily destroyed, save the instance state here
     @Override

@@ -17,9 +17,7 @@ import com.google.api.services.sheets.v4.model.*;
 
 import android.Manifest;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,13 +28,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -44,13 +37,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import longmoneyoffshore.dlrtime.OrderListActivity;
 import longmoneyoffshore.dlrtime.R;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class GSheetsAdapter extends FragmentActivity implements EasyPermissions.PermissionCallbacks {
+public class GSheetsActivity extends FragmentActivity implements EasyPermissions.PermissionCallbacks {
     GoogleAccountCredential mCredential;
     private Button mCallApiButton;
+    private Button goToOrdersList;
 
     //test
     private TextView mOutputText;
@@ -73,6 +68,17 @@ public class GSheetsAdapter extends FragmentActivity implements EasyPermissions.
         mOutputText = (TextView) findViewById(R.id.messages_gsheets);
         //ProgressBar mProgress = findViewById(R.id.indeterminateBar);
         //mProgress.setEnabled(false);
+
+        //Button that takes me to orders list
+        goToOrdersList = (Button) findViewById(R.id.go_to_orders_list);
+        goToOrdersList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent goToOrdersIntent = new Intent(GSheetsActivity.this, OrderListActivity.class);
+                startActivity(goToOrdersIntent);
+            }
+        });
+
 
         mCallApiButton = (Button)findViewById(R.id.access_gsheets_button);
         mCallApiButton.setEnabled(true);
@@ -199,7 +205,7 @@ public class GSheetsAdapter extends FragmentActivity implements EasyPermissions.
 
     void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        Dialog dialog = apiAvailability.getErrorDialog(GSheetsAdapter.this, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES);
+        Dialog dialog = apiAvailability.getErrorDialog(GSheetsActivity.this, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
     }
 
@@ -335,7 +341,7 @@ public class GSheetsAdapter extends FragmentActivity implements EasyPermissions.
                 } else if (mLastError instanceof UserRecoverableAuthIOException) {
                     startActivityForResult(
                             ((UserRecoverableAuthIOException) mLastError).getIntent(),
-                            GSheetsAdapter.REQUEST_AUTHORIZATION);
+                            GSheetsActivity.REQUEST_AUTHORIZATION);
                 } else {
                     mOutputText.setText("The following error occurred:\n"
                             + mLastError.getMessage());

@@ -35,7 +35,8 @@ public class Client {
 
     // 2° constructor
 
-    public Client(String clientName, String clientPhoneNo, String clientLocation, String clientProductID, int clientQuantity, int clientPrice, int clientPriceAdjust, int clientUrgency, int clientValue, String clientStatus) {
+    public Client(String clientName, String clientPhoneNo, String clientLocation, String clientProductID, float clientQuantity,
+                  float clientPrice, float clientPriceAdjust, float clientUrgency, float clientValue, String clientStatus) {
         this.clientName = clientName;
         this.clientPhoneNo = clientPhoneNo;
         this.clientLocation = clientLocation;
@@ -50,7 +51,9 @@ public class Client {
 
     // 3° constructor that also takes anonymizerPrefix
 
-    public Client(String clientName, String clientPhoneNo, String clientLocation, String clientProductID, int clientQuantity, int clientPrice, int clientPriceAdjust, int clientUrgency, int clientValue, String clientStatus, String anonymizerPrefix) {
+    public Client(String clientName, String clientPhoneNo, String clientLocation, String clientProductID, float clientQuantity,
+                  float clientPrice, float clientPriceAdjust, float clientUrgency, float clientValue, String clientStatus,
+                  String anonymizerPrefix) {
         this.clientName = clientName;
         this.clientPhoneNo = clientPhoneNo;
         this.clientLocation = clientLocation;
