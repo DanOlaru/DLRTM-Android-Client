@@ -157,7 +157,7 @@ public class OrderListActivity extends AppCompatActivity {
 
                 Client client = new Client(name, phone, location, productId, quantity, price, priceAdjust, urgency, value, status);
                 clients.add(client);
-                Log.d("ClientValu", String.valueOf(client.getClientQuantity()));
+                //Log.d("ClientQ", String.valueOf(client.getClientQuantity()));
             }
 
             //TODO: clear the listview every time before reloading the sheets content so we don't get the same content repeated

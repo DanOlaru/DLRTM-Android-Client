@@ -109,6 +109,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
 
+
         /*
         //check for pre-existing login
         GoogleSignInAccount userAccount = GoogleSignIn.getLastSignedInAccount(this);
@@ -227,7 +228,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     protected void startOrdersListAct() {
 
-        Intent startOrdersListActivity = new Intent(LoginActivity.this, OrderListActivity.class);
+        Intent startOrdersListActivity = new Intent(LoginActivity.this, GSheetsActivity.class);
 
         //startOrdersListActivity.putExtra("extra data", userNameUsed.);
         startActivity(startOrdersListActivity);
@@ -246,7 +247,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
 }
-
 
 
 /*
@@ -280,8 +280,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -308,10 +306,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-
-
-
-        
     }
 
     private void populateAutoComplete() {
