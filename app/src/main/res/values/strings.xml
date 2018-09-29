@@ -4,10 +4,6 @@
     <string name="app_name">DLRTM — Digital Logistics Resource Time Management </string>
 
 
-    <!-- Dan - authorization into google sign in-->
-    <string name="server_client_id">1047419741332-9j6g1vqilq91n2qlmen2e7hcq2h3bh72.apps.googleusercontent.com</string>
-
-
 
     <string name="title_activity_maps_route">Map</string>
     <string name="title_activity_customer_list">CustomerList</string>
@@ -53,19 +49,6 @@
     <!-- Button labels -->
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
-
-    <!-- extra stuff-->
-
-    <string name="play_services_error_fmt">Google Play Services Error: %i</string>
-
-    <string name="refresh_token">Get Fresh Token</string>
-
-    <string name="desc_rest_activity">Demonstrate using Google Sign In with a Google REST API</string>
-    <string name="name_rest_activity">RestApiActivity</string>
-
-    <!-- Messages for the Rest API activity -->
-    <string name="connections_fmt">Connections: %1$s</string>
-    <string name="msg_contacts_failed">Get contacts failed.</string>
 
 
 <!--end extra stuff-->
