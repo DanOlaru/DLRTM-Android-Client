@@ -94,6 +94,11 @@ public class OrderListActivity extends AppCompatActivity {
         }).execute("https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY");
         //TODO: the login has to provide the sheet ID as string, which is passed to AsyncTask above this line
 
+        if(listview!=null)
+        {
+
+        }
+
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

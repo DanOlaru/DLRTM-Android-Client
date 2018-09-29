@@ -139,10 +139,12 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
 
             //this is where it doesn't compile — the Lambda expression is messing it up
 
-            mDriveClient.newOpenFileActivityIntentSender(openOptions).continueWith((Continuation<IntentSender, Void>) task -> {
-                startIntentSenderForResult(
-                        task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
-                return null;
+            mDriveClient
+                    .newOpenFileActivityIntentSender(openOptions)
+                    .continueWith((Continuation<IntentSender, Void>) task->{
+                        startIntentSenderForResult(
+                            task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+                        return null;
                 });
 
             Task<DriveId> myRequestedIDTask = mDriveClient.getDriveId("text/plain");
