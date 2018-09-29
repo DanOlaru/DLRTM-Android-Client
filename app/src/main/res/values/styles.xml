@@ -33,4 +33,16 @@
 
     <style name="Theme.Black.NoTitleBar.Fullscreen.AppNoActionBar" parent="android:Theme.Black.NoTitleBar.Fullscreen" />
 
+
+    <!--extra stuff-->
+
+
+    <!-- Dark Buttons -->
+    <style name="ThemeOverlay.MyDarkButton" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorButtonNormal">@color/blue_grey_500</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+    <!--end extra stuff-->
+
+
 </resources>
