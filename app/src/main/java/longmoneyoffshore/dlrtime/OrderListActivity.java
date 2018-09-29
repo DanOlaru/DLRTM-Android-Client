@@ -82,6 +82,10 @@ public class OrderListActivity extends AppCompatActivity {
 
     public void buttonClickHandler(View view) {
         // Start to retrieve data on another thread (as background activity)
+
+        listview.setAdapter(null);
+        clients.clear();
+
         new DownloadAsyncTask(new AsyncResult() {
             @Override
             public void onResult(JSONObject object) {
@@ -163,6 +167,7 @@ public class OrderListActivity extends AppCompatActivity {
             //TODO: clear the listview every time before reloading the sheets content so we don't get the same content repeated
             //is this code in the right onCreate place?
             final ClientAdapter adapter = new ClientAdapter(this, R.layout.client_item, clients);
+            //listview.setAdapter(null);
             listview.setAdapter(adapter);
 
         } catch (JSONException e) {

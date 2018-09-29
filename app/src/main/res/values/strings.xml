@@ -89,7 +89,9 @@
     <!--strings related to GSheets Activity-->
     <string name = "access_gsheets_button_text"> Access GSheets </string>
     <string name="login_to_gsheets_mess"> Retrieve orders Info  </string>
-    <string name="go_to_orders">Go To Orders List</string>
+    <string name="go_to_orders">Go To Orders List</string>'
+    <string name="select_file">Select File</string>
+    <string name="select_folder">Selecte Folder</string>
 
 
     <!--strings related to OrdersListActivity-->

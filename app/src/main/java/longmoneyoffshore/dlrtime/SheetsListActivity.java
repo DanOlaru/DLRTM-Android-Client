@@ -2,12 +2,12 @@ package longmoneyoffshore.dlrtime;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -17,20 +17,48 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveClient;
+import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
+import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveResourceClient;
+import com.google.android.gms.drive.OpenFileActivityOptions;
+import com.google.android.gms.drive.query.Filters;
+import com.google.android.gms.drive.query.SearchableField;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.api.services.sheets.v4.model.Sheet;
 
-public class SheetsListActivity extends AppCompatActivity
+//Dan
+import android.app.Activity;
+import android.widget.Toast;
+import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.Metadata;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import com.google.android.gms.drive.DriveFile;
+import com.google.android.gms.drive.Metadata;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.android.gms.common.api.Scope;
+import java.util.HashSet;
+import java.util.Set;
+
+public class SheetsListActivity extends AppCompatActivity //or Activity???
 {
 
-    //dummy
-    private int dummyVariable =0;
-    
+
+
     private DriveClient mDriveClient;
     private DriveResourceClient mDriveResourceClient;
     private DriveFile driveFile;
+
+    protected static final int REQUEST_CODE_OPEN_ITEM = 1;
+    protected static final int REQUEST_CODE_SIGN_IN = 0;
+    private TaskCompletionSource<DriveId> mOpenItemTaskSource;
 
 
 
@@ -45,7 +73,7 @@ public class SheetsListActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sheets_list_activity);
+        setContentView(R.layout.activity_sheets_list);
 
         // Get the access for user google drive
         setDrive();
@@ -68,7 +96,6 @@ public class SheetsListActivity extends AppCompatActivity
         mStatusTextView = findViewById(R.id.status2);
         mStatusTextView.setText(getString(R.string.signed_in_fmt2, googleSignInAccount.getDisplayName()));
 
-
     }
 
     private void revokeAccess(final Context context) {
@@ -85,7 +112,6 @@ public class SheetsListActivity extends AppCompatActivity
     }
 
 
-
     private void Logout()
     {
         Intent intent = new Intent(this, LoginActivity.class);
@@ -99,11 +125,29 @@ public class SheetsListActivity extends AppCompatActivity
 
         try
         {
-            // Use the last signed in account here since it already have a Drive scope.
-            // Build a drive client.
             mDriveClient = Drive.getDriveClient(this, GoogleSignIn.getLastSignedInAccount(this));
-            // Build a drive resource client.
             mDriveResourceClient = Drive.getDriveResourceClient(this, GoogleSignIn.getLastSignedInAccount(this));
+
+            ///////////////////////////////by Dan
+
+            OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
+                    .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
+                    .setActivityTitle(getString(R.string.select_file)).build();
+
+            //Task<DriveId> myRequestedIDTask = pickItem(openOptions);
+
+            mDriveClient.newOpenFileActivityIntentSender(openOptions).continueWith((Continuation<IntentSender, Void>) task -> {
+                startIntentSenderForResult(
+                        task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+                return null;
+                });
+
+            Task<DriveId> myRequestedIDTask = mDriveClient.getDriveId("text/plain");
+            String mySheetId = myRequestedIDTask.getResult().encodeToString();
+            Log.d("pick a file ID", mySheetId);
+
+            //get the id of the sheets file I want to use and pass it to OrderListActivity
+            /////////////////////////////////end by Dan
 
         }
         catch (Exception e)
@@ -111,7 +155,18 @@ public class SheetsListActivity extends AppCompatActivity
             Log.e("Google drive access","Error: cannot get drive access!");
         }
     }
+/*
+    private Task<DriveId> pickItem(OpenFileActivityOptions openOptions) {
+        mOpenItemTaskSource = new TaskCompletionSource<>();
+                mDriveClient.newOpenFileActivityIntentSender(openOptions)
+                .continueWith((Continuation<IntentSender, Void>) task -> {
+                    startIntentSenderForResult(
+                            task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+                    return null;
+                });
+        return mOpenItemTaskSource.getTask();
+    }
 
-
+    */
 
 }

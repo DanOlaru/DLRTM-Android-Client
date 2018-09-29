@@ -23,8 +23,6 @@ import com.google.android.gms.drive.DriveResourceClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-//Dan
-
 /**
 * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
 * profile.
