@@ -50,6 +50,9 @@ public class DownloadAsyncTask extends AsyncTask<String, Void, String> {
             e.printStackTrace();
         }
     }
+
+    //TODO: why is this private here? How can I access it from a different class?
+
     private String downloadUrl(String urlString) throws IOException {
         InputStream is = null;
         try {

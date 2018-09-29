@@ -38,19 +38,21 @@ public class ClientAdapter extends ArrayAdapter<Client> {
 
         if (o != null)
         {
-            TextView pos = (TextView) v.findViewById(R.id.position);
-            TextView name = (TextView) v.findViewById(R.id.name);
-            TextView wins = (TextView) v.findViewById(R.id.wins);
-            TextView draws = (TextView) v.findViewById(R.id.draws);
-            TextView losses = (TextView) v.findViewById(R.id.losses);
-            TextView points = (TextView) v.findViewById(R.id.points);
+            TextView orderName = (TextView) v.findViewById(R.id.order_name);
+            TextView orderLocation = (TextView) v.findViewById(R.id.order_location);
+            TextView orderPhoneNum = (TextView) v.findViewById(R.id.order_phone_number);
+            TextView orderPrice = (TextView) v.findViewById(R.id.order_price);
+            TextView orderPriceAdjust = (TextView) v.findViewById(R.id.order_price_adjust);
+            TextView orderProductID = (TextView) v.findViewById(R.id.order_product_id);
+            TextView orderStatus = (TextView) v.findViewById(R.id.order_status);
 
-            pos.setText(String.valueOf(o.getClientName()));
-            name.setText(String.valueOf(o.getClientLocation()));
-            wins.setText(String.valueOf(o.getClientPhoneNo()));
-            draws.setText(String.valueOf(o.getClientPrice()));
-            losses.setText(String.valueOf(o.getClientPriceAdjust()));
-            points.setText(String.valueOf(o.getClientProductID()));
+            orderName.setText(String.valueOf(o.getClientName()) + " |");
+            orderLocation.setText(String.valueOf(o.getClientLocation()) + " |");
+            orderPhoneNum.setText(String.valueOf(o.getClientPhoneNo()) + " |");
+            orderPrice.setText(String.valueOf(o.getClientPrice()) + " |");
+            orderPriceAdjust.setText(String.valueOf(o.getClientPriceAdjust()) + " |");
+            orderProductID.setText(String.valueOf(o.getClientProductID()) + " |");
+            orderStatus.setText(String.valueOf(o.getClientStatus()) + " |");
         }
         return v;
     }

@@ -18,6 +18,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- Dan: APP requires permissions to dial phone-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.DIAL_PHONE"/>
 
     <application
         android:allowBackup="true"
@@ -25,8 +32,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-
-        android:theme="@style/Theme.Black.NoTitleBar.Fullscreen.AppNoActionBar">
+        android:theme="@style/Theme.AppCompat">
+        <!--android:theme="@style/Theme.Black.NoTitleBar.Fullscreen.AppNoActionBar" -->
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -51,19 +58,33 @@
 
 
 
-        <activity android:name="longmoneyoffshore.dlrtime.OrderListActivity">
+        <activity android:name="longmoneyoffshore.dlrtime.OrderListActivity"
+            android:parentActivityName=".LoginActivity">
             <intent-filter>
+                <!--no intent so far-->
                 <action android:name="android.intent.action.MAIN" />
+
             </intent-filter>
         </activity>
 
 
-        <activity android:name="longmoneyoffshore.dlrtime.IndividualClientOrderActivity">
+        <activity android:name="longmoneyoffshore.dlrtime.IndividualClientOrderActivity"
+            android:parentActivityName=".OrderListActivity">
 
             <intent-filter>
+                <!--no intent so far-->
                 <action android:name="android.intent.action.MAIN" />
 
+            </intent-filter>
+        </activity>
 
+
+        <activity
+            android:name="longmoneyoffshore.dlrtime.GSheetsActivity"
+            android:label="GSheetsAPI" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 

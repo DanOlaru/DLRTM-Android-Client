@@ -1,34 +1,54 @@
-//test
-
 package longmoneyoffshore.dlrtime;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-
 import longmoneyoffshore.dlrtime.utils.AsyncResult;
 import longmoneyoffshore.dlrtime.utils.Client;
+import longmoneyoffshore.dlrtime.utils.ClientParcel;
 import longmoneyoffshore.dlrtime.utils.DownloadAsyncTask;
 import longmoneyoffshore.dlrtime.utils.ClientAdapter;
+import longmoneyoffshore.dlrtime.utils.SignOutFunctionality;
+
+//Dan - test
+import com.google.api.client.auth.oauth2.Credential;
+//import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+//import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.ValueRange;
+
 
 public class OrderListActivity extends AppCompatActivity {
 
     private static final String DEBUG_TAG = "HttpExample";
-    ArrayList<Client> clients = new ArrayList<Client>(); // The list of the clients
-    ListView listview;
-    Button btnDownload;
+    private static final int REQUEST_CODE_1 = 1;
+
+    private ArrayList<Client> clients = new ArrayList<Client>();
+    private ListView listview;
+    private Button btnDownload;
+    private Button signOutButton;
+    private int positionOnListClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,94 +68,67 @@ public class OrderListActivity extends AppCompatActivity {
             btnDownload.setEnabled(false);
         }
 
+        //TODO: sign out button click references public public signOut method in utils
+        signOutButton = (Button) findViewById(R.id.sign_out_button);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        //signOutButton.setOnClickListener(new View.OnClickListener() {
+        //    @Override
+        //    public void onClick(View v) {
+        //        SignOutFunctionality signOutObject = new SignOutFunctionality();
+        //        signOutObject.signOut(v);
+        //    }
+        //});
     }
 
     public void buttonClickHandler(View view) {
-
-        // Start to retrieve data on another thread (therefore as a background activity)
+        // Start to retrieve data on another thread (as background activity)
         new DownloadAsyncTask(new AsyncResult() {
             @Override
             public void onResult(JSONObject object) {
                 processJson(object); // Feeds with the retrieved data
             }
         }).execute("https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY");
+        //TODO: the login has to provide the sheet ID as string, which is passed to AsyncTask above this line
 
-
-        /*
-
-        //Dan: code from website example
-
-        // Click this button to pass data to target activity.
-
-        // the item clicked on will ultimately not be a button, but the line in the table of orders
-
-        Button passDataReturnResultButton = (Button)findViewById(R.id.passDataReturnResultButton);
-
-        passDataReturnResultSourceButton.setOnClickListener(new View.OnClickListener() {
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                //click on the button by the side of that specific order
+                //position clicked on — it is visible outside of this scope to the onActivityResult
+                positionOnListClicked = position;
 
-                Client thisOrder = new Client(); //this has to be populated with the data from the specific row which was clicked
-
-                //what method converts thisOrder into a Parcel?
-
-                ClientParcel thisOrderParcel = new ClientParcel(thisOrder); // using constructor from Client object
-
+                Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
+                ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
                 Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
 
-                thisIndividualOrder.putExtra("order", thisOrderParcel);
-
+                thisIndividualOrder.putExtra("order", clickedOrderParcel);
                 int reqCode = 1; //what should be the predefined value?
-
-                startActivityForResult(thisIndividualOrder, reqCode);
+                startActivityForResult(thisIndividualOrder,reqCode);
             }
         });
     }
 
-    // This method is invoked when target activity returns result data.
-
+    // method invoked when target activity returns result data.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
-        super.onActivityResult(requestCode, resultCode, dataIntent);
+        super.onActivityResult(requestCode, resultCode, returnIntent);
 
         // The returned result data is identified by requestCode.
-        // The request code is specified in startActivityForResult(intent, REQUEST_CODE_1); method.
-        switch (requestCode)
-        {
-            // This request code is set by startActivityForResult(intent, REQUEST_CODE_1) method.
-            case REQUEST_CODE_1:
-                //TextView textView = (TextView)findViewById(R.id.resultDataTextView);
+        Log.d("return_resultcode ", String.valueOf(resultCode));
 
-                if(resultCode == RESULT_OK)
-                {
-                    //old code
-                    //String messageReturn = dataIntent.getStringExtra("message_return");
-                    //textView.setText(messageReturn);
+        if(resultCode == RESULT_OK) {
+            //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
+            Client returnLocalClient = (Client) returnIntent.getParcelableExtra("edited order");
 
-                    //new code sets the new/ edited data on the OrderListActivity and passes it back to the google sheets document
-                }
+            //clients - is modified to take returnLocalClient at the positionOnListClicked
+            //the listview is re-shown
+            clients.set(positionOnListClicked, returnLocalClient);
+            final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
+            listview.setAdapter(reAdapter);
         }
     }
 
-      //end code by Dan
-      */
-
-
-    }
-
     private void processJson(JSONObject object) {
-
         try {
             JSONArray rows = object.getJSONArray("rows");
 
@@ -150,31 +143,42 @@ public class OrderListActivity extends AppCompatActivity {
 
                 String name = columns.getJSONObject(0).getString("v");
 
-                Log.d("Fist value","1  " + name);
+                Log.d("First value","1  " + name);
 
                 String phone = columns.getJSONObject(1).getString("v");
                 String location = columns.getJSONObject(2).getString("v");
                 String productId = columns.getJSONObject(3).getString("v");
-                int quantity = columns.getJSONObject(4).getInt("v");
-                int price = columns.getJSONObject(5).getInt("v");
-                int priceAdjust = columns.getJSONObject(6).getInt("v");
-                int urgency = columns.getJSONObject(7).getInt("v");
-                int value = columns.getJSONObject(8).getInt("v");
+                float quantity = Float.parseFloat(columns.getJSONObject(4).getString("v"));
+                float price = Float.parseFloat(columns.getJSONObject(5).getString("v"));
+                float priceAdjust = Float.parseFloat(columns.getJSONObject(6).getString("v"));
+                float urgency = Float.parseFloat(columns.getJSONObject(7).getString("v"));
+                float value = Float.parseFloat(columns.getJSONObject(8).getString("v"));
                 String status = columns.getJSONObject(9).getString("v");
 
                 Client client = new Client(name, phone, location, productId, quantity, price, priceAdjust, urgency, value, status);
-
-               Log.d("Client", "Client " + client.toString());
-
                 clients.add(client);
+                //Log.d("ClientQ", String.valueOf(client.getClientQuantity()));
             }
 
+            //TODO: clear the listview every time before reloading the sheets content so we don't get the same content repeated
+            //is this code in the right onCreate place?
             final ClientAdapter adapter = new ClientAdapter(this, R.layout.client_item, clients);
             listview.setAdapter(adapter);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private ClientAdapter passBackOrderChanges () {
+
+        //return modifications to GSheets
+
+        //clients.set(positionOnListClicked, returnLocalClient);
+        //final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
+        //listview.setAdapter(reAdapter);
+        ClientAdapter dummy = new ClientAdapter(this, R.layout.client_item, clients);
+        return dummy;
     }
 
 }
