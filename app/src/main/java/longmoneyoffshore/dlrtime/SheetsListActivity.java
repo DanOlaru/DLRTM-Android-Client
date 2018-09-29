@@ -16,7 +16,7 @@ public class SheetsListActivity extends AppCompatActivity
 
     //dummy
     private int temp;
-    
+
     private DriveClient mDriveClient;
     private DriveResourceClient mDriveResourceClient;
     private DriveFile driveFile;
