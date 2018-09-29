@@ -28,7 +28,7 @@ public class SheetsListActivity extends AppCompatActivity
     private DriveResourceClient mDriveResourceClient;
     private DriveFile driveFile;
 
-    private int temp;
+
 
     // Variables necessary to manage the disconnection
     private Button disconnectBtn;
