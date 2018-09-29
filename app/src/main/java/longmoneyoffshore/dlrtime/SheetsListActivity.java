@@ -136,6 +136,9 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
 
             //Task<DriveId> myRequestedIDTask = pickItem(openOptions);
 
+
+            //this is where it doesn't compile — the Lambda expression is messing it up
+
             mDriveClient.newOpenFileActivityIntentSender(openOptions).continueWith((Continuation<IntentSender, Void>) task -> {
                 startIntentSenderForResult(
                         task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
@@ -145,6 +148,7 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
             Task<DriveId> myRequestedIDTask = mDriveClient.getDriveId("text/plain");
             String mySheetId = myRequestedIDTask.getResult().encodeToString();
             Log.d("pick a file ID", mySheetId);
+
 
             //get the id of the sheets file I want to use and pass it to OrderListActivity
             /////////////////////////////////end by Dan
