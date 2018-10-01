@@ -81,11 +81,16 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sheets_list);
 
-        // Get the access for user google drive
-        setDrive();
         gso = GoogleSignInOptions.DEFAULT_SIGN_IN;
+
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+
+        //debug
+        Log.d("debug ", googleSignInAccount.getDisplayName());
+
+        // Get the access for user google drive
+        setDrive();
 
         disconnectBtn = findViewById(R.id.diconnect);
 
@@ -99,8 +104,8 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
              }
         });
 
-        mStatusTextView = findViewById(R.id.status2);
-        mStatusTextView.setText(getString(R.string.signed_in_fmt2, googleSignInAccount.getDisplayName()));
+        //mStatusTextView = findViewById(R.id.status2);
+        //mStatusTextView.setText(getString(R.string.signed_in_fmt2, googleSignInAccount.getDisplayName()));
 
     }
 
@@ -131,7 +136,8 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
         try
         {
             //Dan - try
-            initializeDriveClient(googleSignInAccount);
+            Log.d("pick a file ID", "HHHEHEHEHEHEHHEHEHE #0");
+            //initializeDriveClient(googleSignInAccount);
 
             mDriveClient = Drive.getDriveClient(this, GoogleSignIn.getLastSignedInAccount(this));
             mDriveResourceClient = Drive.getDriveResourceClient(this, GoogleSignIn.getLastSignedInAccount(this));
@@ -141,6 +147,8 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
             OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
                     .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
                     .setActivityTitle(getString(R.string.select_file)).build();
+
+            Log.d("pick a file ID", "HHHEHEHEHEHEHHEHEHE #1");
 
             Task<DriveId> myRequestedIDTask = pickItem(openOptions);
 
@@ -159,10 +167,27 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
 
     private Task<DriveId> pickItem(OpenFileActivityOptions openOptions) {
         mOpenItemTaskSource = new TaskCompletionSource<>();
-        mDriveClient.newOpenFileActivityIntentSender(openOptions).continueWith((Continuation<IntentSender, Void>) (Task<IntentSender> task) -> {
+        Log.d("pick a file ID", "HHHEHEHEHEHEHHEHEHE #2");
+
+
+        /*mDriveClient.newOpenFileActivityIntentSender(openOptions).continueWith((Continuation<IntentSender, Void>) (Task<IntentSender> task) -> {
+            Log.d("pick a file ID", "HHHEHEHEHEHEHHEHEHE #3");
             startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+            Log.d("pick a file ID", "HHHEHEHEHEHEHHEHEHE #4");
             return null;
-        });
+        }); */
+
+
+        mDriveClient.newOpenFileActivityIntentSender(openOptions)
+            .continueWith(new Continuation<IntentSender, Void>() {
+                @Override
+                public Void then(@NonNull Task<IntentSender> task) throws Exception {
+                    startIntentSenderForResult(
+                            task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+                    return null;
+                }
+            });
+
 
         /*
         //rewrite of the code — probably wrong
@@ -226,10 +251,19 @@ private Continuation<IntentSender, Void> myContinuation (Task<IntentSender> myPa
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+
     private void initializeDriveClient(GoogleSignInAccount signInAccount) {
+        Log.d("pick a file ID", "HHHEHEHEHEHEHHEHEHE #0.001");
         mDriveClient = Drive.getDriveClient(getApplicationContext(), signInAccount);
+
+        //mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        //googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+
+        Log.d("pick a file ID", "HHHEHEHEHEHEHHEHEHE #0.1");
         mDriveResourceClient = Drive.getDriveResourceClient(getApplicationContext(), signInAccount);
+        Log.d("pick a file ID", "HHHEHEHEHEHEHHEHEHE #0.2");
     }
+
 
 
     protected DriveClient getDriveClient() {
