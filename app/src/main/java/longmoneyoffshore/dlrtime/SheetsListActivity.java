@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveClient;
 import com.google.android.gms.drive.DriveContents;
@@ -46,18 +48,21 @@ import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.android.gms.common.api.Scope;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executor;
+
+//import static android.support.v4.media.MediaMetadataCompatApi21.Builder.build;
+
 
 public class SheetsListActivity extends AppCompatActivity //or Activity???
 {
-
-
-
     private DriveClient mDriveClient;
     private DriveResourceClient mDriveResourceClient;
     private DriveFile driveFile;
 
     protected static final int REQUEST_CODE_OPEN_ITEM = 1;
     protected static final int REQUEST_CODE_SIGN_IN = 0;
+    private static final String TAG = "BaseDriveActivity";
+
     private TaskCompletionSource<DriveId> mOpenItemTaskSource;
 
 
@@ -68,6 +73,7 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
     GoogleSignInAccount googleSignInAccount;
+    OpenFileActivityOptions openOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -111,7 +117,6 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
                 });
     }
 
-
     private void Logout()
     {
         Intent intent = new Intent(this, LoginActivity.class);
@@ -125,6 +130,9 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
 
         try
         {
+            //Dan - try
+            initializeDriveClient(googleSignInAccount);
+
             mDriveClient = Drive.getDriveClient(this, GoogleSignIn.getLastSignedInAccount(this));
             mDriveResourceClient = Drive.getDriveResourceClient(this, GoogleSignIn.getLastSignedInAccount(this));
 
@@ -134,45 +142,97 @@ public class SheetsListActivity extends AppCompatActivity //or Activity???
                     .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
                     .setActivityTitle(getString(R.string.select_file)).build();
 
-            //Task<DriveId> myRequestedIDTask = pickItem(openOptions);
+            Task<DriveId> myRequestedIDTask = pickItem(openOptions);
 
-
-            //this is where it doesn't compile — the Lambda expression is messing it up
-
-            mDriveClient
-                    .newOpenFileActivityIntentSender(openOptions)
-                    .continueWith((Continuation<IntentSender, Void>) task->{
-                        startIntentSenderForResult(
-                            task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
-                        return null;
-                });
-
-            Task<DriveId> myRequestedIDTask = mDriveClient.getDriveId("text/plain");
             String mySheetId = myRequestedIDTask.getResult().encodeToString();
             Log.d("pick a file ID", mySheetId);
+            //TODO: get the id of the sheets file I want to use and pass it to OrderListActivity
 
 
-            //get the id of the sheets file I want to use and pass it to OrderListActivity
             /////////////////////////////////end by Dan
-
         }
         catch (Exception e)
         {
-            Log.e("Google drive access","Error: cannot get drive access!");
+            Log.e("G drive access","FMl: cannot get drive access!");
         }
     }
-/*
+
     private Task<DriveId> pickItem(OpenFileActivityOptions openOptions) {
         mOpenItemTaskSource = new TaskCompletionSource<>();
-                mDriveClient.newOpenFileActivityIntentSender(openOptions)
-                .continueWith((Continuation<IntentSender, Void>) task -> {
-                    startIntentSenderForResult(
-                            task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
-                    return null;
-                });
+        mDriveClient.newOpenFileActivityIntentSender(openOptions).continueWith((Continuation<IntentSender, Void>) (Task<IntentSender> task) -> {
+            startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+            return null;
+        });
+
+        /*
+        //rewrite of the code — probably wrong
+        Task<IntentSender> myTask = mDriveClient.newOpenFileActivityIntentSender(openOptions);
+        getResult gets the result if it has already completed!!!
+        IntentSender myTaskIntentSender = myTask.getResult();
+        //or
+        IntentSender myTaskIntentSender=mDriveClient.newOpenFileActivityIntentSender(openOptions).getResult();
+
+        myTask.continueWith(myContinuation(myTask));
+        */
+
         return mOpenItemTaskSource.getTask();
     }
 
-    */
+    /*
+private Continuation<IntentSender, Void> myContinuation (Task<IntentSender> myPassedTask)  {
+    try {
+        //IntentSender myTaskIntentSender=mDriveClient.newOpenFileActivityIntentSender(openOptions).getResult();
+        IntentSender myTaskIntentSender = myPassedTask.getResult();
+        startIntentSenderForResult(myTaskIntentSender, REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+    } catch (Exception e) {
+        Log.d("exceptionthrown", e.getMessage());
+    }
+    return null;
+}*/
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CODE_SIGN_IN:
+                if (resultCode != RESULT_OK) {
+                    // Sign-in may fail or be cancelled by the user. For this sample, sign-in is
+                    // required and is fatal. For apps where sign-in is optional, handle
+                    // appropriately
+                    Log.e(TAG, "Sign-in failed.");
+                    finish();
+                    return;
+                }
+
+                Task<GoogleSignInAccount> getAccountTask =
+                        GoogleSignIn.getSignedInAccountFromIntent(data);
+                if (getAccountTask.isSuccessful()) {
+                    initializeDriveClient(getAccountTask.getResult());
+                } else {
+                    Log.e(TAG, "Sign-in failed.");
+                    finish();
+                }
+                break;
+            case REQUEST_CODE_OPEN_ITEM:
+                if (resultCode == RESULT_OK) {
+                    DriveId driveId = data.getParcelableExtra(
+                            OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID);
+                    mOpenItemTaskSource.setResult(driveId);
+                } else {
+                    mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void initializeDriveClient(GoogleSignInAccount signInAccount) {
+        mDriveClient = Drive.getDriveClient(getApplicationContext(), signInAccount);
+        mDriveResourceClient = Drive.getDriveResourceClient(getApplicationContext(), signInAccount);
+    }
+
+
+    protected DriveClient getDriveClient() {
+        return mDriveClient;
+    }
 }
