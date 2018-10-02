@@ -6,16 +6,17 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveClient;
@@ -37,22 +38,24 @@ import android.app.Activity;
 import android.widget.Toast;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.Metadata;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.android.gms.common.api.Scope;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import com.google.android.gms.drive.MetadataChangeSet;
 //import static android.support.v4.media.MediaMetadataCompatApi21.Builder.build;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import android.util.Log;
 
-
-public class SheetsListActivity extends Activity //or Activity???
+public class SheetsListActivity extends AppCompatActivity  //or Activity???
 {
     private DriveClient mDriveClient;
     private DriveResourceClient mDriveResourceClient;
@@ -60,10 +63,14 @@ public class SheetsListActivity extends Activity //or Activity???
 
     protected static final int REQUEST_CODE_OPEN_ITEM = 1;
     protected static final int REQUEST_CODE_SIGN_IN = 0;
+    private static final int NEXT_AVAILABLE_REQUEST_CODE = 1;
+    private static final int REQUEST_CODE_OPENER = NEXT_AVAILABLE_REQUEST_CODE + 1;
     private static final String TAG = "BaseDriveActivity";
+    private static final String MIME_TYPE_TEXT = "text/plain";
+    private static final int RC_SIGN_IN = 9001;
+    private static final int REQ_PICKFILE = 4;
 
     private TaskCompletionSource<DriveId> mOpenItemTaskSource;
-
 
     // Variables necessary to manage the disconnection
     private Button disconnectBtn;
@@ -71,7 +78,7 @@ public class SheetsListActivity extends Activity //or Activity???
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
     GoogleSignInAccount googleSignInAccount;
-    OpenFileActivityOptions openOptions;
+    //OpenFileActivityOptions openOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -81,69 +88,24 @@ public class SheetsListActivity extends Activity //or Activity???
 
         //signIn();
         gso = GoogleSignInOptions.DEFAULT_SIGN_IN;
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
-        //OK SO FAR
 
         Log.d("debug bro", googleSignInAccount.getDisplayName() + "  " + googleSignInAccount.getEmail());
+        //OK SO FAR
 
-        // Get the access for user google drive
+
         setDrive();
 
         disconnectBtn = findViewById(R.id.disconnect);
-
-        disconnectBtn.setOnClickListener(new View.OnClickListener()
-        {
+        disconnectBtn.setOnClickListener(new View.OnClickListener() {
              @Override
-             public void onClick(final View view)
-             {
-                revokeAccess(view.getContext());
-             }
+             public void onClick(final View view) {revokeAccess(view.getContext());}
         });
 
         mStatusTextView = findViewById(R.id.status2);
         mStatusTextView.setText(getString(R.string.signed_in_fmt2, googleSignInAccount.getDisplayName()));
 
-    }
-
-
-    protected void signIn() {
-        Set<Scope> requiredScopes = new HashSet<>(2);
-        requiredScopes.add(Drive.SCOPE_FILE);
-        requiredScopes.add(Drive.SCOPE_APPFOLDER);
-        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
-        if (signInAccount != null && signInAccount.getGrantedScopes().containsAll(requiredScopes)) {
-            initializeDriveClient(signInAccount);
-        } else {
-            GoogleSignInOptions signInOptions =
-                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestScopes(Drive.SCOPE_FILE)
-                            .requestScopes(Drive.SCOPE_APPFOLDER)
-                            .build();
-            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, signInOptions);
-            startActivityForResult(googleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
-        }
-    }
-
-    private void revokeAccess(final Context context) {
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
-                        Intent intent = new Intent(context, LoginActivity.class);
-                        startActivity(intent);
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-
-    private void Logout()
-    {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
     }
 
     private void setDrive()
@@ -152,6 +114,7 @@ public class SheetsListActivity extends Activity //or Activity???
         // After the login the account will be available throughout the project
         try
         {
+
             initializeDriveClient(googleSignInAccount);
 
             //OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
@@ -161,42 +124,83 @@ public class SheetsListActivity extends Activity //or Activity???
             //Task<DriveId> myRequestedIDTask = pickItem(openOptions);
             Task<DriveId> myRequestedIDTask = pickTextFile();
 
-            //TODO: get the id of the sheets file I want to use and pass it to OrderListActivity
+            Log.d("Return SOME result", myRequestedIDTask.toString());
 
+            //TODO: get the id of the sheets file I want to use and pass it to OrderListActivity
         }
         catch (Exception e)
         {
-            Log.e("G drive access","FML: cannot get drive access!" + e);
+            Log.e("G drive access","cannot get drive access" + e);
         }
     }
 
     protected Task<DriveId> pickTextFile() {
-        OpenFileActivityOptions openOptions =
-                new OpenFileActivityOptions.Builder()
+        OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
                         .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
                         .setActivityTitle(getString(R.string.select_file))
                         .build();
+        /* //other version of the declaration of openOptions variable
+        final OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
+                        .setMimeType(Collections.singletonList(MIME_TYPE_TEXT))
+                        .build(); */
+
         return pickItem(openOptions);
     }
 
     private Task<DriveId> pickItem(OpenFileActivityOptions openOptions) {
         mOpenItemTaskSource = new TaskCompletionSource<>();
+
         getDriveClient().newOpenFileActivityIntentSender(openOptions)
                 .continueWith((Continuation<IntentSender, Void>) (Task<IntentSender> task) -> {
-                    //TODO: here the application stops
-            startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+                    try {
+                        SheetsListActivity.this.startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+                        Log.w(TAG, "Able to send intent — error HDIOUHGFDOIIDHUODFIUGHDOFIUGH: ");
+                    } catch (IntentSender.SendIntentException e) {
+                        Log.w(TAG, "Unable to send intent — error: ", e); }
+
             return null;
         });
 
+
         /*
+        //alternative coding minus the casting / type declaration + exception catching
+        getDriveClient().newOpenFileActivityIntentSender(openOptions).continueWith(task -> {
+                    try { startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+                    } catch (IntentSender.SendIntentException e) {
+                        Log.w(TAG, "Unable to send intent — error: ", e); }
+                        return null; }); */
+
+        /* //alternative coding of the same
+        mDriveClient.newOpenFileActivityIntentSender(openOptions)
+                .addOnSuccessListener(new OnSuccessListener<IntentSender>() {
+                    @Override
+                    public void onSuccess(IntentSender intentSender) {
+                        try {
+                            startIntentSenderForResult(
+                                    intentSender,
+                                    REQUEST_CODE_OPENER, null, 0, 0, 0);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.w(TAG, "Unable to send intent.", e);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Unable to create OpenFileActivityIntent.", e);
+            }
+        }); */
+
+        /*
+         //coding without the lambda
         mDriveClient.newOpenFileActivityIntentSender(openOptions).continueWith(new Continuation<IntentSender, Void>() {
                 @Override
                 public Void then(@NonNull Task<IntentSender> task) throws Exception {
-                    Log.d("pick a file ID", "HHHEHEHEHEHEHHEHEHE #3");
-                    startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+                    SheetsListActivity.this.startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
                     return null;
                 }
-            });*/
+            }); */
+
+
         return mOpenItemTaskSource.getTask();
     }
 
@@ -204,11 +208,15 @@ public class SheetsListActivity extends Activity //or Activity???
         mDriveClient = Drive.getDriveClient(getApplicationContext(), signInAccount);
         mDriveResourceClient = Drive.getDriveResourceClient(getApplicationContext(), signInAccount);
 
+        //various testing crapola
         //mDriveClient = Drive.getDriveClient(this, GoogleSignIn.getLastSignedInAccount(this));
         //mDriveResourceClient = Drive.getDriveResourceClient(this, GoogleSignIn.getLastSignedInAccount(this));
         Log.d("mDriveClient+Resource", mDriveClient.toString() + " and " + mDriveResourceClient.getInstanceId());
-    }
 
+        //DriveClient mDriveClient1 = Drive.getDriveClient(this, GoogleSignIn.getLastSignedInAccount(this));
+        //DriveResourceClient mDriveResourceClient1 = Drive.getDriveResourceClient(this, GoogleSignIn.getLastSignedInAccount(this));
+        //Log.d("mDriveClient1+Resource1", mDriveClient1.toString() + " and " + mDriveResourceClient1.getInstanceId());
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -244,11 +252,50 @@ public class SheetsListActivity extends Activity //or Activity???
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("debug bro", googleSignInAccount.getDisplayName() + "  " + googleSignInAccount.getEmail());
     }
 
 
     protected DriveClient getDriveClient() {
         return mDriveClient;
     }
+
+    private void revokeAccess(final Context context) {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // [START_EXCLUDE]
+                        Intent intent = new Intent(context, LoginActivity.class);
+                        startActivity(intent);
+                        // [END_EXCLUDE]
+                    }
+                });
+    }
+
+    private void Logout()
+    {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    protected void signIn() {
+        Set<Scope> requiredScopes = new HashSet<>(2);
+        requiredScopes.add(Drive.SCOPE_FILE);
+        requiredScopes.add(Drive.SCOPE_APPFOLDER);
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
+        if (signInAccount != null && signInAccount.getGrantedScopes().containsAll(requiredScopes)) {
+            initializeDriveClient(signInAccount);
+        } else {
+            GoogleSignInOptions signInOptions =
+                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestScopes(Drive.SCOPE_FILE)
+                            .requestScopes(Drive.SCOPE_APPFOLDER)
+                            .build();
+            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, signInOptions);
+            startActivityForResult(googleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
+        }
+    }
+
+
+
 }
