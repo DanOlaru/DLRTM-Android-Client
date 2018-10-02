@@ -23,10 +23,6 @@ import com.google.android.gms.drive.DriveResourceClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-/**
-* Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
-* profile.
-*/
 public class LoginActivity extends AppCompatActivity implements
         View.OnClickListener {
 
@@ -62,58 +58,41 @@ public class LoginActivity extends AppCompatActivity implements
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.disconnect_button).setOnClickListener(this);
 
-
-        // Button listeners - to implement in the future
-//        signInButton = findViewById(R.id.sign_in_button);
-//        signOutBtn = findViewById(R.id.sign_out_button);
-//        disconnectBtn = findViewById(R.id.disconnect_button);
-
-
-        // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(Drive.SCOPE_FILE)
                 .requestEmail()
                 .build();
-        // [END configure_signin]
 
-        // [START build_client]
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        // [END build_client]
 
-        // [START customize_button]
-        // Set the dimensions of the sign-in button.
         SignInButton signInButton = findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
-        // [END customize_button]
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        // [START on_start_sign_in]
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-//        updateUI(account);
-
+       updateUI(account);
         if (account != null)
         {
+            Log.d ("LOGIN__SIGNED_IN", "A_OK");
+            Log.d ("NAME_OF_PERSON", account.getDisplayName());
+            Log.d ("EMAIL OF PERSON", account.getEmail());
+
             //Launch of SheetsListActivity
             Intent intent = new Intent(this, SheetsListActivity.class);
             startActivity(intent);
-
         }
-
-
-        // [END on_start_sign_in]
     }
 
-    // [START onActivityResult]
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -124,8 +103,11 @@ public class LoginActivity extends AppCompatActivity implements
             Log.i(TAG, "Sign in request code");
             // Called after user is signed in.
             if (resultCode == RESULT_OK) {
+
                 Log.i(TAG, "Signed in successfully.");
 
+                //GoogleSignInOptions gso = GoogleSignInOptions.DEFAULT_SIGN_IN;
+                //GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
                 //Launch of SheetsListActivity
                 Intent intent = new Intent(this, SheetsListActivity.class);
                 startActivity(intent);
@@ -138,9 +120,7 @@ public class LoginActivity extends AppCompatActivity implements
             }
         }
     }
-    // [END onActivityResult]
 
-    // [START handleSignInResult]
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
@@ -154,16 +134,12 @@ public class LoginActivity extends AppCompatActivity implements
             updateUI(null);
         }
     }
-    // [END handleSignInResult]
 
-    // [START signIn]
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN);
     }
-    // [END signIn]
 
-    // [START signOut]
     private void signOut() {
         mGoogleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
@@ -175,9 +151,7 @@ public class LoginActivity extends AppCompatActivity implements
                     }
                 });
     }
-    // [END signOut]
 
-    // [START revokeAccess]
     private void revokeAccess() {
         mGoogleSignInClient.revokeAccess()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
@@ -189,7 +163,6 @@ public class LoginActivity extends AppCompatActivity implements
                     }
                 });
     }
-    // [END revokeAccess]
 
     private void updateUI(@Nullable GoogleSignInAccount account) {
         if (account != null) {
