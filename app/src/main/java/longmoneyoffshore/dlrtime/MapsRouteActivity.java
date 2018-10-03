@@ -1,5 +1,6 @@
 package longmoneyoffshore.dlrtime;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -28,7 +29,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.api.client.http.HttpResponse;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -40,9 +44,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import longmoneyoffshore.dlrtime.utils.AsyncResult;
 import longmoneyoffshore.dlrtime.utils.DirectionsJSONParser;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
+import javax.net.ssl.HttpsURLConnection;
 
 public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -55,50 +62,14 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_route);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         //TODO: this parcel contains all the addresses that need to show up on the map
         Bundle getLocationsToSeeBundle = getIntent().getExtras();
         locationsToSee = (MapDestinationsParcel) getLocationsToSeeBundle.getParcelable("locations to go to");
-
         locationsToSeeCoordinates.clear();
-
-        /*
-        for (int i=0; i<locationsToSee.getMapDestinationLocations().size(); i++) {
-            locationsToSeeCoordinates.add(
-                    getLocationFromAddress(MapsRouteActivity.this, locationsToSee.getMapDestinationLocations().get(i)));
-            Log.d("LOCATIONSTOSEECOORD",String.valueOf(locationsToSeeCoordinates.get(i).latitude));
-            Log.d("LOCATIONSTOSEECOORD",String.valueOf(locationsToSeeCoordinates.get(i).longitude));
-        } */
-    }
-
-
-    //doesn't work
-    public LatLng getLocationFromAddress(Context context, String strAddress) {
-
-        Geocoder coder = new Geocoder(context);
-        List<Address> address;
-        LatLng p1 = null;
-
-        try {
-            // May throw an IOException
-            address = coder.getFromLocationName(strAddress, 5);
-            if (address == null) {
-                return null;
-            }
-            Log.d("address conversion", address.toString());
-
-            Address location = address.get(0);
-            p1 = new LatLng(location.getLatitude(), location.getLongitude() );
-
-        } catch (IOException ex) {
-
-            ex.printStackTrace();
-        }
-
-        return p1;
+        //TODO: transform locations to see, which is a list of String addresses, to a list of LatLng coordinates
     }
 
     /**
@@ -175,7 +146,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         protected String doInBackground(String... url) {
 
             String data = "";
-
             try {
                 data = downloadUrl(url[0]);
             } catch (Exception e) {
