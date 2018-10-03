@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:background="@color/buttonYellow"
             android:text="@string/sign_out_text"
-            android:textSize="8sp"
+            android:textSize="12sp"
             style="?android:attr/buttonBarButtonStyle" />
 
     </LinearLayout>

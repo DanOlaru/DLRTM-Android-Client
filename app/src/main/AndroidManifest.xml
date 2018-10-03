@@ -7,24 +7,33 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <!-- Get access to Internet-->
+    <!-- Get access to Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Dan: APP requires permissions to dial phone-->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Dan: APP requires permissions to dial phone -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.DIAL_PHONE"/>
+    <uses-permission android:name="android.permission.DIAL_PHONE" />
+
+
+    <!-- Dan: permissions for MapsRouteActivity-->
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
+
 
     <application
         android:allowBackup="true"
@@ -33,7 +42,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat">
-        <!--android:theme="@style/Theme.Black.NoTitleBar.Fullscreen.AppNoActionBar" -->
+
+        <!-- android:theme="@style/Theme.Black.NoTitleBar.Fullscreen.AppNoActionBar" -->
+
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -47,61 +58,63 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.google_maps_api.xml.API_KEY"
+            android:value="@string/AIzaSyDCos2tFqSvd80yDcIZgl1_x9Zk1zWQ1RI" />
+
+        <!--this is the "paid" API key-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="AIzaSyDCos2tFqSvd80yDcIZgl1_x9Zk1zWQ1RI"/>
 
-        <activity android:name="longmoneyoffshore.dlrtime.LoginActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name="longmoneyoffshore.dlrtime.SheetsListActivity">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-        </intent-filter>
-
-         </activity>
-
-
-        <activity android:name="longmoneyoffshore.dlrtime.OrderListActivity"
+        <activity android:name=".SheetsListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".OrderListActivity"
             android:parentActivityName=".LoginActivity">
             <intent-filter>
-                <!--no intent so far-->
-                <action android:name="android.intent.action.MAIN" />
 
+                <!-- no intent so far -->
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-
-
-        <activity android:name="longmoneyoffshore.dlrtime.IndividualClientOrderActivity"
-            android:parentActivityName=".OrderListActivity">
-
-            <intent-filter>
-                <!--no intent so far-->
-                <action android:name="android.intent.action.MAIN" />
-
-            </intent-filter>
-        </activity>
-
-
         <activity
-            android:name="longmoneyoffshore.dlrtime.GSheetsActivity"
-            android:label="GSheetsAPI" >
+            android:name=".IndividualClientOrderActivity"
+            android:parentActivityName=".OrderListActivity">
+            <intent-filter>
+
+                <!-- no intent so far -->
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".GSheetsActivity"
+            android:label="GSheetsAPI">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
-        <!--
+
        <activity android:name="longmoneyoffshore.dlrtime.MapsRouteActivity">
            <intent-filter>
                <action android:name="android.intent.action.MAIN" />
            </intent-filter>
        </activity>
-       -->
     </application>
 
 </manifest>

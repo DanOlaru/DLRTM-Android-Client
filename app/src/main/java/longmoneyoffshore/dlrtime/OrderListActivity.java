@@ -5,10 +5,11 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -21,22 +22,11 @@ import longmoneyoffshore.dlrtime.utils.Client;
 import longmoneyoffshore.dlrtime.utils.ClientParcel;
 import longmoneyoffshore.dlrtime.utils.DownloadAsyncTask;
 import longmoneyoffshore.dlrtime.utils.ClientAdapter;
-import longmoneyoffshore.dlrtime.utils.SignOutFunctionality;
+import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
 
 //Dan - test
-import com.google.api.client.auth.oauth2.Credential;
 //import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 //import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.ValueRange;
 
 
 public class OrderListActivity extends AppCompatActivity {
@@ -45,19 +35,28 @@ public class OrderListActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_1 = 1;
 
     private ArrayList<Client> clients = new ArrayList<Client>();
+    private volatile ArrayList<String> destinationLocations = new ArrayList<String>();
+
     private ListView listview;
     private Button btnDownload;
     private Button signOutButton;
+    private Button goToMapsButton;
     private int positionOnListClicked;
+
+    public String SHEET_TO_DOWNLOAD = "https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Set-out UI
         setContentView(R.layout.activity_order_list);
+
         listview = (ListView) findViewById(R.id.listview);
+        downLoadAndShowClients(SHEET_TO_DOWNLOAD);
+
+
         btnDownload = (Button) findViewById(R.id.btnDownload);
+        //its activity is handled by buttonClickHandler
+
 
         // Internet connection
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -71,50 +70,62 @@ public class OrderListActivity extends AppCompatActivity {
         //TODO: sign out button click references public public signOut method in utils
         signOutButton = (Button) findViewById(R.id.sign_out_button);
 
-        //signOutButton.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View v) {
-        //        SignOutFunctionality signOutObject = new SignOutFunctionality();
-        //        signOutObject.signOut(v);
-        //    }
-        //});
+        //clients list is already populated
+        goToMapsButton = (Button) findViewById(R.id.btn_go_to_maps);
+        goToMapsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toMapsRoute = new Intent(OrderListActivity.this, MapsRouteActivity.class);
+                //TODO: generate Parcel object from clients list and send the locations as array to MapsRouteActivity
+                MapDestinationsParcel destinationsParcel = new MapDestinationsParcel(destinationLocations);
+
+                toMapsRoute.putExtra("locations to go to", destinationsParcel);
+                startActivity(toMapsRoute);
+            }
+        });
     }
 
-    public void buttonClickHandler(View view) {
-        // Start to retrieve data on another thread (as background activity)
+    //@Override
+    //public void writeToParcel(Parcel destinations, int flags) {
+    //    destinations.writeList(destinationLocations);
+    //}
 
+    private void downLoadAndShowClients (String downloadFileId) {
         listview.setAdapter(null);
         clients.clear();
 
+        // Start to retrieve data on another thread (as background activity)
         new DownloadAsyncTask(new AsyncResult() {
             @Override
             public void onResult(JSONObject object) {
                 processJson(object); // Feeds with the retrieved data
             }
-        }).execute("https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY");
+        }).execute(downloadFileId);
         //TODO: the login has to provide the sheet ID as string, which is passed to AsyncTask above this line
 
         if(listview!=null)
         {
+            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                    //position clicked on — it is visible outside of this scope to the onActivityResult
+                    positionOnListClicked = position;
+
+                    Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
+                    ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
+                    Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
+
+                    thisIndividualOrder.putExtra("order", clickedOrderParcel);
+                    int reqCode = 1; //what should be the predefined value?
+                    startActivityForResult(thisIndividualOrder,reqCode);
+                }
+            });
         }
+    }
 
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                //position clicked on — it is visible outside of this scope to the onActivityResult
-                positionOnListClicked = position;
-
-                Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
-                ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
-                Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
-
-                thisIndividualOrder.putExtra("order", clickedOrderParcel);
-                int reqCode = 1; //what should be the predefined value?
-                startActivityForResult(thisIndividualOrder,reqCode);
-            }
-        });
+    public void buttonClickHandler(View view) {
+        downLoadAndShowClients(SHEET_TO_DOWNLOAD);
     }
 
     // method invoked when target activity returns result data.
@@ -123,7 +134,7 @@ public class OrderListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, returnIntent);
 
         // The returned result data is identified by requestCode.
-        Log.d("return_resultcode ", String.valueOf(resultCode));
+        //Log.d("return_resultcode ", String.valueOf(resultCode));
 
         if(resultCode == RESULT_OK) {
             //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
@@ -141,18 +152,18 @@ public class OrderListActivity extends AppCompatActivity {
         try {
             JSONArray rows = object.getJSONArray("rows");
 
-            Log.d("Rows lENGTH","lENGTH: " + rows.length());
+            //Log.d("Rows lENGTH","lENGTH: " + rows.length());
 
             for (int r = 0; r < rows.length(); ++r)
             {
                 JSONObject row = rows.getJSONObject(r);
                 JSONArray columns = row.getJSONArray("c");
 
-                Log.d("Rows Json","Content: " + columns.toString());
+                //Log.d("Rows Json","Content: " + columns.toString());
 
                 String name = columns.getJSONObject(0).getString("v");
 
-                Log.d("First value","1  " + name);
+                //Log.d("First value","1  " + name);
 
                 String phone = columns.getJSONObject(1).getString("v");
                 String location = columns.getJSONObject(2).getString("v");
@@ -169,11 +180,15 @@ public class OrderListActivity extends AppCompatActivity {
                 //Log.d("ClientQ", String.valueOf(client.getClientQuantity()));
             }
 
-            //TODO: clear the listview every time before reloading the sheets content so we don't get the same content repeated
+            //Get an ArrayList of all the destinations where the user needs to go
+            destinationLocations.clear();
+            for (int j = 0; j<clients.size();j++) {destinationLocations.add(clients.get(j).getClientLocation());}
+
             //is this code in the right onCreate place?
             final ClientAdapter adapter = new ClientAdapter(this, R.layout.client_item, clients);
             //listview.setAdapter(null);
             listview.setAdapter(adapter);
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -190,5 +205,4 @@ public class OrderListActivity extends AppCompatActivity {
         ClientAdapter dummy = new ClientAdapter(this, R.layout.client_item, clients);
         return dummy;
     }
-
 }
