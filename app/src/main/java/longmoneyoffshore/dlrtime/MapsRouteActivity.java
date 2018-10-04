@@ -7,6 +7,12 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -20,6 +26,12 @@ import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,8 +60,10 @@ import java.util.Map;
 
 import longmoneyoffshore.dlrtime.utils.AsyncResult;
 import longmoneyoffshore.dlrtime.utils.DirectionsJSONParser;
+import longmoneyoffshore.dlrtime.utils.HttpDataHandler;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
 import javax.net.ssl.HttpsURLConnection;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.APP_API_KEY;
 
 public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -58,10 +72,13 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
     MapDestinationsParcel locationsToSee;
     ArrayList<LatLng> locationsToSeeCoordinates = new ArrayList<LatLng>();
 
+    private RequestQueue myRequestQueue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_route);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -70,7 +87,85 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         locationsToSee = (MapDestinationsParcel) getLocationsToSeeBundle.getParcelable("locations to go to");
         locationsToSeeCoordinates.clear();
         //TODO: transform locations to see, which is a list of String addresses, to a list of LatLng coordinates
+
+        //dan
+        //TODO: get coordinates for a ArrayList of addresses
+
+        Log.d("NUMBEROFLOCSTOSEE", "there are " + locationsToSee.getMapDestinationLocations().size() + "locations");
+        for (int j=0; j<locationsToSee.getMapDestinationLocations().size(); j++) {
+            Log.d("ADDRESS", locationsToSee.getMapDestinationLocations().get(j).replace("& ","").replace(" ", "+"));
+        }
+
+        for (int j=0; j<locationsToSee.getMapDestinationLocations().size(); j++) {
+            Log.d("LOCATION# ", "PROCESSING COORDS FOR LOCATION " + j);
+            new GetCoordinates().execute(locationsToSee.getMapDestinationLocations().get(j).replace(" ", "+"));
+            Log.d("LOCATION# ", "BACK FROM LOCATION " + j);
+        }
+
+        /*
+        //testing
+        Log.d("coordlist", "list of the coordinates gotten from those addresses" );
+        for (int j=0; j<locationsToSee.getMapDestinationLocations().size(); j++) {
+            Log.d("coord#", j + " " + locationsToSeeCoordinates.get(j).toString());
+        }
+        */
+
     }
+
+    private class GetCoordinates extends AsyncTask <String, Void, String> {
+        //ProgressDialog dialog = new ProgressDialog(MapsRouteActivity.this); //TODO: useless for now
+
+        @Override
+        protected void onPreExecute () {
+            super.onPreExecute();
+            //dialog.setMessage("Please wait....");
+            //dialog.setCanceledOnTouchOutside(false);
+            //dialog.show();
+        }
+
+
+        @Override
+        protected String doInBackground (String ...strings) {
+            String response = "";
+            try {
+                String address = strings[0];
+                HttpDataHandler http = new HttpDataHandler();
+                String url = String.format("https://maps.googleapis.com/maps/api/geocode/json?address=%s", address);
+                response = http.getHTTPData(url);
+                return response;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute (String s) {
+            super.onPostExecute(s);
+            try {
+                JSONObject jsonObject = new JSONObject(s);
+                String lat = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
+                        .getJSONObject("location").get("lat").toString();
+                String lng = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
+                        .getJSONObject("location").get("lng").toString();
+
+                //TODO: save the coordinates retrieved for this address
+                LatLng saveCoordForLocation = new LatLng(Float.valueOf(lat),Float.valueOf(lng));
+                locationsToSeeCoordinates.add(saveCoordForLocation);
+
+                //testing
+                Log.d("COORDLIST", "list of the coordinates gotten from those addresses #" +  locationsToSeeCoordinates.size());
+                for (int j=0; j<locationsToSeeCoordinates.size(); j++) {
+                    Log.d("COORD#", j + " " + locationsToSeeCoordinates.get(j).toString());
+                    Log.d("ADDRESS#", j + " " + locationsToSee.getMapDestinationLocations().get(j));
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     /**
      * Manipulates the map once available.
@@ -94,6 +189,7 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         mMap.addMarker(new MarkerOptions().position(chicago).title("Marker in Chicago"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, 10));
 
+        //TODO: may not be necessary
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -134,7 +230,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
                     // Start downloading json data from Google Directions API
                     downloadTask.execute(url);
                 }
-
             }
         });
     }
@@ -222,8 +317,7 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             lineOptions.color(Color.RED);
             lineOptions.geodesic(true);
 
-
-// Drawing polyline in the Google Map for the i-th route
+            // Drawing polyline in the Google Map for the i-th route
             mMap.addPolyline(lineOptions);
         }
     }
@@ -288,6 +382,64 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         }
         return data;
     }
+
+
+    //TODO: works fairly well – keep for now
+
+    public void geoLocate (View v) throws IOException{
+        hideSoftKeyboard (v);
+        EditText addressInput = findViewById(R.id.address_input_box);
+        String desiredAddress = addressInput.getText().toString();
+
+        Geocoder gc = new Geocoder(this);
+        List<Address> list_address = gc.getFromLocationName(desiredAddress, 1);
+
+        Address add = list_address.get(0);
+
+        String locality = add.getLocality();
+
+        Toast.makeText(this, locality, Toast.LENGTH_LONG).show();
+
+        double lat = add.getLatitude();
+        double lng = add.getLongitude();
+
+        LatLng actualLocation = new LatLng(lat, lng);
+        mMap.addMarker(new MarkerOptions().position(actualLocation).title("Marker "));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(actualLocation, 10));
+    }
+
+    public void hideSoftKeyboard(View v) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(),0);
+    }
+
+
+    //TODO: useless for now
+    public void getAddressFromCoord () {
+        double specificLatitude = 0 ,specificLongitude = 0;
+
+        myRequestQueue = Volley.newRequestQueue(this);  //dunno what this does
+        JsonObjectRequest request = new JsonObjectRequest("http://maps.googleapis" +
+                ".com/maps/api/geocode/json?latlng=" + String.valueOf(specificLatitude) + "," +
+                String.valueOf(specificLongitude) + "&key=" + APP_API_KEY, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                try {
+                    String address = response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        myRequestQueue.add(request);
+    }
+
 }
 
 

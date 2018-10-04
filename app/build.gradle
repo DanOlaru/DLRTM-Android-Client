@@ -87,6 +87,10 @@ dependencies {
     //noinspection GradleCompatible
     api 'com.google.firebase:firebase-messaging:9.2.0'
 
+    //maps
+    //Dan
+    api 'com.mcxiaoke.volley:library:1.0.19'
+
     //api 'com.google.android.gms:play-services-auth:11.8.0'
     //api 'com.google.api-client:google-api-client:1.23.0'
     //api 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
