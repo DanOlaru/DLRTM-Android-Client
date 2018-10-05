@@ -62,9 +62,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import longmoneyoffshore.dlrtime.utils.AsyncOrderedOrdersResult;
 import longmoneyoffshore.dlrtime.utils.DirectionsJSONParser;
 import longmoneyoffshore.dlrtime.utils.GetCoordinates;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
+import longmoneyoffshore.dlrtime.utils.OptimizeRoute;
+
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.APP_API_KEY;
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.ChicagoLocale;
 
@@ -75,6 +78,8 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
     ArrayList<LatLng> markerPoints= new ArrayList <LatLng> ();
     MapDestinationsParcel locationsToSee;
     ArrayList<LatLng> locationsToSeeCoordinates = new ArrayList<LatLng>();
+    ArrayList<LatLng> ordedLocationsToSeeCoordinates = new ArrayList<LatLng>();
+
     final String userLocale = "chicago"; // this will be the general locale of the user
     final LatLng userLocalePos = ChicagoLocale;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -146,6 +151,13 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
                 Log.e("geolocateException", "couldn't grab coordinates for this address.");
             }
         }
+
+        new OptimizeRoute(new AsyncOrderedOrdersResult() {
+            @Override
+            public void onResult(ArrayList<LatLng> orderedOrdersList) {
+                ordedLocationsToSeeCoordinates = orderedOrdersList;
+            }
+        }).execute(locationsToSeeCoordinates);
     }
 
     /**
