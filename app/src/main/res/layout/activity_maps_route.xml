@@ -8,7 +8,7 @@
     android:id="@+id/maps_screen"
     tools:context=".MapsRouteActivity">
 
-
+<!--
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -37,6 +37,7 @@
             android:onClick="geoLocate"/>
 
     </LinearLayout>
+    -->
     
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
