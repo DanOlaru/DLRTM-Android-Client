@@ -3,6 +3,7 @@ package longmoneyoffshore.dlrtime;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Path;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -112,12 +113,12 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //this parcel contains all the addresses that need to show up on the map
+        //parcel contains all the addresses that need to show up on the map
         Bundle getLocationsToSeeBundle = getIntent().getExtras();
         locationsToSee = (MapDestinationsParcel) getLocationsToSeeBundle.getParcelable("locations to go to");
         locationsToSeeCoordinates.clear(); //here we store the coordinates that need to be seen
+        locationsToSeeCoordinates.add(currentUserGeoPosition);
 
-        //TODO: make it an ASyncTask because it perceptibly slows down the transition from OrdersListActivity to MapsRouteActivity
         LatLng geoCoords;
         Context contextToPass = getApplicationContext();
         ArrayList<String> stringLocationsToParse = new ArrayList<String>();
@@ -134,20 +135,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         getCoordsTask.execute(objectForGeocodeParsing);
 
         /*
-        for (int j=0; j<locationsToSee.getMapDestinationLocations().size(); j++) {
-            String  addressToGeoLocate = locationsToSee.getMapDestinationLocations().get(j);
-            try {
-                //Log.d("ADDRESS", addressToGeoLocate);
-                if (addressToGeoLocate != null) {
-                    geoCoords = geoLocateString(addressToGeoLocate + "," + userLocale);
-                    locationsToSeeCoordinates.add(geoCoords);
-                    counter++;
-                    //Log.d("LOCGEO'D", "OPERATION # " + j + "FOLLOWING GEO COORDINATES RETURNED " + locationsToSeeCoordinates.get(j));
-                }
-            } catch (IOException e) {
-                Log.e("geolocateException", "couldn't grab coordinates for this address.");
-            }
-
             //other implementation — doesn't work as well
             //new GetCoordinates().execute(locationsToSee.getMapDestinationLocations().get(j).
             // replace(" ", "%20").concat("%2C" + userLocale)); //.replace("& ","")
@@ -162,7 +149,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             markerPoints.clear();
             mMap.clear();
         }
-
         //Dan: experimental ----------------------------------
         Polyline routePolyLine = mMap.addPolyline(new PolylineOptions().clickable(true));
         LatLng latLng, prev, nex;
@@ -233,6 +219,7 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             Context workingContext = inputData.firstArg;
             ArrayList<String> listOfAddressesToParse = inputData.secondArg;
             ArrayList<LatLng> result = new ArrayList<LatLng>();
+            result.addAll(locationsToSeeCoordinates);
 
             asyncCounter = 0;
 
@@ -258,25 +245,101 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             // Start downloading json data from Google Directions API
             //downloadTask.execute(url + "&key=" + APP_API_KEY);
             locationsToSeeCoordinates = result;
-
-            LatLng  prev, nex;
-
             coordinatesReady = true;
 
-            /*
-                new OptimizeRoute(new AsyncOrderedOrdersResult() {
-                    @Override
-                    public void onResult(ArrayList<LatLng> orderedOrdersList) {
-                        Log.e("EXECUTINGORDERLOCATIONS", "OPTIMIZING LOCATIONS ROUTE");
-                        ordedLocationsToSeeCoordinates = orderedOrdersList;
-                    }
-                }).execute(locationsToSeeCoordinates);
-                */
+            OptimizeRoute optimizeRouteTask = new OptimizeRoute();
+            optimizeRouteTask.execute(locationsToSeeCoordinates);
 
-            prev = currentUserGeoPosition;
-            for (int j=0; j<asyncCounter; j++) {
-                latLng = locationsToSeeCoordinates.get(j);
-                Log.d("INSIDEFORLOOP",latLng.latitude + " " + latLng.longitude);
+        }
+
+        private LatLng geoLocateString (Context thisContext, String addressInput) throws IOException {
+            Geocoder gc = new Geocoder(thisContext);
+            List<Address> listAddress = gc.getFromLocationName(addressInput + "," + userLocale, 1);
+            Address coords;
+            if (listAddress.size()>0) {coords = listAddress.get(0);}
+            else {
+                coords = null;
+                throw new IOException("couldn't parse address");
+            }
+
+            String locality = coords.getLocality();
+            //Log.e("LOCALITY", locality);
+
+            double lat = coords.getLatitude();
+            double lng = coords.getLongitude();
+
+            LatLng actualLocation = new LatLng(lat, lng);
+
+            return actualLocation;
+        }
+    }
+
+    public class OptimizeRoute extends AsyncTask <ArrayList<LatLng>, Void, ArrayList<LatLng>> {
+
+        @Override
+        protected ArrayList<LatLng> doInBackground(ArrayList<LatLng> ...unordered) {
+
+            ArrayList<LatLng> unorderedLocations = unordered[0];
+            ArrayList<LatLng> reorderedList = new ArrayList<LatLng>();
+            reorderedList.clear();
+
+            //for (int k =0; k<unorderedLocations.size(); k++) Log.d ("OPTIMIZE_ROUTE", "LATITUDE" + unorderedLocations.get(k).latitude + " LONGITUDE" + unorderedLocations.get(k).longitude);
+
+            if (unorderedLocations.size()<=2) {
+                //array is null or has only one element
+                return unorderedLocations;
+            }
+
+            double min, dist;
+
+            LatLng startLocation = unorderedLocations.get(0);
+            unorderedLocations.remove(0);
+            reorderedList.add(startLocation);
+            int counter = 1, indexClosestNeighbor = 0;
+
+            while (unorderedLocations.size()>1) {
+
+                //Log.d ("UNORDERD LIST ", " size " + unorderedLocations.size());
+                min = pythagoreanDistance(reorderedList.get(counter-1), unorderedLocations.get(0));
+                indexClosestNeighbor = 0;
+
+                for (int i=1; i<unorderedLocations.size();i++) {
+                    dist = pythagoreanDistance(reorderedList.get(counter-1), unorderedLocations.get(i));
+                    if (dist < min) {
+                        min = dist;
+                        indexClosestNeighbor = i;
+                    }
+                }
+                reorderedList.add(unorderedLocations.get(indexClosestNeighbor));
+                unorderedLocations.remove(indexClosestNeighbor);
+                counter++;
+
+                //for (int k = 0; k<unorderedLocations.size(); k++) Log.d ("WHILE_UNORDERED", "LATITUDE" + unorderedLocations.get(k).latitude + " LONGITUDE" + unorderedLocations.get(k).longitude);
+            }
+            reorderedList.add(unorderedLocations.get(0));
+
+            return reorderedList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<LatLng> resultOrderedList) {
+            ArrayList<LatLng> orderedResult = resultOrderedList;
+            ArrayList<LatLng> orderedList = new ArrayList<LatLng>(orderedResult);
+
+            Log.d ("RESULT LIST", "SHOWING REORDERED LIST OF LOCATIONS size " + resultOrderedList.size());
+            for (int k=0; k<resultOrderedList.size(); k++) {
+                //Log.d ("UNORDERD LIST", "LATITUDE" + unorderedLocations.get(k).latitude + " LONGITUDE" + unorderedLocations.get(k).longitude);
+                Log.d ("REORDERD LIST", "LATITUDE " + resultOrderedList.get(k).latitude + " LONGITUDE" + resultOrderedList.get(k).longitude);
+            }
+
+            //here we display the re-arranged coordinates
+            LatLng  prev, nex;
+            //prev = currentUserGeoPosition;
+            prev = resultOrderedList.get(0);
+
+            for (int j=0; j<resultOrderedList.size(); j++) {
+                latLng = resultOrderedList.get(j);
+                Log.d("INSIDEFORLOOP ",latLng.latitude + " " + latLng.longitude);
 
                 mMap.addMarker(new MarkerOptions().position(latLng));
                 // Adding new item to the ArrayList
@@ -310,26 +373,9 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             }
         }
 
+        double pythagoreanDistance (LatLng pointA, LatLng pointB) {
 
-        private LatLng geoLocateString (Context thisContext, String addressInput) throws IOException {
-            Geocoder gc = new Geocoder(thisContext);
-            List<Address> listAddress = gc.getFromLocationName(addressInput + "," + userLocale, 1);
-            Address coords;
-            if (listAddress.size()>0) {coords = listAddress.get(0);}
-            else {
-                coords = null;
-                throw new IOException("couldn't parse address");
-            }
-
-            String locality = coords.getLocality();
-            //Log.e("LOCALITY", locality);
-
-            double lat = coords.getLatitude();
-            double lng = coords.getLongitude();
-
-            LatLng actualLocation = new LatLng(lat, lng);
-
-            return actualLocation;
+            return Math.sqrt(Math.pow(pointA.latitude-pointB.latitude,2) + Math.pow(pointA.longitude-pointB.longitude,2));
         }
     }
 
