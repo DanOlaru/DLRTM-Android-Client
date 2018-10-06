@@ -142,7 +142,6 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
                         .setMimeType(Collections.singletonList(MIME_TYPE_TEXT))
                         .build(); */
 
-        Log.d("INSIDEPICKTEXTFILE", "Able to send intent — error HDIOUHGFDOIIDHUODFIUGHDOFIUGH: ");
         return pickItem(openOptions);
     }
 
