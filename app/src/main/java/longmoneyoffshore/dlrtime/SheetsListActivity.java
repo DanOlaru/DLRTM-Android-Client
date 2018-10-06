@@ -162,7 +162,6 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
                         return null;
                     });
 
-
         /*
         //alternative coding minus the casting / type declaration + exception catching
         getDriveClient().newOpenFileActivityIntentSender(openOptions).continueWith(task -> {
