@@ -93,9 +93,9 @@ public class LoginActivity extends AppCompatActivity implements
        updateUI(account);
         if (account != null )
         {
-            Log.d ("LOGIN__SIGNED_IN", "A_OK");
-            Log.d ("NAME_OF_PERSON", account.getDisplayName());
-            Log.d ("EMAIL OF PERSON", account.getEmail());
+            //Log.d ("LOGIN__SIGNED_IN", "A_OK");
+            //Log.d ("NAME_OF_PERSON", account.getDisplayName());
+            //Log.d ("EMAIL OF PERSON", account.getEmail());
 
             updateUI(account);
 
@@ -111,7 +111,6 @@ public class LoginActivity extends AppCompatActivity implements
             updateUI(null);
         }
         */
-
 
     }
 

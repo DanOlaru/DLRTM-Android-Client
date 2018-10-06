@@ -148,18 +148,24 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
     private Task<DriveId> pickItem(OpenFileActivityOptions openOptions) {
         mOpenItemTaskSource = new TaskCompletionSource<>();
 
-            getDriveClient().newOpenFileActivityIntentSender(openOptions)
+        Intent back = new Intent (SheetsListActivity.this, OrderListActivity.class);
+
+        //IntentSender backSender = new IntentSender();
+
+        getDriveClient().newOpenFileActivityIntentSender(openOptions)
                     .continueWith((Continuation<IntentSender, Void>) (Task<IntentSender> task) -> {
                         Log.d("INSIDEFILEPICKER#0", "Able to send intent — error BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB: ");
                         try {
                             Log.d("INSIDEFILEPICKER", "Able to send intent — error AAAAAAAAAAAAAAAAAAAAAAAAAAAAA: ");
                             SheetsListActivity.this.startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
+                            //this.startActivity(back);
                             Log.d(TAG, "Able to send intent — error CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC: ");
-                        } catch (IntentSender.SendIntentException e) {
+                        } catch (/*(Exception e) { */ IntentSender.SendIntentException e) {
                             Log.w(TAG, "Unable to send intent — error: ", e);
                         }
                         return null;
                     });
+
 
         /*
         //alternative coding minus the casting / type declaration + exception catching
@@ -189,7 +195,6 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
             }
         }); */
 
-
         /*
          //coding without the lambda
         mDriveClient.newOpenFileActivityIntentSender(openOptions).continueWith(new Continuation<IntentSender, Void>() {
@@ -200,8 +205,8 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
                     Log.d(TAG, "Able to send intent — error CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC: ");
                     return null;
                 }
-            });
-        */
+            });*/
+
 
         return mOpenItemTaskSource.getTask();
     }
