@@ -68,7 +68,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
     private FusedLocationProviderClient mFusedLocationClient;
     private LatLng currentUserGeoPosition;
 
-    //Dan: experimetnal---------------------
     Polyline routePolyLine;
     LatLng latLng;
     MarkerOptions options;
@@ -124,7 +123,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         ArrayList<String> stringLocationsToParse = new ArrayList<String>();
 
         //copy from parcel to simple array list
-        //Log.d("LOCATIONSCOPY", stringLocationsToParse.get(k));
         stringLocationsToParse.addAll(locationsToSee.getMapDestinationLocations());
 
         //invoke AsyncTask
@@ -149,9 +147,7 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             markerPoints.clear();
             mMap.clear();
         }
-        //Dan: experimental ----------------------------------
-        Polyline routePolyLine = mMap.addPolyline(new PolylineOptions().clickable(true));
-        LatLng latLng, prev, nex;
+
         MarkerOptions options;
 
         //implement the user's last known position as start point
@@ -161,7 +157,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         options.position(currentUserGeoPosition);
 
         mMap.setOnPolylineClickListener(this);
-        //Dan: experimental ---------------------------------- end
 
         //mMap.addMarker(new MarkerOptions().position(chicago).title("Marker in Chicago"));
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, 10));
@@ -313,8 +308,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
                 reorderedList.add(unorderedLocations.get(indexClosestNeighbor));
                 unorderedLocations.remove(indexClosestNeighbor);
                 counter++;
-
-                //for (int k = 0; k<unorderedLocations.size(); k++) Log.d ("WHILE_UNORDERED", "LATITUDE" + unorderedLocations.get(k).latitude + " LONGITUDE" + unorderedLocations.get(k).longitude);
             }
             reorderedList.add(unorderedLocations.get(0));
 
@@ -411,7 +404,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             parserTask.execute(result);
         }
     }
-
 
     //A class to parse the Google Places in JSON format
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {

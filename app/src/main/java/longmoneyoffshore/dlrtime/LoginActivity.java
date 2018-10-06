@@ -168,9 +168,7 @@ public class LoginActivity extends AppCompatActivity implements
             handleSignInResult(task);
         }
     }
-
      */
-
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
