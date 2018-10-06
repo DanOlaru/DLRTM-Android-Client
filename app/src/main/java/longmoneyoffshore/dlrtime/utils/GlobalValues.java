@@ -8,4 +8,5 @@ public class GlobalValues {
 
     public static final LatLng ChicagoLocale = new LatLng(41.8781, -87.6298);
 
+
 }

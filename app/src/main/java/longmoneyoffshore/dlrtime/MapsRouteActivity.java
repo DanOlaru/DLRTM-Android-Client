@@ -1,12 +1,12 @@
 package longmoneyoffshore.dlrtime;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 
@@ -19,35 +19,18 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-//extra
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.api.client.http.HttpResponse;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -60,13 +43,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import longmoneyoffshore.dlrtime.utils.AsyncOrderedOrdersResult;
+import longmoneyoffshore.dlrtime.utils.CompositeType;
 import longmoneyoffshore.dlrtime.utils.DirectionsJSONParser;
-import longmoneyoffshore.dlrtime.utils.GetCoordinates;
+//import longmoneyoffshore.dlrtime.utils.GeolocateAddressAsyncTask;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
-import longmoneyoffshore.dlrtime.utils.OptimizeRoute;
 
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.APP_API_KEY;
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.ChicagoLocale;
@@ -78,14 +59,18 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
     ArrayList<LatLng> markerPoints= new ArrayList <LatLng> ();
     MapDestinationsParcel locationsToSee;
     ArrayList<LatLng> locationsToSeeCoordinates = new ArrayList<LatLng>();
+    volatile boolean coordinatesReady=false;
     ArrayList<LatLng> ordedLocationsToSeeCoordinates = new ArrayList<LatLng>();
 
-    final String userLocale = "chicago"; // this will be the general locale of the user
+    final String userLocale = "Chicago"; // this will be the general locale of the user
     final LatLng userLocalePos = ChicagoLocale;
     private FusedLocationProviderClient mFusedLocationClient;
     private LatLng currentUserGeoPosition;
 
     //Dan: experimetnal---------------------
+    Polyline routePolyLine;
+    LatLng latLng;
+    MarkerOptions options;
 
     private static final float PATTERN_GAP_LENGTH_PX = 2;
     private static final PatternItem DOT = new Dot();
@@ -96,6 +81,7 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_route);
 
@@ -123,21 +109,32 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         //dummy location for testing
         currentUserGeoPosition = ChicagoLocale;
 
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         //this parcel contains all the addresses that need to show up on the map
         Bundle getLocationsToSeeBundle = getIntent().getExtras();
         locationsToSee = (MapDestinationsParcel) getLocationsToSeeBundle.getParcelable("locations to go to");
-        locationsToSeeCoordinates.clear();
+        locationsToSeeCoordinates.clear(); //here we store the coordinates that need to be seen
 
         //TODO: make it an ASyncTask because it perceptibly slows down the transition from OrdersListActivity to MapsRouteActivity
         LatLng geoCoords;
+        Context contextToPass = getApplicationContext();
+        ArrayList<String> stringLocationsToParse = new ArrayList<String>();
 
+        //copy from parcel to simple array list
+        //Log.d("LOCATIONSCOPY", stringLocationsToParse.get(k));
+        stringLocationsToParse.addAll(locationsToSee.getMapDestinationLocations());
+
+        //invoke AsyncTask
+        CompositeType<Context,ArrayList<String>> objectForGeocodeParsing =
+                new CompositeType<Context,ArrayList<String>> (contextToPass, stringLocationsToParse);
+
+        GeolocateAddressAsyncTask getCoordsTask = new GeolocateAddressAsyncTask();
+        getCoordsTask.execute(objectForGeocodeParsing);
+
+        /*
         for (int j=0; j<locationsToSee.getMapDestinationLocations().size(); j++) {
-            //new GetCoordinates().execute(locationsToSee.getMapDestinationLocations().get(j).
-            // replace(" ", "%20").concat("%2C" + userLocale)); //.replace("& ","")
             String  addressToGeoLocate = locationsToSee.getMapDestinationLocations().get(j);
             try {
                 //Log.d("ADDRESS", addressToGeoLocate);
@@ -150,24 +147,12 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             } catch (IOException e) {
                 Log.e("geolocateException", "couldn't grab coordinates for this address.");
             }
-        }
 
-        new OptimizeRoute(new AsyncOrderedOrdersResult() {
-            @Override
-            public void onResult(ArrayList<LatLng> orderedOrdersList) {
-                ordedLocationsToSeeCoordinates = orderedOrdersList;
-            }
-        }).execute(locationsToSeeCoordinates);
+            //other implementation — doesn't work as well
+            //new GetCoordinates().execute(locationsToSee.getMapDestinationLocations().get(j).
+            // replace(" ", "%20").concat("%2C" + userLocale)); //.replace("& ","")
+        } */
     }
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -188,47 +173,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         markerPoints.add(currentUserGeoPosition);
         options = new MarkerOptions();
         options.position(currentUserGeoPosition);
-        prev = currentUserGeoPosition;
-
-        for (int j=0; j<counter; j++) {
-            latLng = locationsToSeeCoordinates.get(j);
-            mMap.addMarker(new MarkerOptions().position(latLng));
-            // Adding new item to the ArrayList
-            markerPoints.add(latLng);
-            options = new MarkerOptions();
-            options.position(latLng);
-            nex = latLng;
-
-            if (markerPoints.size() == 1) {
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
-            } else if (markerPoints.size() >= 2) {
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-
-                // Add new marker to the Google Map Android API V2
-                mMap.addMarker(options);
-
-                //LatLng origin = (LatLng) markerPoints.get(j-1);
-                //LatLng dest = (LatLng) markerPoints.get(j);
-
-                LatLng origin = prev;
-                LatLng dest = nex;
-
-                // Getting URL to the Google Directions API
-                String url = getDirectionsUrl(origin, dest);
-                Log.d("ROUTE_URL", url + "&key=" + APP_API_KEY);
-
-                DownloadTask downloadTask = new DownloadTask();
-
-                // Start downloading json data from Google Directions API
-                downloadTask.execute(url + "&key=" + APP_API_KEY);
-
-                prev = nex;
-                //nex = (LatLng) markerPoints.get(j);
-            }
-        }
-
-        //Log.d("MARKERS#", "NUMBER OF MARKERS ON MAP IS " + markerPoints.size());
 
         mMap.setOnPolylineClickListener(this);
         //Dan: experimental ---------------------------------- end
@@ -277,6 +221,118 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         */
     }
 
+    public class GeolocateAddressAsyncTask extends AsyncTask<CompositeType<Context, ArrayList<String>>,Void,ArrayList<LatLng>> {
+
+        private int asyncCounter = 0;
+
+        @Override
+        protected ArrayList<LatLng> doInBackground(CompositeType<Context, ArrayList<String>>...input) {
+
+            CompositeType<Context,ArrayList<String>> inputData = input[0];
+
+            Context workingContext = inputData.firstArg;
+            ArrayList<String> listOfAddressesToParse = inputData.secondArg;
+            ArrayList<LatLng> result = new ArrayList<LatLng>();
+
+            asyncCounter = 0;
+
+            //Log.d("INSIDEASYNCTASK","BISH_INTERNAL_ASYNC_GET_COORDS");
+            try {
+                //Log.d("INSIDEASYNCTASK","BISH");
+                for (int i=0; i<listOfAddressesToParse.size(); i++) {
+                    result.add(geoLocateString(workingContext, listOfAddressesToParse.get(asyncCounter++)));
+                    //Log.d("INSIDEASYNCTASK", result.get(i).toString());
+                }
+
+            } catch (IOException e) { Log.d("Background Task", e.toString()); }
+
+            //Log.d("INSIDEASYNCTASK","ADDRESSES PARSED " + asyncCounter);
+            //for (int k=0; k<asyncCounter;k++) Log.d("INSIDEASYNCTASK", result.get(k).latitude + "&" + result.get(k).longitude);
+            return result; //works till here
+        }
+
+        @Override
+        protected void onPostExecute (ArrayList<LatLng> result) {
+            //MapsRouteActivity.DownloadTask downloadTask = new MapsRouteActivity.DownloadTask();
+
+            // Start downloading json data from Google Directions API
+            //downloadTask.execute(url + "&key=" + APP_API_KEY);
+            locationsToSeeCoordinates = result;
+
+            LatLng  prev, nex;
+
+            coordinatesReady = true;
+
+            /*
+                new OptimizeRoute(new AsyncOrderedOrdersResult() {
+                    @Override
+                    public void onResult(ArrayList<LatLng> orderedOrdersList) {
+                        Log.e("EXECUTINGORDERLOCATIONS", "OPTIMIZING LOCATIONS ROUTE");
+                        ordedLocationsToSeeCoordinates = orderedOrdersList;
+                    }
+                }).execute(locationsToSeeCoordinates);
+                */
+
+            prev = currentUserGeoPosition;
+            for (int j=0; j<asyncCounter; j++) {
+                latLng = locationsToSeeCoordinates.get(j);
+                Log.d("INSIDEFORLOOP",latLng.latitude + " " + latLng.longitude);
+
+                mMap.addMarker(new MarkerOptions().position(latLng));
+                // Adding new item to the ArrayList
+                markerPoints.add(latLng);
+                options = new MarkerOptions();
+                options.position(latLng);
+                nex = latLng;
+
+                if (markerPoints.size() == 1) {
+                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+                } else if (markerPoints.size() >= 2) {
+                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
+                    // Add new marker to the Google Map Android API V2
+                    mMap.addMarker(options);
+
+                    LatLng origin = prev;
+                    LatLng dest = nex;
+
+                    // Getting URL to the Google Directions API
+                    String url = getDirectionsUrl(origin, dest);
+                    Log.d("ROUTE_URL", url + "&key=" + APP_API_KEY);
+
+                    DownloadTask downloadTask = new DownloadTask();
+
+                    // Start downloading json data from Google Directions API
+                    downloadTask.execute(url + "&key=" + APP_API_KEY);
+                }
+                prev = nex;
+            }
+        }
+
+
+        private LatLng geoLocateString (Context thisContext, String addressInput) throws IOException {
+            Geocoder gc = new Geocoder(thisContext);
+            List<Address> listAddress = gc.getFromLocationName(addressInput + "," + userLocale, 1);
+            Address coords;
+            if (listAddress.size()>0) {coords = listAddress.get(0);}
+            else {
+                coords = null;
+                throw new IOException("couldn't parse address");
+            }
+
+            String locality = coords.getLocality();
+            //Log.e("LOCALITY", locality);
+
+            double lat = coords.getLatitude();
+            double lng = coords.getLongitude();
+
+            LatLng actualLocation = new LatLng(lat, lng);
+
+            return actualLocation;
+        }
+    }
+
     @Override
     public void onPolylineClick(Polyline polyline) {
         // Flip from solid stroke to dotted stroke pattern.
@@ -286,16 +342,13 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             // The default pattern is a solid stroke.
             polyline.setPattern(null);
         }
-
         //Toast.makeText(this, "Route type " + polyline.getTag().toString(),Toast.LENGTH_SHORT).show();
     }
 
-
     private class DownloadTask extends AsyncTask<String, Void, String> {
-
+    //public class DownloadTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... url) {
-
             String data = "";
             try {
                 data = downloadUrl(url[0]);
@@ -304,7 +357,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             }
             return data;
         }
-
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
@@ -313,6 +365,7 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             parserTask.execute(result);
         }
     }
+
 
     //A class to parse the Google Places in JSON format
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
@@ -369,8 +422,9 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             }
 
             lineOptions.addAll(points);
-            lineOptions.width(12);
-            lineOptions.color(Color.RED);
+            lineOptions.width(10);
+
+            lineOptions.color(Color.CYAN);
             lineOptions.geodesic(true);
 
             // Drawing polyline in the Google Map for the i-th route
@@ -464,5 +518,4 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
 
         return actualLocation;
     }
-
 }

@@ -22,5 +22,7 @@
     <color name="blue_grey_800">#37474F</color>
     <color name="blue_grey_900">#263238</color>
 
+    <color name="azure">#60c0f1</color>
+
 
 </resources>
