@@ -64,6 +64,7 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
     protected static final int REQUEST_CODE_OPEN_ITEM = 1;
     protected static final int REQUEST_CODE_SIGN_IN = 0;
     private static final int NEXT_AVAILABLE_REQUEST_CODE = 1;
+    private static final int RESULT_OK = -1;
     private static final int REQUEST_CODE_OPENER = NEXT_AVAILABLE_REQUEST_CODE + 1;
     private static final String TAG = "BaseDriveActivity";
     private static final String MIME_TYPE_TEXT = "text/plain";
@@ -115,14 +116,14 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
         {
             initializeDriveClient(googleSignInAccount);
 
-            //OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
-            //        .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
-            //        .setActivityTitle(getString(R.string.select_file)).build();
+            OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
+                    //.setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain")) //TODO: I need to select sheet files
+                    .setActivityTitle(getString(R.string.select_file)).build();
 
-            //Task<DriveId> myRequestedIDTask = pickItem(openOptions);
-            Task<DriveId> myRequestedIDTask = pickTextFile();
+            Task<DriveId> myRequestedIDTask = pickItem(openOptions);
+            //Task<DriveId> myRequestedIDTask = pickTextFile();
 
-            Log.d("Return SOME result", myRequestedIDTask.toString());
+            Log.d("Return SOME result", myRequestedIDTask.getResult().encodeToString());
 
             //TODO: get the id of the sheets file I want to use and pass it to OrderListActivity
         }
@@ -132,82 +133,28 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
         }
     }
 
-    protected Task<DriveId> pickTextFile() {
-        OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
-                        .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
-                        .setActivityTitle(getString(R.string.select_file))
-                        .build();
-        /* //other version of the declaration of openOptions variable
-        final OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
-                        .setMimeType(Collections.singletonList(MIME_TYPE_TEXT))
-                        .build(); */
-
-        return pickItem(openOptions);
-    }
-
     private Task<DriveId> pickItem(OpenFileActivityOptions openOptions) {
         mOpenItemTaskSource = new TaskCompletionSource<>();
 
-        Intent back = new Intent (SheetsListActivity.this, OrderListActivity.class);
-
-        //IntentSender backSender = new IntentSender();
-
         getDriveClient().newOpenFileActivityIntentSender(openOptions)
                     .continueWith((Continuation<IntentSender, Void>) (Task<IntentSender> task) -> {
-                        Log.d("INSIDEFILEPICKER#0", "Able to send intent — error BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB: ");
                         try {
-                            Log.d("INSIDEFILEPICKER", "Able to send intent — error AAAAAAAAAAAAAAAAAAAAAAAAAAAAA: ");
                             SheetsListActivity.this.startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
-                            //this.startActivity(back);
-                            Log.d(TAG, "Able to send intent — error CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC: ");
-                        } catch (/*(Exception e) { */ IntentSender.SendIntentException e) {
+                        } catch (IntentSender.SendIntentException e) {
                             Log.w(TAG, "Unable to send intent — error: ", e);
                         }
                         return null;
                     });
-
-
-        /*
-        //alternative coding minus the casting / type declaration + exception catching
-        getDriveClient().newOpenFileActivityIntentSender(openOptions).continueWith(task -> {
-                    try { startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
-                    } catch (IntentSender.SendIntentException e) {
-                        Log.w(TAG, "Unable to send intent — error: ", e); }
-                        return null; }); */
-
-        /* //alternative coding of the same
-        mDriveClient.newOpenFileActivityIntentSender(openOptions)
-                .addOnSuccessListener(new OnSuccessListener<IntentSender>() {
-                    @Override
-                    public void onSuccess(IntentSender intentSender) {
-                        try {
-                            startIntentSenderForResult(
-                                    intentSender,
-                                    REQUEST_CODE_OPENER, null, 0, 0, 0);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.w(TAG, "Unable to send intent.", e);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Unable to create OpenFileActivityIntent.", e);
-            }
-        }); */
 
         /*
          //coding without the lambda
         mDriveClient.newOpenFileActivityIntentSender(openOptions).continueWith(new Continuation<IntentSender, Void>() {
                 @Override
                 public Void then(@NonNull Task<IntentSender> task) throws Exception {
-                    Log.d("INSIDEFILEPICKER#0", "Able to send intent — error BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB: ");
                     SheetsListActivity.this.startIntentSenderForResult(task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0);
-                    Log.d(TAG, "Able to send intent — error CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC: ");
                     return null;
                 }
             });*/
-
-
         return mOpenItemTaskSource.getTask();
     }
 
@@ -218,8 +165,6 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
         //various testing crapola
         //mDriveClient = Drive.getDriveClient(this, GoogleSignIn.getLastSignedInAccount(this));
         //mDriveResourceClient = Drive.getDriveResourceClient(this, GoogleSignIn.getLastSignedInAccount(this));
-        Log.d("mDriveClient+Resource", mDriveClient.toString() + " and " + mDriveResourceClient.getInstanceId());
-
         //DriveClient mDriveClient1 = Drive.getDriveClient(this, GoogleSignIn.getLastSignedInAccount(this));
         //DriveResourceClient mDriveResourceClient1 = Drive.getDriveResourceClient(this, GoogleSignIn.getLastSignedInAccount(this));
         //Log.d("mDriveClient1+Resource1", mDriveClient1.toString() + " and " + mDriveResourceClient1.getInstanceId());
@@ -228,10 +173,14 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("REQUESTCODE", "Able to send intent — error YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY: ");
+
+        //Log.d("REQUESTCODE", "Able to send intent — error XXXXXXXXXXXXXXXXXXXXXXX: " + requestCode);
+        //Log.d("RESULTCODE", "Able to send intent — error YYYYYYYYYYYYYYYYYYYYYYYYY: " + resultCode);
+
+        String myChosenFileId;
+
         switch (requestCode) {
             case REQUEST_CODE_SIGN_IN:
-
                 if (resultCode != RESULT_OK) {
                     // Sign-in may fail or be cancelled by the user. For this sample, sign-in is
                     // required and is fatal. For apps where sign-in is optional, handle
@@ -241,8 +190,7 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
                     return;
                 }
 
-                Task<GoogleSignInAccount> getAccountTask =
-                        GoogleSignIn.getSignedInAccountFromIntent(data);
+                Task<GoogleSignInAccount> getAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
                 if (getAccountTask.isSuccessful()) {
                     initializeDriveClient(getAccountTask.getResult());
                 } else {
@@ -251,11 +199,28 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
                 }
                 break;
             case REQUEST_CODE_OPEN_ITEM:
-                Log.d("REQUESTCODE", "Able to send intent — error XXXXXXXXXXXXXXXXXXXXXXX: ");
                 if (resultCode == RESULT_OK) {
-                    DriveId driveId = data.getParcelableExtra(
-                            OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID);
-                    mOpenItemTaskSource.setResult(driveId);
+                    DriveId driveId = data.getParcelableExtra( OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID);
+                    //Log.d("DRIVEID", "DRIVE ID IS  ZZZZZZZZZZZZZZZZZZZZZZZZ: " + driveId.getResourceId());
+
+                    myChosenFileId = driveId.getResourceId();
+
+                    DriveFile selectedFile = driveId.asDriveFile();
+
+                    Log.d ("PICKFILE", selectedFile.toString());
+
+                    //DriveFile selectedFile = Drive.DriveApi.getFile(googleApiClient, driveId);
+
+                    //String fileId = myChosenFileId;
+                    //OutputStream outputStream = new ByteArrayOutputStream();
+                    //DriveFile.files().get(fileId).executeMediaAndDownloadTo(outputStream);
+
+
+                    Intent goToOrdersList = new Intent (SheetsListActivity.this, OrderListActivity.class);
+                    goToOrdersList.putExtra("file selected", myChosenFileId);
+
+                    //startActivity(goToOrdersList);
+                    //mOpenItemTaskSource.setResult(driveId);
                 } else {
                     mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
                 }
@@ -263,7 +228,6 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
 
     protected DriveClient getDriveClient() {
         return mDriveClient;

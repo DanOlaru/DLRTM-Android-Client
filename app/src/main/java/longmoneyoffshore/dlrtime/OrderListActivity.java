@@ -24,6 +24,8 @@ import longmoneyoffshore.dlrtime.utils.DownloadAsyncTask;
 import longmoneyoffshore.dlrtime.utils.ClientAdapter;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
 
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.APP_API_KEY;
+
 //Dan - test
 //import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 //import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -43,7 +45,13 @@ public class OrderListActivity extends AppCompatActivity {
     private Button goToMapsButton;
     private int positionOnListClicked;
 
-    public String SHEET_TO_DOWNLOAD = "https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
+    public String DOWNLOAD_TEMPLATE = "https://spreadsheets.google.com/tq?key=";
+    public String FILE_DOWNLOAD_TEMPLATE_START = "https://docs.google.com/spreadsheets/d/";
+    public String FILE_DOWNLOAD_TEMPLATE_CODA = "/edit#gid=1268876841";
+    public String A_SHEET_TO_DOWNLOAD = "https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
+    public String SHEET_DOWNLOAD_PRE = "https://spreadsheets.google.com/tq?key=";
+
+    String SHEET_TO_DOWNLOAD_ID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +59,9 @@ public class OrderListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_order_list);
 
         listview = (ListView) findViewById(R.id.listview);
-        downLoadAndShowClients(SHEET_TO_DOWNLOAD);
-
 
         btnDownload = (Button) findViewById(R.id.btnDownload);
         //its activity is handled by buttonClickHandler
-
 
         // Internet connection
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -83,8 +88,20 @@ public class OrderListActivity extends AppCompatActivity {
                 startActivity(toMapsRoute);
             }
         });
+
+        Intent intentFromGSheets = getIntent();
+        Bundle sheetData = intentFromGSheets.getExtras();
+
+        SHEET_TO_DOWNLOAD_ID = sheetData.getString("file selected");
+        //Log.d("FILEID", "COMPLETE DOWNLOAD LINK: " + SHEET_DOWNLOAD_PRE + SHEET_TO_DOWNLOAD_ID);
+        Log.d("INSIDEASYNC", "FILE URL: " + SHEET_DOWNLOAD_PRE);
+
+        downLoadAndShowClients(SHEET_TO_DOWNLOAD_ID);
     }
 
+    public void buttonClickHandler(View view) {
+        downLoadAndShowClients(SHEET_TO_DOWNLOAD_ID);
+    }
     //@Override
     //public void writeToParcel(Parcel destinations, int flags) {
     //    destinations.writeList(destinationLocations);
@@ -99,9 +116,10 @@ public class OrderListActivity extends AppCompatActivity {
             @Override
             public void onResult(JSONObject object) {
                 processJson(object); // Feeds with the retrieved data
+                Log.d("INSIDEASYNC", "FILE URL: " + SHEET_DOWNLOAD_PRE + downloadFileId + "key=" + APP_API_KEY);
             }
-        }).execute(downloadFileId);
-        //TODO: the login has to provide the sheet ID as string, which is passed to AsyncTask above this line
+        //}).execute(SHEET_DOWNLOAD_PRE + downloadFileId + "key=" + APP_API_KEY);
+    }).execute(A_SHEET_TO_DOWNLOAD);
 
         if(listview!=null)
         {
@@ -122,10 +140,6 @@ public class OrderListActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    public void buttonClickHandler(View view) {
-        downLoadAndShowClients(SHEET_TO_DOWNLOAD);
     }
 
     // method invoked when target activity returns result data.
