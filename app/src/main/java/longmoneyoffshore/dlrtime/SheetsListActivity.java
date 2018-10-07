@@ -31,6 +31,8 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
+import com.google.api.client.googleapis.util.Utils;
 import com.google.api.services.sheets.v4.model.Sheet;
 
 //Dan
@@ -43,6 +45,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.android.gms.common.api.Scope;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +62,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import android.util.Log;
 
-public class SheetsListActivity extends AppCompatActivity  //or Activity???
+import org.json.JSONObject;
+
+public class SheetsListActivity extends Activity //AppCompatActivity
 {
     private DriveClient mDriveClient;
     private DriveResourceClient mDriveResourceClient;
@@ -73,13 +82,18 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
 
     private TaskCompletionSource<DriveId> mOpenItemTaskSource;
 
-    // Variables necessary to manage the disconnection
+    // Variables necessary to manage the connection
     private Button disconnectBtn;
     private TextView mStatusTextView;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
-    GoogleSignInAccount googleSignInAccount;
-    //OpenFileActivityOptions openOptions;
+    private GoogleSignInAccount googleSignInAccount;
+    private DriveContents mDriveContents;
+
+    //Currently opened file's metadata.
+    private Metadata mMetadata;
+    //Drive ID of the currently opened Drive file.
+    DriveId mCurrentDriveId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -92,11 +106,8 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-        Log.d("debug bro", googleSignInAccount.getDisplayName() + "  " + googleSignInAccount.getEmail());
+        Log.d("DEBUG_BRO", googleSignInAccount.getDisplayName() + "  " + googleSignInAccount.getEmail() + " " + googleSignInAccount.getGrantedScopes());
         //OK SO FAR
-
-        setDrive();
-
         disconnectBtn = findViewById(R.id.disconnect);
         disconnectBtn.setOnClickListener(new View.OnClickListener() {
              @Override
@@ -106,6 +117,7 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
         mStatusTextView = findViewById(R.id.status2);
         mStatusTextView.setText(getString(R.string.signed_in_fmt2, googleSignInAccount.getDisplayName()));
 
+        setDrive();
     }
 
     private void setDrive()
@@ -117,14 +129,12 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
             initializeDriveClient(googleSignInAccount);
 
             OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
-                    //.setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain")) //TODO: I need to select sheet files
+                    //.setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain")) //TODO: select sheet files specifically
                     .setActivityTitle(getString(R.string.select_file)).build();
 
             Task<DriveId> myRequestedIDTask = pickItem(openOptions);
-            //Task<DriveId> myRequestedIDTask = pickTextFile();
 
-            Log.d("Return SOME result", myRequestedIDTask.getResult().encodeToString());
-
+            //Log.d("Return SOME result", myRequestedIDTask.getResult().encodeToString());
             //TODO: get the id of the sheets file I want to use and pass it to OrderListActivity
         }
         catch (Exception e)
@@ -173,10 +183,6 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        //Log.d("REQUESTCODE", "Able to send intent — error XXXXXXXXXXXXXXXXXXXXXXX: " + requestCode);
-        //Log.d("RESULTCODE", "Able to send intent — error YYYYYYYYYYYYYYYYYYYYYYYYY: " + resultCode);
-
         String myChosenFileId;
 
         switch (requestCode) {
@@ -189,7 +195,6 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
                     finish();
                     return;
                 }
-
                 Task<GoogleSignInAccount> getAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
                 if (getAccountTask.isSuccessful()) {
                     initializeDriveClient(getAccountTask.getResult());
@@ -200,25 +205,64 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
                 break;
             case REQUEST_CODE_OPEN_ITEM:
                 if (resultCode == RESULT_OK) {
-                    DriveId driveId = data.getParcelableExtra( OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID);
-                    //Log.d("DRIVEID", "DRIVE ID IS  ZZZZZZZZZZZZZZZZZZZZZZZZ: " + driveId.getResourceId());
+                    mCurrentDriveId = data.getParcelableExtra(OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID); //TODO ok so far!
+                    DriveFile mySelectedFile = mCurrentDriveId.asDriveFile();
+                    //DriveFile mySelectedFile = getParcelFileDescriptor(mCurrentDriveId);
+                    retrieveContents (mySelectedFile);
 
-                    myChosenFileId = driveId.getResourceId();
+                    /*
+                    mDriveResourceClient.getMetadata(mySelectedFile).continueWithTask(new Continuation<Metadata, Task<DriveContents>>() {
+                                @Override
+                                public Task<DriveContents> then(@NonNull Task<Metadata> task) {
+                                    if (task.isSuccessful()) {
+                                        //mMetadata = task.getResult();
+                                        return mDriveResourceClient.openFile(mySelectedFile, DriveFile.MODE_READ_ONLY);
+                                    } else {
+                                        Log.d("NOSUCCESS", "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" + mDriveContents.toString());
+                                        return Tasks.forException(task.getException());
+                                    }
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<DriveContents>() {
+                            @Override
+                            public void onSuccess(DriveContents driveContents) {
+                                mDriveContents = driveContents;
+                                Log.d("WEHAVEFILE", "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + mDriveContents.toString());
+                                InputStream myFileInputStream = mDriveContents.getInputStream();
+                                String myFileContents = myFileInputStream.toString();
+                                Log.e("INPUTSTREAM", "CONTENTS FROM INPUT STREAM" + myFileContents);
+                                //refreshUiFromCurrentFile();
+                            }}).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e(TAG, "Unable to retrieve file metadata and contents.", e);
+                                }
+                            }); */
 
-                    DriveFile selectedFile = driveId.asDriveFile();
+                    myChosenFileId = mCurrentDriveId.getResourceId();
+                    //DriveFile selectedFile = mCurrentDriveId.asDriveFile();
+                    //InputStream myOutputFile = null;
+                    //String myStringFile = selectedFile.toString();
 
-                    Log.d ("PICKFILE", selectedFile.toString());
+                    //mDriveContents = null;
+                    //DriveContents driveContents;
+                    /*
+                    try {
+                        String contents = Utils.readFromInputStream(mDriveContents.getInputStream());
 
+                        //mContentsEditText.setText(contents);
+                    } catch (IOException e) {
+                        Log.e(TAG, "IOException while reading from contents input stream", e);
+                        //showToast(R.string.msg_errreading);
+                        //mSaveButton.setEnabled(false);
+                    } */
+                    //(driveId.asDriveFile());
                     //DriveFile selectedFile = Drive.DriveApi.getFile(googleApiClient, driveId);
-
                     //String fileId = myChosenFileId;
                     //OutputStream outputStream = new ByteArrayOutputStream();
                     //DriveFile.files().get(fileId).executeMediaAndDownloadTo(outputStream);
 
-
                     Intent goToOrdersList = new Intent (SheetsListActivity.this, OrderListActivity.class);
                     goToOrdersList.putExtra("file selected", myChosenFileId);
-
                     //startActivity(goToOrdersList);
                     //mOpenItemTaskSource.setResult(driveId);
                 } else {
@@ -227,6 +271,48 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void retrieveContents(DriveFile file) {
+        // [START drive_android_open_file]
+        Log.d("DISPLAY_CONTENTS", "BEFORE THE TRY");
+        Task<DriveContents> openFileTask =
+                Drive.getDriveResourceClient(SheetsListActivity.this, googleSignInAccount).openFile(file, DriveFile.MODE_READ_ONLY);
+        // [END drive_android_open_file]
+        // [START drive_android_read_contents]
+        openFileTask.continueWithTask(task -> {
+                    DriveContents contents = task.getResult();
+                    // Process contents...
+                    String myStringFile = contents.toString();
+                    Log.d("DISPLAY_CONTENTS", myStringFile);
+
+                    // [START drive_android_read_as_string]
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(contents.getInputStream()))) {
+                        StringBuilder builder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            builder.append(line).append("\n");
+                        }
+                        //showMessage(getString(R.string.content_loaded));
+                        //mFileContents.setText(builder.toString());
+                    }
+                    // [END drive_android_read_as_string]
+                    // [END_EXCLUDE]
+                    // [START drive_android_discard_contents]
+                    Task<Void> discardTask = Drive.getDriveResourceClient(SheetsListActivity.this, googleSignInAccount).discardContents(contents);
+                    // [END drive_android_discard_contents]
+                    return discardTask;
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                    // [START_EXCLUDE]
+                    Log.e(TAG, "Unable to read contents", e);
+                    //showMessage(getString(R.string.read_failed));
+                    finish();
+                    // [END_EXCLUDE]
+                });
+        // [END drive_android_read_contents]
     }
 
     protected DriveClient getDriveClient() {
@@ -270,3 +356,60 @@ public class SheetsListActivity extends AppCompatActivity  //or Activity???
         }
     }
 }
+
+
+/*
+    private void refreshUiFromCurrentFile() {
+        Log.d(TAG, "Refreshing...");
+        if (mCurrentDriveId == null) {
+            //mSaveButton.setEnabled(false);
+            return;
+        }
+        if (mMetadata == null || mDriveContents == null) {
+            return;
+        }
+
+        try {
+            InputStream myFileInputStream = mDriveContents.getInputStream();
+            String myFileContents = myFileInputStream.toString();
+            Log.e("INPUTSTREAM", "CONTENTS FROM INPUT STREAM" + myFileContents);
+
+            //String contents = Utils.readFromInputStream(mDriveContents.getInputStream());
+            //mContentsEditText.setText(contents);
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while reading from contents input stream", e);
+            //showToast(R.string.msg_errreading);
+            //mSaveButton.setEnabled(false);
+        }
+    }
+    private void loadCurrentFile() {
+        Log.d(TAG, "Retrieving...");
+        final DriveFile file = mCurrentDriveId.asDriveFile();
+
+        // Retrieve and store the file metadata and contents.
+        mDriveResourceClient.getMetadata(file)
+                .continueWithTask(new Continuation<Metadata, Task<DriveContents>>() {
+                    @Override
+                    public Task<DriveContents> then(@NonNull Task<Metadata> task) {
+                        if (task.isSuccessful()) {
+                            mMetadata = task.getResult();
+                            return mDriveResourceClient.openFile(file, DriveFile.MODE_READ_ONLY);
+                        } else {
+                            return Tasks.forException(task.getException());
+                        }
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<DriveContents>() {
+            @Override
+            public void onSuccess(DriveContents driveContents) {
+                mDriveContents = driveContents;
+                refreshUiFromCurrentFile();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Unable to retrieve file metadata and contents.", e);
+            }
+        });
+    }
+
+    */
