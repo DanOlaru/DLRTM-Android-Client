@@ -52,6 +52,8 @@ public class OrderListActivity extends AppCompatActivity {
     public String SHEET_DOWNLOAD_PRE = "https://spreadsheets.google.com/tq?key=";
 
     String SHEET_TO_DOWNLOAD_ID = "";
+    String receivedSheetStr;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,21 +93,50 @@ public class OrderListActivity extends AppCompatActivity {
 
         Intent intentFromGSheets = getIntent();
         Bundle sheetData = intentFromGSheets.getExtras();
+        receivedSheetStr = sheetData.getString("file selected");
 
-        SHEET_TO_DOWNLOAD_ID = sheetData.getString("file selected");
+        Log.d("INSIDEORDERLIST", "FILE CONTENTS: " + receivedSheetStr);
+
+        //SHEET_TO_DOWNLOAD_ID = sheetData.getString("file selected");
         //Log.d("FILEID", "COMPLETE DOWNLOAD LINK: " + SHEET_DOWNLOAD_PRE + SHEET_TO_DOWNLOAD_ID);
-        Log.d("INSIDEASYNC", "FILE URL: " + SHEET_DOWNLOAD_PRE);
+        //Log.d("INSIDEASYNC", "FILE URL: " + SHEET_DOWNLOAD_PRE);
 
-        downLoadAndShowClients(SHEET_TO_DOWNLOAD_ID);
+        //downLoadAndShowClients(receivedSheetStr);
+        downLoadAndShowClients(A_SHEET_TO_DOWNLOAD);
     }
 
     public void buttonClickHandler(View view) {
-        downLoadAndShowClients(SHEET_TO_DOWNLOAD_ID);
+        //downLoadAndShowClients(receivedSheetStr);
+        downLoadAndShowClients(A_SHEET_TO_DOWNLOAD);
     }
-    //@Override
-    //public void writeToParcel(Parcel destinations, int flags) {
-    //    destinations.writeList(destinationLocations);
-    //}
+
+    /*
+    private void downLoadAndShowClients (String downloadedFile) {
+        listview.setAdapter(null);
+        clients.clear();
+
+
+        if(listview!=null)
+        {
+            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    //position clicked on — it is visible outside of this scope to the onActivityResult
+                    positionOnListClicked = position;
+
+                    Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
+                    ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
+                    Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
+
+                    thisIndividualOrder.putExtra("order", clickedOrderParcel);
+                    int reqCode = 1; //what should be the predefined value?
+                    startActivityForResult(thisIndividualOrder,reqCode);
+                }
+            });
+        }
+    } */
+
 
     private void downLoadAndShowClients (String downloadFileId) {
         listview.setAdapter(null);
@@ -141,6 +172,10 @@ public class OrderListActivity extends AppCompatActivity {
             });
         }
     }
+    /*
+    public void buttonClickHandler(View view) {
+        downLoadAndShowClients(SHEET_TO_DOWNLOAD_ID);
+    } */
 
     // method invoked when target activity returns result data.
     @Override

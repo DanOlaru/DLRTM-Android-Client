@@ -54,7 +54,6 @@ public class LoginActivity extends AppCompatActivity implements
     private DriveClient mDriveClient;
     private DriveResourceClient mDriveResourceClient;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,8 +70,20 @@ public class LoginActivity extends AppCompatActivity implements
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+
+
+        /*
+        //this is the original one that worked
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(Drive.SCOPE_FILE).requestScopes(new Scope(Scopes.DRIVE_APPFOLDER)) //this last request added by Dan
+                .requestEmail()
+                .build(); */
+
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.DRIVE_FILE))
+                //.requestScopes(new Scope(Scopes.PROFILE))
+                //.requestScopes(new Scope(Scopes.DRIVE_FULL))
                 .requestEmail()
                 .build();
 
@@ -91,7 +102,7 @@ public class LoginActivity extends AppCompatActivity implements
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-       updateUI(account);
+        updateUI(account);
         if (account != null )
         {
             //Log.d ("LOGIN__SIGNED_IN", "A_OK");

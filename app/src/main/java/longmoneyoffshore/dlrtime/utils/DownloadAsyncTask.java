@@ -43,8 +43,7 @@ public class DownloadAsyncTask extends AsyncTask<String, Void, String> {
 
         try {
             JSONObject table = new JSONObject(jsonResponse);
-
-//            Log.d("Table content JSON"," Table: " +table.toString());
+            //Log.d("Table content JSON"," Table: " +table.toString());
             callback.onResult(table);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -93,4 +92,5 @@ public class DownloadAsyncTask extends AsyncTask<String, Void, String> {
         }
         return sb.toString();
     }
+
 }
