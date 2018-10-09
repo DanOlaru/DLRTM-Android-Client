@@ -9,5 +9,11 @@ public class GlobalValues {
     public static final LatLng ChicagoLocale = new LatLng(41.8781, -87.6298);
     public static final String THE_FIRST_DOWNLOAD_SHEET = "https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
 
+    public static final int RC_SIGN_IN = 9001;
+    public static final int RC_RECOVERABLE = 9002;
+
+    public static final int REQUEST_CODE_SIGN_IN = 0;
+    public static final int REQUEST_CODE_SIGN_OUT = 5;
+
 
 }

@@ -1,3 +1,7 @@
+/*
+ * Alexandru Enach & Dan Olaru, (c) 2018
+ */
+
 package longmoneyoffshore.dlrtime;
 
 import android.content.Context;

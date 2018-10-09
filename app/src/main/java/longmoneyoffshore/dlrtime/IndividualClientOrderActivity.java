@@ -1,3 +1,7 @@
+/*
+ * Author: Dan Olaru, (c) 2018
+ */
+
 package longmoneyoffshore.dlrtime;
 
 import android.os.Bundle;
@@ -8,20 +12,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
-//local imports — Dan
-
 import android.content.Intent;
 import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientParcel;
 import android.app.Activity;
-
 import longmoneyoffshore.dlrtime.utils.ClientCaller;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.RC_SIGN_IN;
 
 public class IndividualClientOrderActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    //this Client object will take any modifications that are made in the IndividualClientOrder window and pass them back
-    // to the OrderListActivity and back to GSheets
     private Client localFeedbackClient;
     private Client myPassedClient;
 
@@ -45,45 +44,44 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
         // Get the transferred data from source activity.
         Intent passedIntent = getIntent();
+
         ClientParcel myPassedClientParcel = passedIntent.getParcelableExtra("order");
-        myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
+            myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
 
-        // dummy data set
-        //myPassedClient = new Client ("Johnny T Apple" , "773 845 1234" , "Argyle & Lawrence" , "BD" , 60, 60, 0, 0, 3, "pending");
+            //initially localFeedbackClient is identical to the passed Client object. Any modifications made
+            // will be passed back using it to the invoking activity or perhaps the ASyncTask!!!
+            localFeedbackClient = new Client(myPassedClient);
 
-        //initially localFeedbackClient is identical to the passed Client object. Any modifications made
-        // will be passed back using it to the invoking activity or perhaps the ASyncTask!!!
-        localFeedbackClient = new Client (myPassedClient);
+            //get the applicable anonymizerPrefix
+            final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
-        //get the applicable anonymizerPrefix
-        final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
+            //orderNameField = (EditText) findViewById(R.id.orderNameClient); //is this necessary?
+            //orderNameField.setText(myPassedClient.getClientName());
 
-        //orderNameField = (EditText) findViewById(R.id.orderNameClient); //is this necessary?
-        //orderNameField.setText(myPassedClient.getClientName());
+            orderNameClientField = (EditText) findViewById(R.id.orderNameClnt);
+            orderNameClientField.setText(myPassedClient.getClientName());
 
-        orderNameClientField = (EditText) findViewById(R.id.orderNameClnt);
-        orderNameClientField.setText(myPassedClient.getClientName());
+            orderPhoneClientField = (EditText) findViewById(R.id.orderPhoneClnt);
+            orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
 
-        orderPhoneClientField = (EditText) findViewById(R.id.orderPhoneClnt);
-        orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
+            orderLocationClientField = (EditText) findViewById(R.id.orderLocationClnt);
+            orderLocationClientField.setText(myPassedClient.getClientLocation());
 
-        orderLocationClientField = (EditText) findViewById(R.id.orderLocationClnt);
-        orderLocationClientField.setText(myPassedClient.getClientLocation());
+            orderProductIdField = (EditText) findViewById(R.id.orderProductIDClnt);
+            orderProductIdField.setText(myPassedClient.getClientProductID());
 
-        orderProductIdField = (EditText) findViewById(R.id.orderProductIDClnt);
-        orderProductIdField.setText(myPassedClient.getClientProductID());
+            orderProductQuantField = (EditText) findViewById(R.id.orderProductQuantClnt);
+            orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
 
-        orderProductQuantField = (EditText) findViewById(R.id.orderProductQuantClnt);
-        orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
+            orderProductPriceField = (EditText) findViewById(R.id.orderProductPriceClnt);
+            orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
 
-        orderProductPriceField = (EditText) findViewById(R.id.orderProductPriceClnt);
-        orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
+            orderPriceAdjustField = (EditText) findViewById(R.id.orderPriceAdjClnt);
+            orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
 
-        orderPriceAdjustField = (EditText) findViewById(R.id.orderPriceAdjClnt);
-        orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
+            orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
+            orderUrgencyField.setRating(myPassedClient.getClientUrgency());
 
-        orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
-        orderUrgencyField.setRating(myPassedClient.getClientUrgency());
 
         // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5
         orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -108,24 +106,12 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
         orderStatusClientField.setText(myPassedClient.getClientStatus());
 
-        //TODO: this button saves the comment typed into the comment box and feeds it back to OrderListActivity
-        /*
-        final Button commitCommentButton = (Button) findViewById(R.id.btnSubmit);
-        commitCommentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                commitFeedbackClient();
-
-            }
-        }); */
 
         //TODO: implement sign-out button here
 
         //make_call button starts the dialer
         Button callButton = (Button) findViewById(R.id.make_call_button);
 
-        //TODO: why can't I implement the call button onClickListener in onResume?
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,16 +155,12 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 commitFeedbackClient();
 
                 ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
                 Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
                 feedbackIntent.putExtra("edited order", localFeedbackParcel);
                 setResult(RESULT_OK, feedbackIntent);
-
-                //Log.i("back_butt_ICOR",localFeedbackParcel.getClientStatus());
-                //Log.d("onStop Cl_urgency", String.valueOf(localFeedbackParcel.getClientUrgency()));
                 finish();
             }
         });
@@ -187,29 +169,15 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         Button signOutButton = (Button) findViewById(R.id.sign_out_button);
 
         //is this sign-out implementation correct?
-       // signOutButton.setOnClickListener(new View.OnClickListener() {
-       //     @Override
-       //     public void onClick(View v) {
-       //             SignOutFunctionality signOutObject = new SignOutFunctionality();
-       //             signOutObject.signOut(v);
-       //     }
-       // });
-
-
-        //TODO: what is this code?
-       // Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-       // setSupportActionBar(toolbar);
-
-        // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
+       signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Start intent to sign out
+                Intent signOutIntent = new Intent(IndividualClientOrderActivity.this, LoginActivity.class);
+                setResult(RC_SIGN_IN, signOutIntent);
+                //finish();
+            }
+       });
     }
 
     //TODO Implement other lifecycle components to save the modified data upon destruction, and send it back to OrderListActivity and back to GSheets
@@ -225,27 +193,18 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         localFeedbackClient.setClientUrgency(orderUrgencyField.getRating());
         localFeedbackClient.setClientValue(orderValueClientField.getRating());
         localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
-
-        Log.d("return client modifs", localFeedbackClient.getClientStatus());
-
     }
 
     @Override
     protected void onStart() {
-        super.onStart(); //no need to pass savedInstanceState???
-
-        //anything else to implement here?
+        super.onStart();
     }
 
-    //is this method going to be necessary?
     @Override
     protected void onResume() {
         super.onResume();
-        //setContentView(R.id.activity_individual_client_order);
 
-        //get the applicable anonymizerPrefix — in case the user has changed it from the Settings activity
         final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
-
     }
 
     @Override
@@ -270,7 +229,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         Log.d("onStop Cl_urgency", String.valueOf(localFeedbackClient.getClientUrgency()));
         finish();
         */
-
     }
 
     // invoked when the activity may be temporarily destroyed, save the instance state here

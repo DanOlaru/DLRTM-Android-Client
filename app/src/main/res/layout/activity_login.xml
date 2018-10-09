@@ -26,18 +26,6 @@
             android:textSize="36sp" />
 
         <TextView
-            android:id="@+id/detail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fadeScrollbars="true"
-            android:gravity="bottom"
-            android:maxLines="5"
-            android:padding="10dp"
-            android:scrollbars="vertical"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
-
-        <TextView
             android:id="@+id/detail2"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
@@ -57,7 +45,8 @@
             android:gravity="bottom"
             android:text="@string/signed_out"
             android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:visibility="invisible"/>
 
         <Button
             android:id="@+id/button_optional_action"

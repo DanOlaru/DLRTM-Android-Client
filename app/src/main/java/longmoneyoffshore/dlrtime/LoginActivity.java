@@ -1,3 +1,7 @@
+/*
+ * Author: Dan Olaru, (c) 2018
+ */
+
 package longmoneyoffshore.dlrtime;
 
 import android.app.Activity;
@@ -11,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -26,16 +29,17 @@ import com.google.android.gms.drive.DriveResourceClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-
-import java.util.List;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.RC_RECOVERABLE;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.RC_SIGN_IN;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.REQUEST_CODE_SIGN_IN;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.REQUEST_CODE_SIGN_OUT;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "SignInActivity";
     private static final String KEY_ACCOUNT = "key_account";
     private static final String CONTACTS_SCOPE = "https://www.googleapis.com/auth/contacts.readonly";
-    private static final int RC_SIGN_IN = 9001;
-    private static final int RC_RECOVERABLE = 9002;
+
 
     public GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
@@ -46,7 +50,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button disconnectBtn;
 
     //Google Drive access
-    private static final int REQUEST_CODE_SIGN_IN = 0;
+
 
     private DriveClient mDriveClient;
     private DriveResourceClient mDriveResourceClient;
@@ -58,7 +62,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Views
         mStatusTextView = findViewById(R.id.status);
-        mDetailTextView = findViewById(R.id.detail);
+        //mDetailTextView = findViewById(R.id.detail);
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -102,6 +106,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             //Launch SheetsListActivity
             Intent intent = new Intent(this, SheetsListActivity.class);
             startActivity(intent);
+            //startActivityForResult(intent, RC_SIGN_IN);
         }
         /*
         if (account != null && GoogleSignIn.hasPermissions(account, new Scope(Scopes.DRIVE_APPFOLDER))) {
@@ -127,8 +132,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        /*
+        switch(requestCode) {
+            case REQUEST_CODE_SIGN_IN:
+                Log.i(TAG, "Sign in request code");
+                break;
+            case REQUEST_CODE_SIGN_OUT:
+                //signOut();
+                revokeAccess();
+                break;
+        }*/
 
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == REQUEST_CODE_SIGN_IN) {
             Log.i(TAG, "Sign in request code");
             // Called after user is signed in.
@@ -150,17 +164,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    /*
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
-    } */
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {

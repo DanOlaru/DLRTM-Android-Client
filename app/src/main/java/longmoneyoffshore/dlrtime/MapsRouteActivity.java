@@ -1,3 +1,7 @@
+/*
+ * Author: Dan Olaru, (c) 2018
+ */
+
 package longmoneyoffshore.dlrtime;
 
 import android.Manifest;
@@ -87,10 +91,17 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
 
         ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
+        if (ActivityCompat.checkSelfPermission(MapsRouteActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(MapsRouteActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsRouteActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            //return;
+        }
+
+
         if (ActivityCompat.checkSelfPermission(MapsRouteActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat
                 .checkSelfPermission(MapsRouteActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsRouteActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            return;
+            //return;
         }else{
             // Write you code here if permission already given.
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -106,7 +117,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
                     });
         }
 
-        //dummy location for testing
         currentUserGeoPosition = ChicagoLocale;
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);

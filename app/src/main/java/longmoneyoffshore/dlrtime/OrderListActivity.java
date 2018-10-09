@@ -1,3 +1,7 @@
+/*
+ * Author: Dan Olaru, (c) 2018
+ */
+
 package longmoneyoffshore.dlrtime;
 
 import android.Manifest;
@@ -53,6 +57,8 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.APP_API_KEY;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.RC_SIGN_IN;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.REQUEST_CODE_SIGN_OUT;
 
 public class OrderListActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
@@ -68,15 +74,16 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     private Button btnDownload;
     private Button signOutButton;
     private Button goToMapsButton;
+    private Button makeNewOrderButton;
+
     private int positionOnListClicked;
 
-    String sheetURL;
     String sheetID;
 
-    //TODO: Dan - experimental
     GoogleAccountCredential mCredential;
     private Button mCallApiButton;
     private Button goToOrdersList;
+
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -87,6 +94,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
     public static final int INDIVIDUAL_ORDER_CHANGED=1005;
     public static final int CLICK_INDIVIDUAL_ORDER = 1006;
+    public static final int CREATE_NEW_ORDER=1007;
 
     final String dummyFileID = "16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
 
@@ -108,7 +116,18 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         }
 
         //TODO: sign out button click references public public signOut method in utils
-        signOutButton = (Button) findViewById(R.id.sign_out_button);
+        signOutButton = (Button) findViewById(R.id.sign_out);
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Log.i("SIGNOUT", "TRYING TO SIGN OUT");
+                //TODO: Start intent to sign out
+                //Intent signOutIntent = new Intent(OrderListActivity.this, LoginActivity.class);
+                //setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
+                //finish();
+            }
+        });
 
         //clients list is already populated
         goToMapsButton = (Button) findViewById(R.id.btn_go_to_maps);
@@ -120,6 +139,16 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
                 toMapsRoute.putExtra("locations to go to", destinationsParcel);
                 startActivity(toMapsRoute);
+            }
+        });
+
+        makeNewOrderButton = (Button) findViewById(R.id.btn_make_new_order);
+
+        makeNewOrderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
+                startActivityForResult(thisIndividualOrder,CREATE_NEW_ORDER);
             }
         });
 
