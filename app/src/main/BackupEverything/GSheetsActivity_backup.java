@@ -56,8 +56,8 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
 
-    final String dummyFileID = "16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
-    private String selectedFileId= dummyFileID;
+    final String dummyFileID = "https://docs.google.com/spreadsheets/d/16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY/edit#gid=0";
+    private String selectedFileId="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,29 +67,24 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
 
         Intent passedIntent = getIntent();
         Bundle passedDataBundle = passedIntent.getExtras();
-        selectedFileId = passedDataBundle.getString("file selected");
+        //selectedFileId = passedDataBundle.getString("file selected");
         Log.d("INSIDE GSHEETS_ACT", "THE SPREADSHEET ID IS: " + selectedFileId);
+
+        selectedFileId = dummyFileID;
+        getResultsFromApi(selectedFileId);
 
         //test
         mOutputText = (TextView) findViewById(R.id.messages_gsheets);
-        //ProgressBar mProgress = findViewById(R.id.indeterminateBar);
-        //mProgress.setEnabled(false);
 
-        //Button to orders list
+        //Button that takes me to orders list
         goToOrdersList = (Button) findViewById(R.id.go_to_orders_list);
         goToOrdersList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent goToOrdersIntent = new Intent(GSheetsActivity.this, OrderListActivity.class);
-                String myChosenFileContent = "";
-
-                //TODO: pass the contents of the open file thru intent
-
-                goToOrdersIntent.putExtra("file_contents", myChosenFileContent);
                 startActivity(goToOrdersIntent);
             }
         });
-
 
         mCallApiButton = (Button)findViewById(R.id.access_gsheets_button);
         mCallApiButton.setEnabled(true);
@@ -97,7 +92,7 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getResultsFromApi();
+                getResultsFromApi(selectedFileId);
             }
         });
 
@@ -105,17 +100,19 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
         mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(SCOPES)).setBackOff(new ExponentialBackOff());
     }
 
-    private void getResultsFromApi() {
-        if (! isGooglePlayServicesAvailable()) {
+    private void getResultsFromApi(String fileID) { //TODO: get FileID here
 
+        if (! isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount();
         } else if (! isDeviceOnline()) {
             mOutputText.setText("No network connection available.");
         } else {
-            new MakeRequestTask(mCredential).execute();
+            new MakeRequestTask(mCredential).execute(fileID);
         }
+
+        new MakeRequestTask(mCredential).execute(fileID);
     }
 
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
@@ -126,7 +123,7 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
             if (accountName != null) {
 
                 mCredential.setSelectedAccountName(accountName);
-                getResultsFromApi();
+                getResultsFromApi(selectedFileId);
             } else {
 
                 startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
@@ -150,7 +147,7 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
                             "This app requires Google Play Services. Please install " +
                                     "Google Play Services on your device and relaunch this app.");
                 } else {
-                    getResultsFromApi();
+                    getResultsFromApi(selectedFileId);
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
@@ -164,14 +161,14 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString(PREF_ACCOUNT_NAME, accountName);
                         editor.apply();
-                        mCredential.setSelectedAccountName(accountName);
-                        getResultsFromApi();
+                        //mCredential.setSelectedAccountName(accountName);
+                        getResultsFromApi(selectedFileId);
                     }
                 }
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
-                    getResultsFromApi();
+                    getResultsFromApi(selectedFileId);
                 }
                 break;
         }
@@ -220,7 +217,7 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
         dialog.show();
     }
 
-    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+    private class MakeRequestTask extends AsyncTask<String, Void, List<String>> {
         private com.google.api.services.sheets.v4.Sheets mService = null;
         private Exception mLastError = null;
 
@@ -228,15 +225,15 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.sheets.v4.Sheets.Builder(transport, jsonFactory, credential)
-                    .setApplicationName("GSheets API Android").build();
+                    .setApplicationName("Google Sheets API Android Quickstart").build();
         }
 
         @Override
-        protected List<String> doInBackground(Void... params) {
+        protected List<String> doInBackground(String... fileIds) {
             try {
-
                 //TODO: have to implement a way to get the spreadsheet ID, to pass it here
-                return getDataFromApi(selectedFileId);
+                String spreadSheetID =fileIds[0];
+                return getDataFromApi(spreadSheetID);
 
             } catch (Exception e) {
                 mLastError = e;
@@ -271,7 +268,7 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
             //TODO: this field has to be dynamic — changed depending on what is available in the
             //TODO: GSheets account opened with the credentials
             //spreadsheetId = "16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
-            //spreadsheetId = selectedFileId;
+            Log.d("SPREADSHEET_ID", "THE ID IS: " + spreadsheetId);
 
             String range = "A2:J";
 

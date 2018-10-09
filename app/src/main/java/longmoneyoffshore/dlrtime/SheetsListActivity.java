@@ -102,7 +102,7 @@ public class SheetsListActivity extends Activity //AppCompatActivity
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-        Log.d("DEBUG_BRO", googleSignInAccount.getDisplayName() + "  " + googleSignInAccount.getEmail() + " " + googleSignInAccount.getGrantedScopes());
+        //Log.d("DEBUG_BRO", googleSignInAccount.getDisplayName() + "  " + googleSignInAccount.getEmail() + " " + googleSignInAccount.getGrantedScopes());
         //OK SO FAR
         disconnectBtn = findViewById(R.id.disconnect);
         disconnectBtn.setOnClickListener(new View.OnClickListener() {
@@ -190,19 +190,44 @@ public class SheetsListActivity extends Activity //AppCompatActivity
                 break;
             case REQUEST_CODE_OPEN_ITEM:
                 if (resultCode == RESULT_OK) {
-                    mCurrentDriveId = data.getParcelableExtra(OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID); //TODO ok so far!
-                    DriveFile mySelectedFile = mCurrentDriveId.asDriveFile();
-
+                    mCurrentDriveId = data.getParcelableExtra(OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID);
+                    DriveFile mySelectedFile = mCurrentDriveId.asDriveFile(); //TODO: THIS IS THE FILE
                     myChosenFileId = mCurrentDriveId.getResourceId();
 
-                    //TODO: send the entire file — DOESN'T WORK SO FAR
-                    //retrieveContents(mySelectedFile);
-                    //loadCurrentFile(mySelectedFile);
+                    Log.d("SHEETS_LIST","ID OF THE FILE PICKED" + myChosenFileId);
+
+                    /*
+                    Task<DriveContents> openFileTask = Drive.getDriveResourceClient(SheetsListActivity.this, googleSignInAccount)
+                            .openFile(mySelectedFile, DriveFile.MODE_READ_ONLY);
+
+                    openFileTask.continueWith(task -> {
+                        DriveContents contents = task.getResult();
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()))) {
+                            StringBuilder builder = new StringBuilder();
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                builder.append(line).append("\n");
+                                Log.d("LINE","LINE READ FROM FILE" + line);
+                            }
+                        }
+                        Task<Void> discardTask = Drive.getDriveResourceClient(SheetsListActivity.this, googleSignInAccount)
+                                .discardContents(contents);
+                        return discardTask;
+                    }).addOnFailureListener(e -> {
+                        Log.e(TAG, "UNABLE TO READ CONTENTS", e);
+                        finish();
+                    }); */
+
 
                     Intent goToOrdersList = new Intent (SheetsListActivity.this, OrderListActivity.class);
-                    goToOrdersList.putExtra("file selected", myChosenFileId);
-                    startActivity(goToOrdersList);
-                    //mOpenItemTaskSource.setResult(driveId);
+                    goToOrdersList.putExtra("file selected ", myChosenFileId);
+
+
+                    Intent goToGSheets = new Intent (SheetsListActivity.this, GSheetsActivity.class);
+                    goToGSheets.putExtra("file selected", myChosenFileId);
+                    startActivity(goToGSheets);
+
+                    //startActivity(goToOrdersList);
                 } else {
                     mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
                 }
@@ -211,36 +236,18 @@ public class SheetsListActivity extends Activity //AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void retrieveContents(DriveFile file) {
-        Task<DriveContents> openFileTask =
-                Drive.getDriveResourceClient(SheetsListActivity.this, googleSignInAccount).openFile(file, DriveFile.MODE_READ_ONLY);
+    static String getStringFromInputStream(InputStream is) {
+        StringBuilder sb = new StringBuilder();
 
-        openFileTask.continueWithTask(task -> {
-            DriveContents contents = task.getResult();
-
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()))) {
-                StringBuilder builder = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line).append("\n");
-                }
-
-                String resultSheet = builder.toString();
-                Log.d("DISPLAY_CONTENTS", resultSheet);
-                Intent goToOrdersList = new Intent (SheetsListActivity.this, OrderListActivity.class);
-                goToOrdersList.putExtra("file selected", resultSheet);
-                startActivity(goToOrdersList);
-
+        String line;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append("\n");
             }
-
-            Task<Void> discardTask = Drive.getDriveResourceClient(SheetsListActivity.this, googleSignInAccount).discardContents(contents);
-            return discardTask;
-        })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "UNABLE TO READ CONTENTS", e);
-                    //showMessage(getString(R.string.read_failed));
-                    finish();
-                });
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read string content.");
+        }
+        return sb.toString();
     }
 
     private void loadCurrentFile(DriveFile file) {
@@ -271,6 +278,37 @@ public class SheetsListActivity extends Activity //AppCompatActivity
             public void onFailure(@NonNull Exception e) {
                 Log.e(TAG, "Unable to retrieve file metadata and contents.", e);
             }
+        });
+    }
+
+    private void retrieveContents(DriveFile file) {
+        Task<DriveContents> openFileTask =
+                Drive.getDriveResourceClient(SheetsListActivity.this, googleSignInAccount).openFile(file, DriveFile.MODE_READ_ONLY);
+
+        openFileTask.continueWithTask(task -> {
+            DriveContents contents = task.getResult();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()))) {
+                StringBuilder builder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line).append("\n");
+                }
+
+                String resultSheet = builder.toString();
+                Log.d("DISPLAY_CONTENTS", resultSheet);
+                Intent goToOrdersList = new Intent (SheetsListActivity.this, OrderListActivity.class);
+                goToOrdersList.putExtra("file selected", resultSheet);
+                startActivity(goToOrdersList);
+
+            }
+
+            Task<Void> discardTask = Drive.getDriveResourceClient(SheetsListActivity.this, googleSignInAccount).discardContents(contents);
+            return discardTask;
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "UNABLE TO READ CONTENTS", e);
+            //showMessage(getString(R.string.read_failed));
+            finish();
         });
     }
 

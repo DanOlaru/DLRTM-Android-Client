@@ -96,9 +96,9 @@ public class OrderListActivity extends AppCompatActivity {
         //https://www.googleapis.com/drive/v3/files/FILE_ID?fields=mimeType&key={YOUR_API_KEY}
         //GET https://www.googleapis.com/drive/v3/files/1VRwq2yaAUH6dilpDbFksgT8_ioRaWHmagaQQLK2KOKk?fields=contentHints%2Fthumbnail%2FmimeType%2CcopyRequiresWriterPermission%2CcreatedTime%2CfileExtension%2CfullFileExtension%2Cid%2Ckind%2ClastModifyingUser%2CmimeType%2CmodifiedByMeTime%2CmodifiedTime%2Cname%2CownedByMe&key={YOUR_API_KEY}
 
-        sheetURL = "https://www.googleapis.com/drive/v3/files/"+sheetID
-                +"?fields=contentHints%2Fthumbnail%2FmimeType%2CcopyRequiresWriterPermission" +
-                "%2CcreatedTime%2CfileExtension%2CfullFileExtension%2Cid%2Ckind%2ClastModifyingUser%2CmimeType%2CmodifiedByMeTime%2CmodifiedTime%2Cname%2CownedByMe&key="+APP_API_KEY;
+        sheetURL = "https://www.googleapis.com/drive/v3/files/"+sheetID +
+                "?alt=media" +
+                "&key="+APP_API_KEY;
         //"?mimetype=text/csv"
 
         Log.d("BEFOREDOWNLOADCLIENTS", "SHEET ID: " + sheetURL);

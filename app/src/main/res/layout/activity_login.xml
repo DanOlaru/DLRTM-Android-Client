@@ -24,14 +24,6 @@
             android:gravity="bottom"
             android:textColor="@android:color/white"
             android:textSize="36sp" />
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/signed_out"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:gravity="bottom" />
 
         <TextView
             android:id="@+id/detail"
@@ -45,6 +37,28 @@
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/detail2"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fadeScrollbars="true"
+            android:gravity="bottom"
+            android:maxLines="5"
+            android:padding="10dp"
+            android:scrollbars="vertical"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:text="@string/signed_out"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
         <Button
             android:id="@+id/button_optional_action"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
@@ -52,7 +66,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             tools:text="Optional Action"
-            tools:visibility="visible" />
+            tools:visibility="invisible" />
 
     </LinearLayout>
 
