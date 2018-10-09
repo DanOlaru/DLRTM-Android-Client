@@ -194,8 +194,6 @@ public class SheetsListActivity extends Activity //AppCompatActivity
                     DriveFile mySelectedFile = mCurrentDriveId.asDriveFile(); //TODO: THIS IS THE FILE
                     myChosenFileId = mCurrentDriveId.getResourceId();
 
-                    Log.d("SHEETS_LIST","ID OF THE FILE PICKED" + myChosenFileId);
-
                     /*
                     Task<DriveContents> openFileTask = Drive.getDriveResourceClient(SheetsListActivity.this, googleSignInAccount)
                             .openFile(mySelectedFile, DriveFile.MODE_READ_ONLY);
@@ -220,14 +218,16 @@ public class SheetsListActivity extends Activity //AppCompatActivity
 
 
                     Intent goToOrdersList = new Intent (SheetsListActivity.this, OrderListActivity.class);
-                    goToOrdersList.putExtra("file selected ", myChosenFileId);
+                    goToOrdersList.putExtra("file selected", myChosenFileId);
+
+                    //Log.d("SSHEETSLISTACT", "INTEGRITY OF DATA CHECK:" + myChosenFileId);
+                    startActivity(goToOrdersList);
+
+                    //Intent goToGSheets = new Intent (SheetsListActivity.this, GSheetsActivity.class);
+                    //goToGSheets.putExtra("file selected", myChosenFileId);
+                    //startActivity(goToGSheets);
 
 
-                    Intent goToGSheets = new Intent (SheetsListActivity.this, GSheetsActivity.class);
-                    goToGSheets.putExtra("file selected", myChosenFileId);
-                    startActivity(goToGSheets);
-
-                    //startActivity(goToOrdersList);
                 } else {
                     mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
                 }

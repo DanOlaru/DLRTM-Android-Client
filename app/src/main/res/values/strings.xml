@@ -72,6 +72,7 @@
 
     <string-array name="issue_or_cancel_options">
         <item>Done</item>
+        <item>Pending</item>
         <item>Cancel</item>
         <item>Issue</item>
     </string-array>

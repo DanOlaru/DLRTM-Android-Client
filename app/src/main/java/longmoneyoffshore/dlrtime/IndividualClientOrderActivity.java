@@ -12,8 +12,8 @@ import android.widget.TextView;
 //local imports — Dan
 
 import android.content.Intent;
-import longmoneyoffshore.dlrtime.utils.Client;
-import longmoneyoffshore.dlrtime.utils.ClientParcel;
+import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
+import longmoneyoffshore.dlrtime.utils.TransportClients.ClientParcel;
 import android.app.Activity;
 
 import longmoneyoffshore.dlrtime.utils.ClientCaller;
@@ -175,10 +175,10 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
                 Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
                 feedbackIntent.putExtra("edited order", localFeedbackParcel);
-                setResult(IndividualClientOrderActivity.RESULT_OK, feedbackIntent);
+                setResult(RESULT_OK, feedbackIntent);
 
-                Log.i("back_butt_ICOR",localFeedbackParcel.getClientStatus());
-                Log.d("onStop Cl_urgency", String.valueOf(localFeedbackParcel.getClientUrgency()));
+                //Log.i("back_butt_ICOR",localFeedbackParcel.getClientStatus());
+                //Log.d("onStop Cl_urgency", String.valueOf(localFeedbackParcel.getClientUrgency()));
                 finish();
             }
         });

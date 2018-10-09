@@ -1,4 +1,6 @@
-package longmoneyoffshore.dlrtime.utils;
+package longmoneyoffshore.dlrtime.utils.TransportClients;
+
+import android.util.Log;
 
 public class Client {
     /* Client info consists of: name, location, phone number, product, quantity, total price, price per unit,
@@ -176,4 +178,19 @@ public class Client {
 
     //return a reference to this Client object
     public Client getClient () {return this;}
+
+
+    public void showClient () {
+        Log.d("THIS_CLIENT NAME", clientName);
+        Log.d("THIS_CLIENT PHONE", clientPhoneNo);
+        Log.d("THIS_CLIENT LOCATION", clientLocation);
+        Log.d("THIS_CLIENT PROD ID", clientProductID);
+        Log.d("THIS_CLIENT QUANT", String.valueOf(clientQuantity));
+        Log.d("THIS_CLIENT PRICE", String.valueOf(clientPrice));
+        Log.d("THIS_CLIENT PR ADJ", String.valueOf(clientPriceAdjust));
+        Log.d("THIS_CLIENT URGENCY", String.valueOf(clientUrgency));
+        Log.d("THIS_CLIENT VALUE", String.valueOf(clientValue));
+        Log.d("THIS_CLIENT STATUS", clientStatus);
+    }
+
 }

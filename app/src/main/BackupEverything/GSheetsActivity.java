@@ -36,6 +36,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
+import longmoneyoffshore.dlrtime.utils.TransportClients.ClientArray;
+import longmoneyoffshore.dlrtime.utils.TransportClients.ClientArrayParcel;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -68,7 +71,7 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
         Intent passedIntent = getIntent();
         Bundle passedDataBundle = passedIntent.getExtras();
         selectedFileId = passedDataBundle.getString("file selected");
-        Log.d("INSIDE GSHEETS_ACT", "THE SPREADSHEET ID IS: " + selectedFileId);
+        //Log.d("INSIDE GSHEETS_ACT", "THE SPREADSHEET ID IS: " + selectedFileId);
 
         //test
         mOutputText = (TextView) findViewById(R.id.messages_gsheets);
@@ -103,6 +106,8 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
 
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(SCOPES)).setBackOff(new ExponentialBackOff());
+
+        getResultsFromApi();
     }
 
     private void getResultsFromApi() {
@@ -220,7 +225,9 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
         dialog.show();
     }
 
-    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+    //TODO: correct, for backup
+    //private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+    private class MakeRequestTask extends AsyncTask<Void, Void, ClientArray> {
         private com.google.api.services.sheets.v4.Sheets mService = null;
         private Exception mLastError = null;
 
@@ -231,11 +238,22 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
                     .setApplicationName("GSheets API Android").build();
         }
 
+         protected ClientArray doInBackground(Void... params) {
+         try {
+         return getDataFromApi(selectedFileId);
+
+         } catch (Exception e) {
+         mLastError = e;
+         cancel(true);
+         return null;
+         }
+         }
+
+
+         /* //TODO: correct, for backup
         @Override
         protected List<String> doInBackground(Void... params) {
             try {
-
-                //TODO: have to implement a way to get the spreadsheet ID, to pass it here
                 return getDataFromApi(selectedFileId);
 
             } catch (Exception e) {
@@ -243,19 +261,7 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
                 cancel(true);
                 return null;
             }
-        }
-
-        /*
-         protected List<Client> doInBackground(Void... params) {
-         try {
-         return getDataFromApi();
-         } catch (Exception e) {
-         mLastError = e;
-         cancel(true);
-         return null;
-         }
-         }
-         */
+        } */
 
         /**
          * Fetch a list of names and majors of students in a sample spreadsheet:
@@ -266,10 +272,38 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
          * my own Clients GSheets
          * https://docs.google.com/spreadsheets/d/16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY/edit#gid=0
          */
-        private List<String> getDataFromApi(String spreadsheetId) throws IOException {
+        private ClientArray getDataFromApi(String spreadsheetId) throws IOException {
 
-            //TODO: this field has to be dynamic — changed depending on what is available in the
-            //TODO: GSheets account opened with the credentials
+            ClientArray resultsArray = new ClientArray();
+            int counter = -1;
+
+            Client iterationClient = new Client();
+
+            String range = "A2:J";
+
+            ValueRange response = this.mService.spreadsheets().values().get(spreadsheetId, range).execute();
+            List<List<Object>> values = response.getValues();
+            if (values != null) {
+                for (List row : values) {
+                    iterationClient.setClientName(row.get(0).toString());
+                    iterationClient.setClientPhoneNo(row.get(1).toString());
+                    iterationClient.setClientLocation(row.get(2).toString());
+                    iterationClient.setClientProductID(row.get(3).toString());
+                    iterationClient.setClientQuantity(Float.parseFloat(row.get(4).toString()));
+                    iterationClient.setClientPrice(Float.parseFloat(row.get(5).toString()));
+                    iterationClient.setClientPriceAdjust(Float.parseFloat(row.get(6).toString()));
+                    iterationClient.setClientUrgency(Float.parseFloat(row.get(7).toString()));
+                    iterationClient.setClientValue(Float.parseFloat(row.get(8).toString()));
+                    iterationClient.setClientStatus(row.get(9).toString());
+
+                    resultsArray.getClientArray().add(++counter ,new Client(iterationClient));
+                }
+            }
+            return resultsArray;
+        }
+
+        /* //TODO: this code is CORRECT for backup puposes
+        private List<String> getDataFromApi(String spreadsheetId) throws IOException {
             //spreadsheetId = "16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
             //spreadsheetId = selectedFileId;
 
@@ -295,7 +329,7 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
                 }
             }
             return results;
-        }
+        } */
 
         //TODO: results is actually an array of Client objects, which will be passed to
         //TODO: and displayed in the OrdersListActivity
@@ -316,7 +350,6 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
                             + row.get(2) + ", "
                             + row.get(3) + ", "
                             + row.get(4) + ", "
-
                     );
                 }
             }
@@ -331,6 +364,30 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
         }
 
         @Override
+        protected void onPostExecute(ClientArray output) {
+            //mProgress.hide();
+            if (output == null || output.getClientArray().size() == 0) {
+                mOutputText.setText("No results returned.");
+            } else {
+                //TODO: OK SO FAR!!!!!!
+
+                //TODO: here we have a clientArray to send to OrdersListActivity
+                ClientArrayParcel clientsListParcel = new ClientArrayParcel(output);
+
+                Log.d("PARCELABLE ", "SIZE " + clientsListParcel.getBasicClientArray().size());
+
+                for (int k = 0; k<clientsListParcel.getBasicClientArray().size();k++) {
+                    Log.d(String.valueOf(k) + " ", "SHOWING CLIENTS NAME " + clientsListParcel.getClientArray().get(k).getClientName()); }
+
+                Intent goToOrdersList = new Intent(GSheetsActivity.this, OrderListActivity.class);
+                goToOrdersList.putExtra("list of clients", clientsListParcel);
+
+                //startActivity(goToOrdersList);
+            }
+        }
+
+        /* //TODO: this code is CORRECT for backup puposes
+        @Override
         protected void onPostExecute(List<String> output) {
             //mProgress.hide();
             if (output == null || output.size() == 0) {
@@ -339,7 +396,7 @@ public class GSheetsActivity extends FragmentActivity implements EasyPermissions
                 output.add(0, "Data retrieved using the Google Sheets API:");
                 mOutputText.setText(TextUtils.join("\n", output));
             }
-        }
+        } */
 
         @Override
         protected void onCancelled() {

@@ -1,4 +1,4 @@
-package longmoneyoffshore.dlrtime.utils;
+package longmoneyoffshore.dlrtime.utils.TransportClients;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import longmoneyoffshore.dlrtime.R;
-import longmoneyoffshore.dlrtime.utils.Client;
+import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 
 public class ClientAdapter extends ArrayAdapter<Client> {
 

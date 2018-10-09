@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class MapDestinationsParcel implements Parcelable {
 
+    //object to transport
     private volatile ArrayList<String> destinationLocations = new ArrayList<String>();
 
 
@@ -20,6 +21,7 @@ public class MapDestinationsParcel implements Parcelable {
         }
     };
 
+    //constructor
     public MapDestinationsParcel(ArrayList<String> inputDestinationLocations) {
         this.destinationLocations = inputDestinationLocations;
     }
