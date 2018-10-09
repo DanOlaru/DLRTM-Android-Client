@@ -7,12 +7,17 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,11 +30,7 @@ import longmoneyoffshore.dlrtime.utils.ClientAdapter;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
 
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.APP_API_KEY;
-
-//Dan - test
-//import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-//import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.THE_FIRST_DOWNLOAD_SHEET;
 
 public class OrderListActivity extends AppCompatActivity {
 
@@ -45,15 +46,9 @@ public class OrderListActivity extends AppCompatActivity {
     private Button goToMapsButton;
     private int positionOnListClicked;
 
-    public String DOWNLOAD_TEMPLATE = "https://spreadsheets.google.com/tq?key=";
-    public String FILE_DOWNLOAD_TEMPLATE_START = "https://docs.google.com/spreadsheets/d/";
-    public String FILE_DOWNLOAD_TEMPLATE_CODA = "/edit#gid=1268876841";
-    public String A_SHEET_TO_DOWNLOAD = "https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
-    public String SHEET_DOWNLOAD_PRE = "https://spreadsheets.google.com/tq?key=";
 
-    String SHEET_TO_DOWNLOAD_ID = "";
-    String receivedSheetStr;
-
+    String sheetURL;
+    String sheetID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +56,7 @@ public class OrderListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_order_list);
 
         listview = (ListView) findViewById(R.id.listview);
-
         btnDownload = (Button) findViewById(R.id.btnDownload);
-        //its activity is handled by buttonClickHandler
 
         // Internet connection
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -93,52 +86,30 @@ public class OrderListActivity extends AppCompatActivity {
 
         Intent intentFromGSheets = getIntent();
         Bundle sheetData = intentFromGSheets.getExtras();
-        receivedSheetStr = sheetData.getString("file selected");
+        sheetID = sheetData.getString("file selected"); //TODO: the file ID arrives properly
+        Log.d("INSIDEORDERLIST", "FILE ID: " + sheetID);
 
-        Log.d("INSIDEORDERLIST", "FILE CONTENTS: " + receivedSheetStr);
+        //TODO: how to properly form dowloadURL from fild ID
 
-        //SHEET_TO_DOWNLOAD_ID = sheetData.getString("file selected");
-        //Log.d("FILEID", "COMPLETE DOWNLOAD LINK: " + SHEET_DOWNLOAD_PRE + SHEET_TO_DOWNLOAD_ID);
-        //Log.d("INSIDEASYNC", "FILE URL: " + SHEET_DOWNLOAD_PRE);
 
-        //downLoadAndShowClients(receivedSheetStr);
-        downLoadAndShowClients(A_SHEET_TO_DOWNLOAD);
+        //PROPER REQUEST TEMPLATES
+        //https://www.googleapis.com/drive/v3/files/FILE_ID?fields=mimeType&key={YOUR_API_KEY}
+        //GET https://www.googleapis.com/drive/v3/files/1VRwq2yaAUH6dilpDbFksgT8_ioRaWHmagaQQLK2KOKk?fields=contentHints%2Fthumbnail%2FmimeType%2CcopyRequiresWriterPermission%2CcreatedTime%2CfileExtension%2CfullFileExtension%2Cid%2Ckind%2ClastModifyingUser%2CmimeType%2CmodifiedByMeTime%2CmodifiedTime%2Cname%2CownedByMe&key={YOUR_API_KEY}
+
+        sheetURL = "https://www.googleapis.com/drive/v3/files/"+sheetID
+                +"?fields=contentHints%2Fthumbnail%2FmimeType%2CcopyRequiresWriterPermission" +
+                "%2CcreatedTime%2CfileExtension%2CfullFileExtension%2Cid%2Ckind%2ClastModifyingUser%2CmimeType%2CmodifiedByMeTime%2CmodifiedTime%2Cname%2CownedByMe&key="+APP_API_KEY;
+        //"?mimetype=text/csv"
+
+        Log.d("BEFOREDOWNLOADCLIENTS", "SHEET ID: " + sheetURL);
+        downLoadAndShowClients(sheetURL);
     }
 
     public void buttonClickHandler(View view) {
-        //downLoadAndShowClients(receivedSheetStr);
-        downLoadAndShowClients(A_SHEET_TO_DOWNLOAD);
+        downLoadAndShowClients(sheetURL);
     }
 
-    /*
-    private void downLoadAndShowClients (String downloadedFile) {
-        listview.setAdapter(null);
-        clients.clear();
-
-
-        if(listview!=null)
-        {
-            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    //position clicked on — it is visible outside of this scope to the onActivityResult
-                    positionOnListClicked = position;
-
-                    Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
-                    ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
-                    Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
-
-                    thisIndividualOrder.putExtra("order", clickedOrderParcel);
-                    int reqCode = 1; //what should be the predefined value?
-                    startActivityForResult(thisIndividualOrder,reqCode);
-                }
-            });
-        }
-    } */
-
-
-    private void downLoadAndShowClients (String downloadFileId) {
+    private void downLoadAndShowClients (String downloadFileURL) {
         listview.setAdapter(null);
         clients.clear();
 
@@ -147,10 +118,8 @@ public class OrderListActivity extends AppCompatActivity {
             @Override
             public void onResult(JSONObject object) {
                 processJson(object); // Feeds with the retrieved data
-                Log.d("INSIDEASYNC", "FILE URL: " + SHEET_DOWNLOAD_PRE + downloadFileId + "key=" + APP_API_KEY);
             }
-        //}).execute(SHEET_DOWNLOAD_PRE + downloadFileId + "key=" + APP_API_KEY);
-    }).execute(A_SHEET_TO_DOWNLOAD);
+        }).execute(downloadFileURL);
 
         if(listview!=null)
         {
@@ -255,3 +224,30 @@ public class OrderListActivity extends AppCompatActivity {
         return dummy;
     }
 }
+
+
+/*
+    private void downLoadAndShowClients (String downloadedFile) {
+        listview.setAdapter(null);
+        clients.clear();
+
+        if(listview!=null)
+        {
+            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    //position clicked on — it is visible outside of this scope to the onActivityResult
+                    positionOnListClicked = position;
+
+                    Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
+                    ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
+                    Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
+
+                    thisIndividualOrder.putExtra("order", clickedOrderParcel);
+                    int reqCode = 1; //what should be the predefined value?
+                    startActivityForResult(thisIndividualOrder,reqCode);
+                }
+            });
+        }
+    } */

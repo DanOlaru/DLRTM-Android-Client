@@ -7,6 +7,7 @@ public class GlobalValues {
     public static final String US_ANONYMIZER_PREFIX = "*67";
 
     public static final LatLng ChicagoLocale = new LatLng(41.8781, -87.6298);
+    public static final String THE_FIRST_DOWNLOAD_SHEET = "https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
 
 
 }

@@ -29,8 +29,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 
 import java.util.List;
 
-public class LoginActivity extends AppCompatActivity implements
-        View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "SignInActivity";
     private static final String KEY_ACCOUNT = "key_account";
@@ -38,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements
     private static final int RC_SIGN_IN = 9001;
     private static final int RC_RECOVERABLE = 9002;
 
-    private GoogleSignInClient mGoogleSignInClient;
+    public GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
 
@@ -48,8 +47,6 @@ public class LoginActivity extends AppCompatActivity implements
 
     //Google Drive access
     private static final int REQUEST_CODE_SIGN_IN = 0;
-    private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
-    private static final int REQUEST_CODE_CREATOR = 2;
 
     private DriveClient mDriveClient;
     private DriveResourceClient mDriveResourceClient;
@@ -68,10 +65,6 @@ public class LoginActivity extends AppCompatActivity implements
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.disconnect_button).setOnClickListener(this);
 
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-
-
         /*
         //this is the original one that worked
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -83,7 +76,7 @@ public class LoginActivity extends AppCompatActivity implements
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope(Scopes.DRIVE_FILE))
                 //.requestScopes(new Scope(Scopes.PROFILE))
-                //.requestScopes(new Scope(Scopes.DRIVE_FULL))
+                //.requestScopes(new Scope(Scopes.DRIVE_FULL)) //causes the account to seize up and not show the picker
                 .requestEmail()
                 .build();
 
@@ -92,7 +85,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         SignInButton signInButton = findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
-        signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
+        //signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
     }
 
     @Override
@@ -105,32 +98,23 @@ public class LoginActivity extends AppCompatActivity implements
         updateUI(account);
         if (account != null )
         {
-            //Log.d ("LOGIN__SIGNED_IN", "A_OK");
-            //Log.d ("NAME_OF_PERSON", account.getDisplayName());
-            //Log.d ("EMAIL OF PERSON", account.getEmail());
-
             updateUI(account);
-
-            //Launch of SheetsListActivity
+            //Launch SheetsListActivity
             Intent intent = new Intent(this, SheetsListActivity.class);
             startActivity(intent);
         }
-
         /*
         if (account != null && GoogleSignIn.hasPermissions(account, new Scope(Scopes.DRIVE_APPFOLDER))) {
             updateUI(account);
         } else {
             updateUI(null);
-        }
-        */
-
+        }*/
     }
 
     /*
     @Override
     public void onStart() {
         super.onStart();
-
         // Check if the user is already signed in and all required scopes are granted
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null && GoogleSignIn.hasPermissions(account, new Scope(Scopes.DRIVE_APPFOLDER))) {
@@ -138,8 +122,7 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
             updateUI(null);
         }
-    }
-            */
+    } */
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -152,7 +135,6 @@ public class LoginActivity extends AppCompatActivity implements
             if (resultCode == RESULT_OK) {
 
                 Log.i(TAG, "Signed in successfully.");
-
                 //GoogleSignInOptions gso = GoogleSignInOptions.DEFAULT_SIGN_IN;
                 //GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
                 //Launch of SheetsListActivity
@@ -169,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     /*
-       @Override
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -178,8 +160,7 @@ public class LoginActivity extends AppCompatActivity implements
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
-    }
-     */
+    } */
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
@@ -199,7 +180,6 @@ public class LoginActivity extends AppCompatActivity implements
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN);
     }
-
 
 
     private void signOut() {
@@ -226,7 +206,6 @@ public class LoginActivity extends AppCompatActivity implements
                 });
     }
 
-
     private void updateUI(@Nullable GoogleSignInAccount account) {
         if (account != null) {
             mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
@@ -241,7 +220,6 @@ public class LoginActivity extends AppCompatActivity implements
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
-
 
     @Override
     public void onClick(View v) {
@@ -262,6 +240,4 @@ public class LoginActivity extends AppCompatActivity implements
         Log.w(TAG, "onRecoverableAuthException", recoverableException);
         startActivityForResult(recoverableException.getIntent(), RC_RECOVERABLE);
     }
-
-
 }
