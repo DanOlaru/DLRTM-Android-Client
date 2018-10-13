@@ -44,43 +44,40 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
         // Get the transferred data from source activity.
         Intent passedIntent = getIntent();
-
         ClientParcel myPassedClientParcel = passedIntent.getParcelableExtra("order");
-            myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
 
-            //initially localFeedbackClient is identical to the passed Client object. Any modifications made
-            // will be passed back using it to the invoking activity or perhaps the ASyncTask!!!
-            localFeedbackClient = new Client(myPassedClient);
+        myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
+        localFeedbackClient = new Client(myPassedClient);
 
-            //get the applicable anonymizerPrefix
-            final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
+        //get the applicable anonymizerPrefix
+        final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
-            //orderNameField = (EditText) findViewById(R.id.orderNameClient); //is this necessary?
-            //orderNameField.setText(myPassedClient.getClientName());
+        //orderNameField = (EditText) findViewById(R.id.orderNameClient); //is this necessary?
+        //orderNameField.setText(myPassedClient.getClientName());
 
-            orderNameClientField = (EditText) findViewById(R.id.orderNameClnt);
-            orderNameClientField.setText(myPassedClient.getClientName());
+        orderNameClientField = (EditText) findViewById(R.id.orderNameClnt);
+        orderNameClientField.setText(myPassedClient.getClientName());
 
-            orderPhoneClientField = (EditText) findViewById(R.id.orderPhoneClnt);
-            orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
+        orderPhoneClientField = (EditText) findViewById(R.id.orderPhoneClnt);
+        orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
 
-            orderLocationClientField = (EditText) findViewById(R.id.orderLocationClnt);
-            orderLocationClientField.setText(myPassedClient.getClientLocation());
+        orderLocationClientField = (EditText) findViewById(R.id.orderLocationClnt);
+        orderLocationClientField.setText(myPassedClient.getClientLocation());
 
-            orderProductIdField = (EditText) findViewById(R.id.orderProductIDClnt);
-            orderProductIdField.setText(myPassedClient.getClientProductID());
+        orderProductIdField = (EditText) findViewById(R.id.orderProductIDClnt);
+        orderProductIdField.setText(myPassedClient.getClientProductID());
 
-            orderProductQuantField = (EditText) findViewById(R.id.orderProductQuantClnt);
-            orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
+        orderProductQuantField = (EditText) findViewById(R.id.orderProductQuantClnt);
+        orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
 
-            orderProductPriceField = (EditText) findViewById(R.id.orderProductPriceClnt);
-            orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
+        orderProductPriceField = (EditText) findViewById(R.id.orderProductPriceClnt);
+        orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
 
-            orderPriceAdjustField = (EditText) findViewById(R.id.orderPriceAdjClnt);
-            orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
+        orderPriceAdjustField = (EditText) findViewById(R.id.orderPriceAdjClnt);
+        orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
 
-            orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
-            orderUrgencyField.setRating(myPassedClient.getClientUrgency());
+        orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
+        orderUrgencyField.setRating(myPassedClient.getClientUrgency());
 
 
         // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5

@@ -65,7 +65,5 @@ public class ClientArray extends Client {
             clientList.remove(index);
             clientList.set(index,updateClient);
         }
-
-
     }
 }

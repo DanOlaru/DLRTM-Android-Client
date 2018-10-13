@@ -1,6 +1,4 @@
-/*
- * Author: Dan Olaru, (c) 2018
- */
+/* Author: Dan Olaru, (c) 2018 */
 
 package longmoneyoffshore.dlrtime;
 
@@ -12,10 +10,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,50 +21,31 @@ import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.ValueRange;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import longmoneyoffshore.dlrtime.utils.AsyncResult;
+import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.PassDataBackToSheets;
+import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.ReadDataFromSheets;
 import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientArray;
-import longmoneyoffshore.dlrtime.utils.TransportClients.ClientArrayParcel;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientParcel;
-import longmoneyoffshore.dlrtime.utils.DownloadAsyncTask;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientAdapter;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static longmoneyoffshore.dlrtime.utils.GlobalValues.APP_API_KEY;
-import static longmoneyoffshore.dlrtime.utils.GlobalValues.RC_SIGN_IN;
-import static longmoneyoffshore.dlrtime.utils.GlobalValues.REQUEST_CODE_SIGN_OUT;
-
 public class OrderListActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
     private static final String DEBUG_TAG = "HttpExample";
     private static final int REQUEST_CODE_1 = 1;
-
-    //private ArrayList<Client> clients = new ArrayList<Client>();
-
     private ClientArray clients = new ClientArray();
-    private volatile ArrayList<String> destinationLocations = new ArrayList<String>();
+    //private volatile ArrayList<String> destinationLocations = new ArrayList<String>();
+    public volatile ArrayList<String> destinationLocations = new ArrayList<String>();
 
     private ListView listview;
     private Button btnDownload;
@@ -79,6 +56,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     private int positionOnListClicked;
 
     String sheetID;
+    Client saveClickedOrder;
 
     GoogleAccountCredential mCredential;
     private Button mCallApiButton;
@@ -92,6 +70,9 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
+    //private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
+    //private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+
     public static final int INDIVIDUAL_ORDER_CHANGED=1005;
     public static final int CLICK_INDIVIDUAL_ORDER = 1006;
     public static final int CREATE_NEW_ORDER=1007;
@@ -134,10 +115,19 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         goToMapsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //testing
+                for (int k=0;k<destinationLocations.size();k++) {
+                    Log.d("DESTINATIONS EXTRACTED", String.valueOf(k)+ " " + destinationLocations.get(k));
+                }
                 Intent toMapsRoute = new Intent(OrderListActivity.this, MapsRouteActivity.class);
-                MapDestinationsParcel destinationsParcel = new MapDestinationsParcel(destinationLocations);
 
-                toMapsRoute.putExtra("locations to go to", destinationsParcel);
+                if (destinationLocations.size() > 0) {
+                    MapDestinationsParcel destinationsParcel = new MapDestinationsParcel(destinationLocations);
+                    toMapsRoute.putExtra("locations to go to", destinationsParcel);
+
+                } else {
+                    //TODO: the list of locations isn't yet populated
+                    }
                 startActivity(toMapsRoute);
             }
         });
@@ -169,27 +159,19 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    //position clicked on — it is visible outside of this scope to the onActivityResult
+                    //position clicked on — visible outside of this scope to the onActivityResult
                     positionOnListClicked = position;
-
                     Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
+                    saveClickedOrder = clickedOrder;
+
                     ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
                     Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
-
                     thisIndividualOrder.putExtra("order", clickedOrderParcel);
+
                     startActivityForResult(thisIndividualOrder,CLICK_INDIVIDUAL_ORDER);
                 }
             });
         }
-    }
-
-    private ClientAdapter passBackOrderChanges (Client modifiedClient) {
-
-        //TODO: feed back any modifications to GSheets
-
-        ClientAdapter dummy = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
-        return dummy;
     }
 
     public void buttonClickHandler(View view) {
@@ -210,7 +192,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
             }
         } else {
-
             EasyPermissions.requestPermissions(this, "This app needs to access your Google account (via Contacts).",
                     REQUEST_PERMISSION_GET_ACCOUNTS, Manifest.permission.GET_ACCOUNTS);
         }
@@ -261,8 +242,11 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     //final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
                     final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
                     listview.setAdapter(reAdapter);
-                    //passBackOrderChanges(positionOnListClicked, returnLocalClient);
-                    passBackOrderChanges(returnLocalClient);
+
+                    //Sending the change back to GSheets
+                    Log.d("CLIENT_MODIFIES", " ####################################");
+                    returnLocalClient.showClient();
+                    new PassDataBackToSheets(mCredential, returnLocalClient, saveClickedOrder, positionOnListClicked).execute(sheetID);
                 }
                 break;
         }
@@ -297,6 +281,19 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         return connectionStatusCode == ConnectionResult.SUCCESS;
     }
 
+
+    private void getResultsFromApi(String selectedSheetID) {
+        if (! isGooglePlayServicesAvailable()) { acquireGooglePlayServices(); }
+        else if (mCredential.getSelectedAccountName() == null) { chooseAccount(); }
+        else if (! isDeviceOnline()) { } else {
+            listview.setAdapter(null);
+            //clients.clear();
+            clients.getClientArray().clear();
+            //new OrderListActivity.RequestDataTask(mCredential).execute(selectedSheetID);
+            new ReadDataFromSheets(mCredential, clients, destinationLocations, OrderListActivity.this,listview).execute(selectedSheetID);
+        }
+    }
+
     private void acquireGooglePlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         final int connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this);
@@ -309,124 +306,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         Dialog dialog = apiAvailability.getErrorDialog(OrderListActivity.this, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
-    }
-
-    private void getResultsFromApi(String selectedSheetID) {
-        if (! isGooglePlayServicesAvailable()) { acquireGooglePlayServices(); }
-        else if (mCredential.getSelectedAccountName() == null) { chooseAccount(); }
-        else if (! isDeviceOnline()) { } else {
-            listview.setAdapter(null);
-            //clients.clear();
-            clients.getClientArray().clear();
-            new OrderListActivity.MakeRequestTask(mCredential).execute(selectedSheetID);
-        }
-    }
-
-    private class MakeRequestTask extends AsyncTask<String, Void, ClientArray> {
-        private com.google.api.services.sheets.v4.Sheets mService = null;
-        private Exception mLastError = null;
-
-        MakeRequestTask(GoogleAccountCredential credential) {
-            HttpTransport transport = AndroidHttp.newCompatibleTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            mService = new com.google.api.services.sheets.v4.Sheets.Builder(transport, jsonFactory, credential)
-                    .setApplicationName("GSheets API Android").build();
-        }
-
-        protected ClientArray doInBackground(String... params) {
-            try {
-                return getDataFromApi(params[0]);
-
-            } catch (Exception e) {
-                mLastError = e;
-                cancel(true);
-                return null;
-            }
-        }
-
-        private ClientArray getDataFromApi(String spreadsheetId) throws IOException {
-
-            ClientArray resultsArray = new ClientArray();
-            int counter = -1;
-
-            Client iterationClient = new Client();
-
-            String range = "A2:J";
-
-            ValueRange response = this.mService.spreadsheets().values().get(spreadsheetId, range).execute();
-            List<List<Object>> values = response.getValues();
-            if (values != null) {
-                for (List row : values) {
-                    iterationClient.setClientName(row.get(0).toString());
-                    iterationClient.setClientPhoneNo(row.get(1).toString());
-                    iterationClient.setClientLocation(row.get(2).toString());
-                    iterationClient.setClientProductID(row.get(3).toString());
-                    iterationClient.setClientQuantity(Float.parseFloat(row.get(4).toString()));
-                    iterationClient.setClientPrice(Float.parseFloat(row.get(5).toString()));
-                    iterationClient.setClientPriceAdjust(Float.parseFloat(row.get(6).toString()));
-                    iterationClient.setClientUrgency(Float.parseFloat(row.get(7).toString()));
-                    iterationClient.setClientValue(Float.parseFloat(row.get(8).toString()));
-                    iterationClient.setClientStatus(row.get(9).toString());
-
-                    resultsArray.getClientArray().add(++counter ,new Client(iterationClient));
-                }
-            }
-            return resultsArray;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            //mOutputText.setText("");
-            //mProgress.show();
-        }
-
-        @Override
-        protected void onPostExecute(ClientArray output) {
-            //mProgress.hide();
-            if (output == null || output.getClientArray().size() == 0) {
-                //mOutputText.setText("No results returned.");
-            } else {
-                //Todo : we fill the list adapter with this info
-
-                //clients.clear();
-                clients.getClientArray().clear();
-                //clients.addAll(output.getClientArray());
-                clients.getClientArray().addAll(output.getClientArray());
-
-                //Get an ArrayList of all the destinations where the user needs to go
-                destinationLocations.clear();
-                //for (int j = 0; j<clients.size();j++) {destinationLocations.add(clients.get(j).getClientLocation());}
-                for (int j = 0; j<clients.getClientArray().size();j++) {destinationLocations.add(clients.getClientArray().get(j).getClientLocation());}
-
-                //final ClientAdapter adapter = new ClientAdapter(OrderListActivity.this, R.layout.client_item, clients);
-                final ClientAdapter adapter = new ClientAdapter(OrderListActivity.this, R.layout.client_item, clients.getClientArray());
-
-                //listview.setAdapter(null);
-                listview.setAdapter(adapter);
-
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            //mProgress.hide();
-            if (mLastError != null) {
-                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
-                    showGooglePlayServicesAvailabilityErrorDialog(
-                            ((GooglePlayServicesAvailabilityIOException) mLastError)
-                                    .getConnectionStatusCode());
-                } else if (mLastError instanceof UserRecoverableAuthIOException) {
-                    startActivityForResult(
-                            ((UserRecoverableAuthIOException) mLastError).getIntent(),
-                            OrderListActivity.REQUEST_AUTHORIZATION);
-                } else {
-                    //mOutputText.setText("The following error occurred:\n"
-                    //        + mLastError.getMessage());
-                }
-            } else {
-                //mOutputText.setText("Request cancelled.");
-            }
-        }
     }
 
 }

@@ -1,8 +1,5 @@
 package longmoneyoffshore.dlrtime.utils.TransportClients;
 
-
-// Parcelable test implementation - Dan
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -17,18 +14,15 @@ public class ClientParcel extends Client implements Parcelable {
         public ClientParcel[] newArray(int size) { return new ClientParcel[size]; }
     };
 
-
     //constructors
 
     //simple constructor
-    public ClientParcel () { }
+    public ClientParcel () { super(); }
 
     //constructor of ClientParcel from Client object — is this right? Does it do what I want it to do?
     public ClientParcel (Client thisClient) { super (thisClient); }
 
     //Parcellation
-    //the order matters?
-
     private ClientParcel(Parcel in) {
         this.setClientName(in.readString());
         this.setClientPhoneNo(in.readString());
@@ -42,6 +36,7 @@ public class ClientParcel extends Client implements Parcelable {
         this.setClientStatus(in.readString());
         //
         this.setAnonymizerPrefix(in.readString());
+        this.setClientReferenceCode(in.readString());
     }
 
 
@@ -63,6 +58,9 @@ public class ClientParcel extends Client implements Parcelable {
         out.setClientUrgency(this.getClientUrgency());
         out.setClientValue(this.getClientValue());
         out.setClientStatus(this.getClientStatus());
+        //
+        out.setAnonymizerPrefix(this.getAnonymizerPrefix());
+        out.setClientReferenceCode(this.getClientReferenceCode());
 
         return out;
     }
@@ -82,6 +80,7 @@ public class ClientParcel extends Client implements Parcelable {
         outClient.writeString(this.getClientStatus());
         //
         outClient.writeString(this.getAnonymizerPrefix());
+        outClient.writeString(this.getClientReferenceCode());
     }
 
     //implement describeContents

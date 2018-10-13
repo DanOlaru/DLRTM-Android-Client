@@ -25,13 +25,15 @@ public class Client {
     private float clientUrgency;
     private float clientValue;
     private String clientStatus;
+    //
     private String anonymizerPrefix = USanonymizerPrefix;
+    private String clientReferenceCode = "0";
 
 
     //Note: by convention only for the name of the classes the first letter is uppercase
 
-    /****************************************Constructors of the classs******************/
-    // 1° constructor - the basic one
+    /****************************************Constructors******************/
+    // 1° constructor -  basic
     public Client()
     {}
 
@@ -69,8 +71,26 @@ public class Client {
         this.anonymizerPrefix = anonymizerPrefix;
     }
 
-    // 4° constructor from this same type of object — Dan
+    // 4° constructor that also takes anonymizerPrefix and clientReferenceCode
 
+    public Client(String clientName, String clientPhoneNo, String clientLocation, String clientProductID, float clientQuantity,
+                  float clientPrice, float clientPriceAdjust, float clientUrgency, float clientValue, String clientStatus,
+                  String anonymizerPrefix, String clientReferenceCode) {
+        this.clientName = clientName;
+        this.clientPhoneNo = clientPhoneNo;
+        this.clientLocation = clientLocation;
+        this.clientProductID = clientProductID;
+        this.clientQuantity = clientQuantity;
+        this.clientPrice = clientPrice;
+        this.clientPriceAdjust = clientPriceAdjust;
+        this.clientUrgency = clientUrgency;
+        this.clientValue = clientValue;
+        this.clientStatus = clientStatus;
+        this.anonymizerPrefix = anonymizerPrefix;
+        this.clientReferenceCode = clientReferenceCode;
+    }
+
+    // 5° constructor from the same type of object — Dan
     public Client (Client fromClient)
     {
         this.clientName = fromClient.getClientName();
@@ -84,8 +104,9 @@ public class Client {
         this.clientValue = fromClient.getClientValue();
         this.clientStatus = fromClient.getClientStatus();
 
-        //latest change
+        //latest
         this.anonymizerPrefix = fromClient.getAnonymizerPrefix();
+        this.clientReferenceCode = fromClient.getClientReferenceCode();
     }
 
     /****************Getter and setter - methods use to access the private attributes of a class **/
@@ -125,7 +146,6 @@ public class Client {
     public float getClientQuantity() {
         return clientQuantity;
     }
-
     public void setClientQuantity(float clientQuantity) {
         this.clientQuantity = clientQuantity;
     }
@@ -133,7 +153,6 @@ public class Client {
     public float getClientPrice() {
         return clientPrice;
     }
-
     public void setClientPrice(float clientPrice) {
         this.clientPrice = clientPrice;
     }
@@ -141,15 +160,11 @@ public class Client {
     public float getClientPriceAdjust() {
         return clientPriceAdjust;
     }
-
-    public void setClientPriceAdjust(float clientPriceAdjust) {
-        this.clientPriceAdjust = clientPriceAdjust;
-    }
+    public void setClientPriceAdjust(float clientPriceAdjust) { this.clientPriceAdjust = clientPriceAdjust; }
 
     public float getClientUrgency() {
         return clientUrgency;
     }
-
     public void setClientUrgency(float clientUrgency) {
         this.clientUrgency = clientUrgency;
     }
@@ -157,7 +172,6 @@ public class Client {
     public float getClientValue() {
         return clientValue;
     }
-
     public void setClientValue(float clientValue) {
         this.clientValue = clientValue;
     }
@@ -165,15 +179,17 @@ public class Client {
     public String getClientStatus() {
         return clientStatus;
     }
-
     public void setClientStatus(String clientStatus) {
         this.clientStatus = clientStatus;
     }
 
     //set and get AnonymizerPrefix which is added in front of the phone number if the caller ID needs to be private for any reason
+    public String getAnonymizerPrefix () {return this.anonymizerPrefix;}
     public void setAnonymizerPrefix (String anonymizerPrefix) {this.anonymizerPrefix = anonymizerPrefix;}
 
-    public String getAnonymizerPrefix () {return this.anonymizerPrefix;}
+    public String getClientReferenceCode () {return clientReferenceCode;}
+    public void setClientReferenceCode(String refCode) {this.clientReferenceCode = refCode;}
+    public void setClientReferenceCode(int refCode) { this.clientReferenceCode = String.valueOf(refCode); }
 
 
     //return a reference to this Client object
@@ -191,6 +207,7 @@ public class Client {
         Log.d("THIS_CLIENT URGENCY", String.valueOf(clientUrgency));
         Log.d("THIS_CLIENT VALUE", String.valueOf(clientValue));
         Log.d("THIS_CLIENT STATUS", clientStatus);
+        Log.d("THIS_CLIENT REF CODE", clientReferenceCode);
     }
 
 }

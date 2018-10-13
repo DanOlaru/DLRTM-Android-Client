@@ -94,7 +94,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         if (ActivityCompat.checkSelfPermission(MapsRouteActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(MapsRouteActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsRouteActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            //return;
         }
 
 
@@ -122,31 +121,38 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //parcel contains all the addresses that need to show up on the map
+        //parcel contains the addresses that need to show up on the map
         Bundle getLocationsToSeeBundle = getIntent().getExtras();
         locationsToSee = (MapDestinationsParcel) getLocationsToSeeBundle.getParcelable("locations to go to");
-        locationsToSeeCoordinates.clear(); //here we store the coordinates that need to be seen
-        locationsToSeeCoordinates.add(currentUserGeoPosition);
 
-        LatLng geoCoords;
-        Context contextToPass = getApplicationContext();
-        ArrayList<String> stringLocationsToParse = new ArrayList<String>();
+        if (locationsToSee != null) {
 
-        //copy from parcel to simple array list
-        stringLocationsToParse.addAll(locationsToSee.getMapDestinationLocations());
+            locationsToSeeCoordinates.clear(); //here we store the coordinates that need to be seen
+            locationsToSeeCoordinates.add(currentUserGeoPosition);
 
-        //invoke AsyncTask
-        CompositeType<Context,ArrayList<String>> objectForGeocodeParsing =
-                new CompositeType<Context,ArrayList<String>> (contextToPass, stringLocationsToParse);
+            LatLng geoCoords;
+            Context contextToPass = getApplicationContext();
+            ArrayList<String> stringLocationsToParse = new ArrayList<String>();
 
-        GeolocateAddressAsyncTask getCoordsTask = new GeolocateAddressAsyncTask();
-        getCoordsTask.execute(objectForGeocodeParsing);
+            //copy from parcel to simple array list
+            stringLocationsToParse.addAll(locationsToSee.getMapDestinationLocations());
+
+            //invoke AsyncTask
+            CompositeType<Context, ArrayList<String>> objectForGeocodeParsing = new CompositeType<Context, ArrayList<String>>(contextToPass, stringLocationsToParse);
+
+            GeolocateAddressAsyncTask getCoordsTask = new GeolocateAddressAsyncTask();
+            getCoordsTask.execute(objectForGeocodeParsing);
 
         /*
             //other implementation — doesn't work as well
             //new GetCoordinates().execute(locationsToSee.getMapDestinationLocations().get(j).
             // replace(" ", "%20").concat("%2C" + userLocale)); //.replace("& ","")
         } */
+        } else {
+            //TODO: when we don't have any coordinates selected
+            Log.d("LOCATIONS","ARE NULL!!!!!!!!!!!!!!!!!!!!!");
+        }
+
     }
 
     @Override
@@ -228,7 +234,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
 
             asyncCounter = 0;
 
-            //Log.d("INSIDEASYNCTASK","BISH_INTERNAL_ASYNC_GET_COORDS");
             try {
                 //Log.d("INSIDEASYNCTASK","BISH");
                 for (int i=0; i<listOfAddressesToParse.size(); i++) {
@@ -238,8 +243,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
 
             } catch (IOException e) { Log.d("Background Task", e.toString()); }
 
-            //Log.d("INSIDEASYNCTASK","ADDRESSES PARSED " + asyncCounter);
-            //for (int k=0; k<asyncCounter;k++) Log.d("INSIDEASYNCTASK", result.get(k).latitude + "&" + result.get(k).longitude);
             return result; //works till here
         }
 
@@ -329,10 +332,10 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             ArrayList<LatLng> orderedResult = resultOrderedList;
             ArrayList<LatLng> orderedList = new ArrayList<LatLng>(orderedResult);
 
-            Log.d ("RESULT LIST", "SHOWING REORDERED LIST OF LOCATIONS size " + resultOrderedList.size());
+            //Log.d ("RESULT LIST", "SHOWING REORDERED LIST OF LOCATIONS size " + resultOrderedList.size());
             for (int k=0; k<resultOrderedList.size(); k++) {
                 //Log.d ("UNORDERD LIST", "LATITUDE" + unorderedLocations.get(k).latitude + " LONGITUDE" + unorderedLocations.get(k).longitude);
-                Log.d ("REORDERD LIST", "LATITUDE " + resultOrderedList.get(k).latitude + " LONGITUDE" + resultOrderedList.get(k).longitude);
+                //Log.d ("REORDERD LIST", "LATITUDE " + resultOrderedList.get(k).latitude + " LONGITUDE" + resultOrderedList.get(k).longitude);
             }
 
             //here we display the re-arranged coordinates
@@ -342,7 +345,7 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
 
             for (int j=0; j<resultOrderedList.size(); j++) {
                 latLng = resultOrderedList.get(j);
-                Log.d("INSIDEFORLOOP ",latLng.latitude + " " + latLng.longitude);
+                //Log.d("INSIDEFORLOOP ",latLng.latitude + " " + latLng.longitude);
 
                 mMap.addMarker(new MarkerOptions().position(latLng));
                 // Adding new item to the ArrayList
@@ -462,16 +465,10 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
 
                     points.add(position);
                 }
-
-                //lineOptions.addAll(points);
-                //lineOptions.width(12);
-                //lineOptions.color(Color.RED);
-                //lineOptions.geodesic(true);
             }
 
             lineOptions.addAll(points);
             lineOptions.width(10);
-
             lineOptions.color(Color.CYAN);
             lineOptions.geodesic(true);
 
