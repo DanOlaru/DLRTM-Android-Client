@@ -39,6 +39,9 @@ import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.APPEND_FIELD;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.UPDATE_FIELD;
+
 public class OrderListActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
     private static final String DEBUG_TAG = "HttpExample";
@@ -69,7 +72,9 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
+    //private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
+    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
+
     //private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
     //private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
 
@@ -137,8 +142,9 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         makeNewOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
-                startActivityForResult(thisIndividualOrder,CREATE_NEW_ORDER);
+                Intent newIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
+                newIndividualOrder.setAction("new order");
+                startActivityForResult(newIndividualOrder,CREATE_NEW_ORDER);
             }
         });
 
@@ -167,6 +173,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
                     Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
                     thisIndividualOrder.putExtra("order", clickedOrderParcel);
+                    thisIndividualOrder.setAction("individual order");
 
                     startActivityForResult(thisIndividualOrder,CLICK_INDIVIDUAL_ORDER);
                 }
@@ -235,20 +242,27 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             case CLICK_INDIVIDUAL_ORDER:
                 if (resultCode == RESULT_OK) {
                     //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
-                    Client returnLocalClient = (Client) data.getParcelableExtra("edited order");
+                    Client returnClient = (Client) data.getParcelableExtra("edited order");
 
-                    //clients.set(positionOnListClicked, returnLocalClient);
-                    clients.getClientArray().set(positionOnListClicked, returnLocalClient);
+                    //TODO: implement comparison to make sure that something has changed
+                    clients.getClientArray().set(positionOnListClicked, returnClient);
                     //final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
                     final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
                     listview.setAdapter(reAdapter);
 
                     //Sending the change back to GSheets
-                    Log.d("CLIENT_MODIFIES", " ####################################");
-                    returnLocalClient.showClient();
-                    new PassDataBackToSheets(mCredential, returnLocalClient, saveClickedOrder, positionOnListClicked).execute(sheetID);
+                    //Log.d("CLIENT_MODIFIES", " ####################################");
+                    new PassDataBackToSheets(mCredential, returnClient, saveClickedOrder, positionOnListClicked, UPDATE_FIELD).execute(sheetID);
                 }
                 break;
+            case CREATE_NEW_ORDER:
+                if (resultCode == RESULT_OK) {
+                    Client returnClient = (Client) data.getParcelableExtra("new order");
+                    clients.getClientArray().set(positionOnListClicked, returnClient);
+                    final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
+                    listview.setAdapter(reAdapter);
+                    new PassDataBackToSheets(mCredential, returnClient, saveClickedOrder, positionOnListClicked, APPEND_FIELD).execute(sheetID);
+                }
         }
     }
 

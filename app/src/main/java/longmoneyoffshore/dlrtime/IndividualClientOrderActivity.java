@@ -21,7 +21,7 @@ import static longmoneyoffshore.dlrtime.utils.GlobalValues.RC_SIGN_IN;
 
 public class IndividualClientOrderActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private Client localFeedbackClient;
+    private Client localFeedbackClient = new Client();
     private Client myPassedClient;
 
     //individual variables for the display table
@@ -46,38 +46,20 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         Intent passedIntent = getIntent();
         ClientParcel myPassedClientParcel = passedIntent.getParcelableExtra("order");
 
-        myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
-        localFeedbackClient = new Client(myPassedClient);
-
-        //get the applicable anonymizerPrefix
-        final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
+        String command = passedIntent.getAction();
+        Log.d("INDIVORDER","COMMAND" + command);
 
         //orderNameField = (EditText) findViewById(R.id.orderNameClient); //is this necessary?
-        //orderNameField.setText(myPassedClient.getClientName());
-
         orderNameClientField = (EditText) findViewById(R.id.orderNameClnt);
-        orderNameClientField.setText(myPassedClient.getClientName());
-
         orderPhoneClientField = (EditText) findViewById(R.id.orderPhoneClnt);
-        orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
-
         orderLocationClientField = (EditText) findViewById(R.id.orderLocationClnt);
-        orderLocationClientField.setText(myPassedClient.getClientLocation());
-
         orderProductIdField = (EditText) findViewById(R.id.orderProductIDClnt);
-        orderProductIdField.setText(myPassedClient.getClientProductID());
-
         orderProductQuantField = (EditText) findViewById(R.id.orderProductQuantClnt);
-        orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
-
         orderProductPriceField = (EditText) findViewById(R.id.orderProductPriceClnt);
-        orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
-
         orderPriceAdjustField = (EditText) findViewById(R.id.orderPriceAdjClnt);
-        orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
-
         orderUrgencyField = (RatingBar) findViewById(R.id.orderUrgencyClnt);
-        orderUrgencyField.setRating(myPassedClient.getClientUrgency());
+        orderValueClientField = (RatingBar) findViewById(R.id.orderValueClnt);
+        orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
 
 
         // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5
@@ -85,62 +67,86 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
                 //orderUrgencyField.setOnRatingBarChangeListener();
-                localFeedbackClient.setClientUrgency ((float) ratingBar.getRating());
+                localFeedbackClient.setClientUrgency((float) ratingBar.getRating());
             }
         });
 
-        //Client Value
-        orderValueClientField = (RatingBar) findViewById(R.id.orderValueClnt);
-        orderValueClientField.setRating(myPassedClientParcel.getClientValue());
 
         orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                localFeedbackClient.setClientValue ((float) orderValueClientField.getRating());
+                localFeedbackClient.setClientValue((float) orderValueClientField.getRating());
             }
         });
 
-        orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
-        orderStatusClientField.setText(myPassedClient.getClientStatus());
+        //other buttons
 
-
-        //TODO: implement sign-out button here
-
-        //make_call button starts the dialer
         Button callButton = (Button) findViewById(R.id.make_call_button);
-
-        callButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                //establish number to call
-                TextView numberToCall = (TextView) findViewById(R.id.orderPhoneClnt);
-                String basicNumberToCall = numberToCall.getText().toString();
-
-                ClientCaller.dialClient (basicNumberToCall, anonymizerPrefix, IndividualClientOrderActivity.this);
-
-            }
-        });
+        callButton.setVisibility(View.INVISIBLE);
 
         //this makes the text box at the bottom of the screen
         //cycle through the possible messages to display upon clicking the Done/Issue/Cancel button
         final Button issueOrCancelButton = (Button) findViewById(R.id.issue_or_cancel_button);
-        int statusOptionsLength = getResources().getStringArray (R.array.issue_or_cancel_options).length + 1;
+        int statusOptionsLength = getResources().getStringArray (R.array.issue_or_cancel_options).length;
 
         String[] temp_order_states = getResources().getStringArray (R.array.issue_or_cancel_options);
-        String[] inclusive_order_states = new String [statusOptionsLength];
-
+        String[] inclusive_order_states = new String [statusOptionsLength+1];
         for (int i = 0; i<statusOptionsLength-1; i++) {inclusive_order_states[i] = temp_order_states[i];}
+        String[] order_states;
 
-        inclusive_order_states[statusOptionsLength-1] = localFeedbackClient.getClientStatus();
 
-        final String[] order_states = inclusive_order_states;
+        if (command == "individual order") {
+
+            myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
+            localFeedbackClient = new Client(myPassedClient);
+
+            //get the applicable anonymizerPrefix
+            final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
+
+            //orderNameField.setText(myPassedClient.getClientName());
+
+            orderNameClientField.setText(myPassedClient.getClientName());
+            orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
+            orderLocationClientField.setText(myPassedClient.getClientLocation());
+            orderProductIdField.setText(myPassedClient.getClientProductID());
+            orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
+            orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
+            orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
+            orderUrgencyField.setRating(myPassedClient.getClientUrgency());
+            orderValueClientField.setRating(myPassedClientParcel.getClientValue());
+            orderStatusClientField.setText(myPassedClient.getClientStatus());
+
+            //TODO: implement sign-out button here
+
+            //make_call button starts the dialer
+            callButton.setVisibility(View.VISIBLE);
+            callButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //establish number to call
+                    TextView numberToCall = (TextView) findViewById(R.id.orderPhoneClnt);
+                    String basicNumberToCall = numberToCall.getText().toString();
+
+                    ClientCaller.dialClient(basicNumberToCall, anonymizerPrefix, IndividualClientOrderActivity.this);
+                }
+            });
+
+            statusOptionsLength++;
+            inclusive_order_states[statusOptionsLength-1] = localFeedbackClient.getClientStatus();
+            order_states = inclusive_order_states;
+
+        } else {
+            // we're filling in info for a new order
+            order_states = inclusive_order_states;
+
+            //TODO: implement return client from here
+        }
 
         issueOrCancelButton.setOnClickListener(new View.OnClickListener() {
             int click_counter=0;
             @Override
             public void onClick(View v) {
-                if (click_counter >= order_states.length) {click_counter = 0;}
+                if (click_counter >= order_states.length-1) {click_counter = 0;}
                 orderStatusClientField.setText(order_states[click_counter++]);
                 //save setting for data feedback
                 //localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
@@ -201,7 +207,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
     protected void onResume() {
         super.onResume();
 
-        final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
+        //final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
     }
 
     @Override

@@ -15,5 +15,8 @@ public class GlobalValues {
     public static final int REQUEST_CODE_SIGN_IN = 0;
     public static final int REQUEST_CODE_SIGN_OUT = 5;
 
+    //write back data to Google Sheets
+    public static final int UPDATE_FIELD = 2001;
+    public static final int APPEND_FIELD = 2002;
 
 }
