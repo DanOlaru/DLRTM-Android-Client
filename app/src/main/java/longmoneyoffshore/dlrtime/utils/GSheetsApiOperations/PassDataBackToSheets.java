@@ -77,9 +77,6 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
             String range; // = "A2:J";
             ValueRange feedback;
 
-            //Log.e("CLIENT_ORIGINAL"," #"); originalClient.showClient();
-            //Log.e("CLIENT_TO_CHANGE"," #"); feedbackClient.showClient();
-
             range = "A"+ (position+2) + ":J" + (position+2); //!!!!
             List<List<Object>> values = Arrays.asList(
                     Arrays.asList(
@@ -120,14 +117,9 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         Sheets service = this.service;
 
         // [START sheets_update_values]
-        List<List<Object>> values = Arrays.asList(
-                Arrays.asList(
-                        // Cell values ...
-                )
-        );
-        // [START_EXCLUDE silent]
+        List<List<Object>> values = Arrays.asList(Arrays.asList());
+
         values = _values;
-        // [END_EXCLUDE]
 
         //test to see if my list of values is good
         Log.d("TESTING VALS", "RANGE TO BE WRITTEN: " + range + " FILE ID: "+ spreadsheetId);
@@ -147,6 +139,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         ValueRange body = new ValueRange().setValues(values);
         UpdateValuesResponse result = service.spreadsheets().values().update(spreadsheetId, range, body)
                         .setValueInputOption(valueInputOption).execute();
+        Log.d("CELLS UPDATED", "DKJHFDKJH");
         Log.d("CELLS UPDATED", result.toString());
         return result;
     }
@@ -175,7 +168,6 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         // [END sheets_append_values]
         return result;
     }
-
 
     public BatchUpdateValuesResponse batchUpdateValues(String spreadsheetId, String range, String valueInputOption, List<List<Object>> _values)
             throws IOException {

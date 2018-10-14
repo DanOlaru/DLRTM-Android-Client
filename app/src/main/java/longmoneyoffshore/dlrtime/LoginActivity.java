@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope(Scopes.DRIVE_FILE))
-                //.requestScopes(new Scope(Scopes.PROFILE))
+                .requestScopes(new Scope(Scopes.PROFILE))
                 //.requestScopes(new Scope(Scopes.DRIVE_FULL)) //causes the account to seize up and not show the picker
                 .requestEmail()
                 .build();

@@ -79,6 +79,9 @@ dependencies {
     api 'com.mcxiaoke.volley:library:1.0.19'
     //api 'com.google.android.gms:play-services-auth:11.8.0'
     //api 'com.google.api-client:google-api-client:1.23.0'
-    //api 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     //api 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
+
+    //api 'com.google.api-client:google-api-client:1.25.0'
+    //api 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+    //api 'com.google.apis:google-api-services-sheets:v4-rev516-1.23.0'
 }
