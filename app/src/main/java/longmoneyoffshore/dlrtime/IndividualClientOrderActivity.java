@@ -6,6 +6,8 @@ package longmoneyoffshore.dlrtime;
 
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,8 +18,13 @@ import android.content.Intent;
 import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientParcel;
 import android.app.Activity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import longmoneyoffshore.dlrtime.utils.ClientCaller;
-import static longmoneyoffshore.dlrtime.utils.GlobalValues.RC_SIGN_IN;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.*;
 
 public class IndividualClientOrderActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -61,22 +68,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderValueClientField = (RatingBar) findViewById(R.id.orderValueClnt);
         orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
 
-        // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5
-        orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                //orderUrgencyField.setOnRatingBarChangeListener();
-                localFeedbackClient.setClientUrgency((float) ratingBar.getRating());
-            }
-        });
-
-        orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                localFeedbackClient.setClientValue((float) orderValueClientField.getRating());
-            }
-        });
-
         //other buttons
         Button callButton = (Button) findViewById(R.id.make_call_button);
         //callButton.setVisibility(View.INVISIBLE);
@@ -85,13 +76,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         //this makes the text box at the bottom of the screen
         //cycle through the possible messages to display upon clicking the Done/Issue/Cancel button
         final Button issueOrCancelButton = (Button) findViewById(R.id.issue_or_cancel_button);
-        int statusOptionsLength = getResources().getStringArray (R.array.issue_or_cancel_options).length;
-
-        String[] temp_order_states = getResources().getStringArray (R.array.issue_or_cancel_options);
-        String[] inclusive_order_states = new String [statusOptionsLength+1];
-        for (int i = 0; i<statusOptionsLength-1; i++) {inclusive_order_states[i] = temp_order_states[i];}
-        String[] order_states;
-
+        ArrayList<String> ordersStates = new ArrayList<String>(Arrays.asList(getResources().getStringArray (R.array.issue_or_cancel_options)));
 
         if (command.equals("individual order")) {
             myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
@@ -101,21 +86,47 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
             //orderNameField.setText(myPassedClient.getClientName());
-            orderNameClientField.setText(myPassedClient.getClientName());
-            orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
-            orderLocationClientField.setText(myPassedClient.getClientLocation());
-            orderProductIdField.setText(myPassedClient.getClientProductID());
-            orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
-            orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
-            orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
-            orderUrgencyField.setRating(myPassedClient.getClientUrgency());
-            orderValueClientField.setRating(myPassedClientParcel.getClientValue());
-            orderStatusClientField.setText(myPassedClient.getClientStatus());
+            if (!myPassedClient.getClientName().equals(blankClient.getClientName())) orderNameClientField.setText(myPassedClient.getClientName());
+            else orderNameClientField.setText(null);
 
-            //TODO: implement sign-out button here
+            //orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
+            if (!myPassedClient.getClientPhoneNo().equals(blankClient.getClientPhoneNo())) orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
+            else orderPhoneClientField.setText(null);
+
+
+            //orderLocationClientField.setText(myPassedClient.getClientLocation());
+            if (!myPassedClient.getClientLocation().equals(blankClient.getClientLocation())) orderLocationClientField.setText(myPassedClient.getClientLocation());
+            else orderLocationClientField.setText(null);
+
+            //orderProductIdField.setText(myPassedClient.getClientProductID());
+            if (!myPassedClient.getClientProductID().equals(blankClient.getClientProductID())) orderProductIdField.setText(myPassedClient.getClientProductID());
+            else orderProductIdField.setText(null);
+
+            orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
+            //if (myPassedClient.getClientQuantity() != blankClient.getClientQuantity()) orderProductQuantField.setText(String.valueOf(myPassedClient.getClientQuantity()));
+            //else orderProductQuantField.setText(null);
+
+            orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
+            //if (myPassedClient.getClientPrice() != blankClient.getClientPrice()) orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
+            //else orderProductPriceField.setText(null);
+
+            orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
+            //if (myPassedClient.getClientPriceAdjust() != blankClient.getClientPriceAdjust()) orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
+            //else orderPriceAdjustField.setText(null);
+
+            orderUrgencyField.setRating(myPassedClient.getClientUrgency());
+            //if (myPassedClient.getClientUrgency() != blankClient.getClientUrgency()) orderUrgencyField.setRating(myPassedClient.getClientUrgency());
+            //else orderUrgencyField.setRating(0);
+
+            orderValueClientField.setRating(myPassedClientParcel.getClientValue());
+            //if (myPassedClient.getClientValue() != blankClient.getClientValue()) orderValueClientField.setRating(myPassedClient.getClientValue());
+            //else orderValueClientField.setRating(0);
+
+            //orderStatusClientField.setText(myPassedClient.getClientStatus());
+            if (!myPassedClient.getClientStatus().equals(blankClient.getClientStatus())) orderStatusClientField.setText(myPassedClient.getClientStatus());
+            else orderStatusClientField.setText(null);
 
             //make_call button starts the dialer
-            //callButton.setVisibility(View.VISIBLE);
             callButton.setEnabled(true);
             callButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -128,23 +139,152 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 }
             });
 
-            statusOptionsLength++;
-            inclusive_order_states[statusOptionsLength-1] = localFeedbackClient.getClientStatus();
-            order_states = inclusive_order_states;
+            //statusOptionsLength++;
+            ordersStates.add(localFeedbackClient.getClientStatus());
 
         } else {
             // we're filling in info for a new order
-            order_states = inclusive_order_states;
-
-            //TODO: implement return client from here
+            ordersStates.add(null);
+            localFeedbackClient = new Client(blankClient);
         }
 
+        //if (orderNameClientField.getText()!=null) clientAsDisplayed.setClientName(orderNameClientField.getText().toString());
+        orderNameClientField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() != 0) localFeedbackClient.setClientName(s.toString());
+            }
+        });
+
+        //if (orderPhoneClientField.getText()!=null) clientAsDisplayed.setClientPhoneNo(orderPhoneClientField.getText().toString());
+        orderPhoneClientField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() != 0) localFeedbackClient.setClientPhoneNo(s.toString());
+            }
+        });
+
+        //if (orderLocationClientField.getText()!=null) clientAsDisplayed.setClientLocation(orderLocationClientField.getText().toString());
+        orderLocationClientField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() != 0) localFeedbackClient.setClientLocation(s.toString());
+            }
+        });
+
+        //if (orderProductIdField.getText()!=null) clientAsDisplayed.setClientProductID(orderProductIdField.getText().toString());
+        orderProductIdField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() != 0) localFeedbackClient.setClientProductID(s.toString());
+            }
+        });
+
+        orderProductQuantField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() != 0) localFeedbackClient.setClientQuantity(Float.parseFloat(s.toString()));
+            }
+        });
+
+        //orderProductPriceField.setText(String.valueOf(myPassedClient.getClientPrice()));
+
+        orderProductPriceField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() != 0) localFeedbackClient.setClientPrice(Float.parseFloat(s.toString()));
+            }
+        });
+
+        //orderPriceAdjustField.setText(String.valueOf(myPassedClient.getClientPriceAdjust()));
+        orderPriceAdjustField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() != 0) localFeedbackClient.setClientPriceAdjust(Float.parseFloat(s.toString()));
+            }
+        });
+
+        // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5
+        orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+                localFeedbackClient.setClientUrgency((float) ratingBar.getRating());
+            }
+        });
+
+        orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+                localFeedbackClient.setClientValue((float) orderValueClientField.getRating());
+            }
+        });
+
+        String lastState = localFeedbackClient.getClientStatus();
+
+        orderStatusClientField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!localFeedbackClient.getClientStatus().equals(lastState)) ordersStates.add(localFeedbackClient.getClientStatus());
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() != 0) {
+                    localFeedbackClient.setClientStatus(s.toString());
+                }
+            }
+
+        });
+        if (!localFeedbackClient.getClientStatus().equals(lastState)) ordersStates.add(localFeedbackClient.getClientStatus());
+
+        //BUTTONS
         issueOrCancelButton.setOnClickListener(new View.OnClickListener() {
             int click_counter=0;
             @Override
             public void onClick(View v) {
-                if (click_counter >= order_states.length-1) {click_counter = 0;}
-                orderStatusClientField.setText(order_states[click_counter++]);
+                if (click_counter >= ordersStates.size()) {click_counter = 0;}
+
+                if (!ordersStates.get(click_counter++).equals(blankClient.getClientStatus())) orderStatusClientField.setText(ordersStates.get(click_counter-1));
+                else orderStatusClientField.setText(null);
+
+                //orderStatusClientField.setText(ordersStates.get(click_counter++));
                 //save setting for data feedback
                 //localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
             }
@@ -155,7 +295,15 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                commitFeedbackClient(command);
+                //commitFeedbackClient(command);
+
+                //Log.d("WHATS THERE", "SHOW ME THE CLIENT AS IS, INCLUDING GAPS ");
+                //localFeedbackClient.showClient();
+
+                if (command.equals("individual order")) {
+                    if (!localFeedbackClient.clientDifferences(myPassedClient).equals("0000000000"))
+                        localFeedbackClient.setRevision(localFeedbackClient.getRevision()+1);
+                }
 
                 ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
                 Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
@@ -181,92 +329,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
     }
 
     //TODO Implement other lifecycle components to save the modified data upon destruction, and send it back to OrderListActivity and back to GSheets
-
-    private void commitFeedbackClient (String command) {
-
-        //localFeedbackClient = getChangedOrderFromTextFields();
-
-        if (command.equals("individual order")) {
-
-            localFeedbackClient = getChangedOrderFromTextFields();
-            //put in a different revision code if change occurred
-            if (!localFeedbackClient.clientDifferences(myPassedClient).equals("0000000000"))
-                localFeedbackClient.setRevision(localFeedbackClient.getRevision()+1);
-        }
-        else {
-            localFeedbackClient = getNewOrderFromTextFields();
-        }
-
-        //else localFeedbackClient.setRevision(myPassedClient.getRevision());
-        //Log.d("CLIENT_MODIFIES", " ORIGINAL REVISION " + myPassedClient.getRevision() + " CHANGED REVISION " + localFeedbackClient.getRevision());
-        //Log.d("CLIENT_MODIFIES", " DIFFERENCES " + localFeedbackClient.clientDifferences(myPassedClient));
-        //Log.d("CLIENT_MODIFIES",  "NEW REVISION " + localFeedbackClient.getRevision());
-        //Log.d("COMPARISONMETHOD", localFeedbackClient.clientDifferences(myPassedClient));
-    }
-
-    private Client getChangedOrderFromTextFields () {
-
-        Client clientAsDisplayed = new Client();
-
-        clientAsDisplayed.setClientName(orderNameClientField.getText().toString());
-        clientAsDisplayed.setClientPhoneNo(orderPhoneClientField.getText().toString());
-        clientAsDisplayed.setClientLocation(orderLocationClientField.getText().toString());
-        clientAsDisplayed.setClientProductID(orderProductIdField.getText().toString());
-        clientAsDisplayed.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
-        clientAsDisplayed.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
-        clientAsDisplayed.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
-        clientAsDisplayed.setClientUrgency(orderUrgencyField.getRating());
-        clientAsDisplayed.setClientValue(orderValueClientField.getRating());
-        clientAsDisplayed.setClientStatus(orderStatusClientField.getText().toString());
-
-        return clientAsDisplayed;
-
-    }
-    private Client getNewOrderFromTextFields () {
-        Client clientAsDisplayed = new Client();
-
-        Log.d("COMMITING", "SHOW ME THE CLIENT AS IS, INCLUDING GAPS " );
-
-        if (orderNameClientField.getText()!=null) clientAsDisplayed.setClientName(orderNameClientField.getText().toString());
-        else clientAsDisplayed.setClientName("N/A");
-        //Log.d("COMMITING", " orderNameClientField.getText() " +  clientAsDisplayed.getClientName());
-
-        if (orderPhoneClientField.getText()!=null) clientAsDisplayed.setClientPhoneNo(orderPhoneClientField.getText().toString());
-        else clientAsDisplayed.setClientPhoneNo("N/A");
-        //clientAsDisplayed.setClientPhoneNo(orderPhoneClientField.getText().toString());
-
-        if (orderLocationClientField.getText()!=null) clientAsDisplayed.setClientLocation(orderLocationClientField.getText().toString());
-        else clientAsDisplayed.setClientLocation("N/A");
-        //clientAsDisplayed.setClientLocation(orderLocationClientField.getText().toString());
-
-        if (orderProductIdField.getText()!=null) clientAsDisplayed.setClientProductID(orderProductIdField.getText().toString());
-        else clientAsDisplayed.setClientProductID("N/A");
-        //clientAsDisplayed.setClientProductID(orderProductIdField.getText().toString());
-        
-        if (orderProductQuantField.getText()!=null) clientAsDisplayed.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
-        else clientAsDisplayed.setClientQuantity(0);
-        //clientAsDisplayed.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
-
-        if (orderProductPriceField.getText()!=null) clientAsDisplayed.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
-        else clientAsDisplayed.setClientPrice(0);
-        //clientAsDisplayed.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
-
-        if (orderPriceAdjustField.getText()!=null) clientAsDisplayed.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
-        else clientAsDisplayed.setClientPriceAdjust(0);
-        //clientAsDisplayed.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
-
-        clientAsDisplayed.setClientUrgency(orderUrgencyField.getRating());
-
-        clientAsDisplayed.setClientValue(orderValueClientField.getRating());
-
-        if (orderStatusClientField.getText()!=null) clientAsDisplayed.setClientStatus(orderNameClientField.getText().toString());
-        else clientAsDisplayed.setClientStatus("N/A");
-        //clientAsDisplayed.setClientStatus(orderStatusClientField.getText().toString());
-
-        clientAsDisplayed.showClient();
-
-        return clientAsDisplayed;
-    }
 
     @Override
     protected void onStart() {
@@ -339,4 +401,3 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         Log.d("Notif", "successfully retrieved instance state");
     }
 }
-

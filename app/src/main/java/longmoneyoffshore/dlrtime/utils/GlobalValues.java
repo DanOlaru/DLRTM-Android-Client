@@ -2,6 +2,8 @@ package longmoneyoffshore.dlrtime.utils;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
+
 public class GlobalValues {
     public static final String APP_API_KEY = "AIzaSyDCos2tFqSvd80yDcIZgl1_x9Zk1zWQ1RI";
     public static final String US_ANONYMIZER_PREFIX = "*67";
@@ -31,5 +33,6 @@ public class GlobalValues {
 
     //
     public final String dummyFileID = "16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
+    public final static Client blankClient = new Client("N/A","N/A","N/A","N/A",0,0,0,0,0,"N/A");
 
 }

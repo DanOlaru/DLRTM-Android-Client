@@ -185,7 +185,7 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
 
-                        android:inputType="text"
+                        android:inputType="numberDecimal"
                         android:hint="@string/product_quantity"
                         android:textSize="12sp" />
                 </TableRow>
@@ -204,7 +204,7 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
 
-                        android:inputType="text"
+                        android:inputType="numberDecimal"
                         android:hint="@string/product_price"
                         android:textSize="12sp" />
                 </TableRow>
@@ -223,7 +223,7 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
 
-                        android:inputType="text"
+                        android:inputType="numberDecimal"
                         android:hint="@string/price_adjust"
                         android:textSize="12sp" />
                 </TableRow>

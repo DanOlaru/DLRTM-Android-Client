@@ -29,7 +29,7 @@ public class Client {
     private float clientValue;
     private String clientStatus;
 
-    // hidden variable
+    // hidden variables
     private String anonymizerPrefix = USanonymizerPrefix;
     private String clientReferenceCode = "0";
     private String revision = "0";

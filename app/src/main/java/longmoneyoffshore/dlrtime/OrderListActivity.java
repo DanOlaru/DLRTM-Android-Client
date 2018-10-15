@@ -182,7 +182,9 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     thisIndividualOrder.putExtra("order", clickedOrderParcel);
                     thisIndividualOrder.setAction("individual order");
 
-                    Log.d("CLIENT_CLICKED", " ORIGINAL REVISION " + backupClickedOrder.getRevision());
+                    //Log.d("CLIENT_CLICKED", " MMMMMMMM MMMMMMM MM MMMM M MM ORIGINAL REVISION " + backupClickedOrder.getRevision());
+                    //backupClickedOrder.showClient();
+
                     startActivityForResult(thisIndividualOrder,CLICK_INDIVIDUAL_ORDER);
                 }
             });
@@ -251,21 +253,21 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
                     Client returnClient = (Client) data.getParcelableExtra("edited order");
 
+                    Log.d("WHATS THERE", "SHOW ME THE RETURN CLIENT");
+                    returnClient.showClient();
+                    //Log.d("WHATS THERE", "SHOW ME THE BACKUP CLIENT");
+                    //backupClickedOrder.showClient();
+
                     if (!(returnClient.equalsRevision(backupClickedOrder))) {
 
                         clients.getClientArray().set(positionOnListClicked, returnClient);
                         final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
                         listview.setAdapter(reAdapter);
 
-                        String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2); //!!!!
-
-                        //Log.d("CLIENT_MODIFIES", " ORIGINAL REVISION " + backupClickedOrder.getRevision() + " CHANGED REVISION " + returnClient.getRevision());
-                        //Log.d("CLIENT_MODIFIES", " #################################### and RANGE" + rangeToModify);
-                        //returnClient.showClient();
+                        String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2);
                         new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, UPDATE_FIELD).execute(sheetID);
                     } else {
-                        //TODO: nothing
-                        Log.d("NO_CLIENT_MODIFIES", " #################################### WAS NOT MODIFIED");
+                        //TODO: nothing Log.d("NO_CLIENT_MODIFIES", " #################################### WAS NOT MODIFIED");
                     }
 
                     /*
@@ -282,22 +284,26 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 break;
             case CREATE_NEW_ORDER:
                 if (resultCode == RESULT_OK) {
-                    Client returnClient = (Client) data.getParcelableExtra("new order");
+                    //Client returnClient = (Client) data.getParcelableExtra("new order");
+                    Client returnClient = (Client) data.getParcelableExtra("edited order");
 
-                    Log.d("NEWORDER", " #################################### ");
-                    returnClient.showClient();
+                    if (!returnClient.clientDifferences(blankClient).equals("0000000000")) {
 
-                    clients.getClientArray().add(returnClient);
-                    final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
-                    listview.setAdapter(reAdapter);
+                        Log.d("NEWORDER", "CLIENT BEING ADDED #################################### ");
+                        returnClient.showClient();
 
-                    new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, APPEND_FIELD).execute(sheetID);
+                        clients.getClientArray().add(returnClient);
+                        final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
+                        listview.setAdapter(reAdapter);
+
+                        new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, APPEND_FIELD).execute(sheetID);
+                    } else {/*do nothing*/
+                        Log.d("NO_CLIENT_ADDED", " #################################### WAS NOT MODIFIED");}
                 }
         }
     }
 
     /*
-
     private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
         InputStream in = OrderListActivity.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
@@ -312,7 +318,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     }
     */
 
-
     private void getResultsFromApi(String selectedSheetID) {
         if (! isGooglePlayServicesAvailable()) { acquireGooglePlayServices(); }
         else if (mCredential.getSelectedAccountName() == null) { chooseAccount(); }
@@ -324,7 +329,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             new ReadDataFromSheets(mCredential, clients, destinationLocations, OrderListActivity.this,listview).execute(selectedSheetID);
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
@@ -354,9 +358,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         final int connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this);
         return connectionStatusCode == ConnectionResult.SUCCESS;
     }
-
-
-
 
     private void acquireGooglePlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
