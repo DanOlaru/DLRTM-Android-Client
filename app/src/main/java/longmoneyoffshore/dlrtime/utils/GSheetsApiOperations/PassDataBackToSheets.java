@@ -78,23 +78,8 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
             ValueRange feedback;
 
             range = "A"+ (position+2) + ":J" + (position+2); //!!!!
-            List<List<Object>> values = Arrays.asList(
-                    Arrays.asList(
-                            feedbackClient.getClientName(),
-                            feedbackClient.getClientPhoneNo(),
-                            feedbackClient.getClientLocation(),
-                            feedbackClient.getClientProductID(),
-                            feedbackClient.getClientQuantity(),
-                            feedbackClient.getClientPrice(),
-                            feedbackClient.getClientPriceAdjust(),
-                            feedbackClient.getClientUrgency(),
-                            feedbackClient.getClientValue(),
-                            feedbackClient.getClientStatus()
-                            //
-                            //feedbackClient.getAnonymizerPrefix(),
-                            //feedbackClient.getClientReferenceCode()
-                    )
-            );
+
+            List<List<Object>> values = feedbackClient.returnClientAsObjectList();
 
             switch (requestCode) {
                 case UPDATE_FIELD:

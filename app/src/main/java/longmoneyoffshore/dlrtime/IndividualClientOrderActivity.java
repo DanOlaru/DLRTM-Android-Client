@@ -47,7 +47,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         ClientParcel myPassedClientParcel = passedIntent.getParcelableExtra("order");
 
         String command = passedIntent.getAction();
-        Log.d("INDIVORDER","COMMAND" + command);
+        Log.d("INDIVORDER","COMMAND: " + command);
 
         //orderNameField = (EditText) findViewById(R.id.orderNameClient); //is this necessary?
         orderNameClientField = (EditText) findViewById(R.id.orderNameClnt);
@@ -61,7 +61,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderValueClientField = (RatingBar) findViewById(R.id.orderValueClnt);
         orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
 
-
         // — these listeners feed back the rating bar settings into the Client object and Client Parcel Object and eventually back to GSheets as integers from 1 to 5
         orderUrgencyField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
@@ -71,7 +70,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             }
         });
 
-
         orderValueClientField.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
@@ -80,9 +78,9 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         });
 
         //other buttons
-
         Button callButton = (Button) findViewById(R.id.make_call_button);
-        callButton.setVisibility(View.INVISIBLE);
+        //callButton.setVisibility(View.INVISIBLE);
+        callButton.setEnabled(false);
 
         //this makes the text box at the bottom of the screen
         //cycle through the possible messages to display upon clicking the Done/Issue/Cancel button
@@ -95,8 +93,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         String[] order_states;
 
 
-        if (command == "individual order") {
-
+        if (command.equals("individual order")) {
             myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
             localFeedbackClient = new Client(myPassedClient);
 
@@ -104,7 +101,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
 
             //orderNameField.setText(myPassedClient.getClientName());
-
             orderNameClientField.setText(myPassedClient.getClientName());
             orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
             orderLocationClientField.setText(myPassedClient.getClientLocation());
@@ -119,7 +115,8 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             //TODO: implement sign-out button here
 
             //make_call button starts the dialer
-            callButton.setVisibility(View.VISIBLE);
+            //callButton.setVisibility(View.VISIBLE);
+            callButton.setEnabled(true);
             callButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -158,7 +155,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                commitFeedbackClient();
+                commitFeedbackClient(command);
 
                 ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
                 Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
@@ -185,17 +182,90 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
     //TODO Implement other lifecycle components to save the modified data upon destruction, and send it back to OrderListActivity and back to GSheets
 
-    private void commitFeedbackClient () {
-        localFeedbackClient.setClientName(orderNameClientField.getText().toString());
-        localFeedbackClient.setClientPhoneNo(orderPhoneClientField.getText().toString());
-        localFeedbackClient.setClientLocation(orderLocationClientField.getText().toString());
-        localFeedbackClient.setClientProductID(orderProductIdField.getText().toString());
-        localFeedbackClient.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
-        localFeedbackClient.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
-        localFeedbackClient.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
-        localFeedbackClient.setClientUrgency(orderUrgencyField.getRating());
-        localFeedbackClient.setClientValue(orderValueClientField.getRating());
-        localFeedbackClient.setClientStatus(orderStatusClientField.getText().toString());
+    private void commitFeedbackClient (String command) {
+
+        //localFeedbackClient = getChangedOrderFromTextFields();
+
+        if (command.equals("individual order")) {
+
+            localFeedbackClient = getChangedOrderFromTextFields();
+            //put in a different revision code if change occurred
+            if (!localFeedbackClient.clientDifferences(myPassedClient).equals("0000000000"))
+                localFeedbackClient.setRevision(localFeedbackClient.getRevision()+1);
+        }
+        else {
+            localFeedbackClient = getNewOrderFromTextFields();
+        }
+
+        //else localFeedbackClient.setRevision(myPassedClient.getRevision());
+        //Log.d("CLIENT_MODIFIES", " ORIGINAL REVISION " + myPassedClient.getRevision() + " CHANGED REVISION " + localFeedbackClient.getRevision());
+        //Log.d("CLIENT_MODIFIES", " DIFFERENCES " + localFeedbackClient.clientDifferences(myPassedClient));
+        //Log.d("CLIENT_MODIFIES",  "NEW REVISION " + localFeedbackClient.getRevision());
+        //Log.d("COMPARISONMETHOD", localFeedbackClient.clientDifferences(myPassedClient));
+    }
+
+    private Client getChangedOrderFromTextFields () {
+
+        Client clientAsDisplayed = new Client();
+
+        clientAsDisplayed.setClientName(orderNameClientField.getText().toString());
+        clientAsDisplayed.setClientPhoneNo(orderPhoneClientField.getText().toString());
+        clientAsDisplayed.setClientLocation(orderLocationClientField.getText().toString());
+        clientAsDisplayed.setClientProductID(orderProductIdField.getText().toString());
+        clientAsDisplayed.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
+        clientAsDisplayed.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
+        clientAsDisplayed.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
+        clientAsDisplayed.setClientUrgency(orderUrgencyField.getRating());
+        clientAsDisplayed.setClientValue(orderValueClientField.getRating());
+        clientAsDisplayed.setClientStatus(orderStatusClientField.getText().toString());
+
+        return clientAsDisplayed;
+
+    }
+    private Client getNewOrderFromTextFields () {
+        Client clientAsDisplayed = new Client();
+
+        Log.d("COMMITING", "SHOW ME THE CLIENT AS IS, INCLUDING GAPS " );
+
+        if (orderNameClientField.getText()!=null) clientAsDisplayed.setClientName(orderNameClientField.getText().toString());
+        else clientAsDisplayed.setClientName("N/A");
+        //Log.d("COMMITING", " orderNameClientField.getText() " +  clientAsDisplayed.getClientName());
+
+        if (orderPhoneClientField.getText()!=null) clientAsDisplayed.setClientPhoneNo(orderPhoneClientField.getText().toString());
+        else clientAsDisplayed.setClientPhoneNo("N/A");
+        //clientAsDisplayed.setClientPhoneNo(orderPhoneClientField.getText().toString());
+
+        if (orderLocationClientField.getText()!=null) clientAsDisplayed.setClientLocation(orderLocationClientField.getText().toString());
+        else clientAsDisplayed.setClientLocation("N/A");
+        //clientAsDisplayed.setClientLocation(orderLocationClientField.getText().toString());
+
+        if (orderProductIdField.getText()!=null) clientAsDisplayed.setClientProductID(orderProductIdField.getText().toString());
+        else clientAsDisplayed.setClientProductID("N/A");
+        //clientAsDisplayed.setClientProductID(orderProductIdField.getText().toString());
+        
+        if (orderProductQuantField.getText()!=null) clientAsDisplayed.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
+        else clientAsDisplayed.setClientQuantity(0);
+        //clientAsDisplayed.setClientQuantity(Float.parseFloat(orderProductQuantField.getText().toString()));
+
+        if (orderProductPriceField.getText()!=null) clientAsDisplayed.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
+        else clientAsDisplayed.setClientPrice(0);
+        //clientAsDisplayed.setClientPrice(Float.parseFloat(orderProductPriceField.getText().toString()));
+
+        if (orderPriceAdjustField.getText()!=null) clientAsDisplayed.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
+        else clientAsDisplayed.setClientPriceAdjust(0);
+        //clientAsDisplayed.setClientPriceAdjust(Float.parseFloat(orderPriceAdjustField.getText().toString()));
+
+        clientAsDisplayed.setClientUrgency(orderUrgencyField.getRating());
+
+        clientAsDisplayed.setClientValue(orderValueClientField.getRating());
+
+        if (orderStatusClientField.getText()!=null) clientAsDisplayed.setClientStatus(orderNameClientField.getText().toString());
+        else clientAsDisplayed.setClientStatus("N/A");
+        //clientAsDisplayed.setClientStatus(orderStatusClientField.getText().toString());
+
+        clientAsDisplayed.showClient();
+
+        return clientAsDisplayed;
     }
 
     @Override
@@ -206,7 +276,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
     @Override
     protected void onResume() {
         super.onResume();
-
         //final String anonymizerPrefix = myPassedClient.getAnonymizerPrefix();
     }
 

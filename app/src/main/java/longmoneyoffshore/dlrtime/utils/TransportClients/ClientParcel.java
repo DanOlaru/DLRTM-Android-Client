@@ -37,6 +37,8 @@ public class ClientParcel extends Client implements Parcelable {
         //
         this.setAnonymizerPrefix(in.readString());
         this.setClientReferenceCode(in.readString());
+        //revision
+        this.setRevision(in.readString());
     }
 
 
@@ -61,6 +63,8 @@ public class ClientParcel extends Client implements Parcelable {
         //
         out.setAnonymizerPrefix(this.getAnonymizerPrefix());
         out.setClientReferenceCode(this.getClientReferenceCode());
+        //revision
+        out.setRevision(this.getRevision());
 
         return out;
     }
@@ -81,6 +85,8 @@ public class ClientParcel extends Client implements Parcelable {
         //
         outClient.writeString(this.getAnonymizerPrefix());
         outClient.writeString(this.getClientReferenceCode());
+        //revision
+        outClient.writeString(this.getRevision());
     }
 
     //implement describeContents

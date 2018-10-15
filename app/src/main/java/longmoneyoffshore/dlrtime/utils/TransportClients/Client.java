@@ -2,6 +2,9 @@ package longmoneyoffshore.dlrtime.utils.TransportClients;
 
 import android.util.Log;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Client {
     /* Client info consists of: name, location, phone number, product, quantity, total price, price per unit,
      * ClientPriceAdjust is positive if client owes and negative if client is owed,
@@ -25,9 +28,11 @@ public class Client {
     private float clientUrgency;
     private float clientValue;
     private String clientStatus;
-    //
+
+    // hidden variable
     private String anonymizerPrefix = USanonymizerPrefix;
     private String clientReferenceCode = "0";
+    private String revision = "0";
 
 
     //Note: by convention only for the name of the classes the first letter is uppercase
@@ -90,7 +95,26 @@ public class Client {
         this.clientReferenceCode = clientReferenceCode;
     }
 
-    // 5° constructor from the same type of object — Dan
+    // 5° constructor that also takes anonymizerPrefix and clientReferenceCode and revision
+    public Client(String clientName, String clientPhoneNo, String clientLocation, String clientProductID, float clientQuantity,
+                  float clientPrice, float clientPriceAdjust, float clientUrgency, float clientValue, String clientStatus,
+                  String anonymizerPrefix, String clientReferenceCode, String revCode) {
+        this.clientName = clientName;
+        this.clientPhoneNo = clientPhoneNo;
+        this.clientLocation = clientLocation;
+        this.clientProductID = clientProductID;
+        this.clientQuantity = clientQuantity;
+        this.clientPrice = clientPrice;
+        this.clientPriceAdjust = clientPriceAdjust;
+        this.clientUrgency = clientUrgency;
+        this.clientValue = clientValue;
+        this.clientStatus = clientStatus;
+        this.anonymizerPrefix = anonymizerPrefix;
+        this.clientReferenceCode = clientReferenceCode;
+        this.revision = revCode;
+    }
+
+    // 6° constructor from the same type of object — Dan
     public Client (Client fromClient)
     {
         this.clientName = fromClient.getClientName();
@@ -107,6 +131,7 @@ public class Client {
         //latest
         this.anonymizerPrefix = fromClient.getAnonymizerPrefix();
         this.clientReferenceCode = fromClient.getClientReferenceCode();
+        this.revision = fromClient.getRevision();
     }
 
     /****************Getter and setter - methods use to access the private attributes of a class **/
@@ -191,10 +216,57 @@ public class Client {
     public void setClientReferenceCode(String refCode) {this.clientReferenceCode = refCode;}
     public void setClientReferenceCode(int refCode) { this.clientReferenceCode = String.valueOf(refCode); }
 
+    public String getRevision () {return revision;}
+    public void setRevision (String rev) {this.revision = rev;}
+
 
     //return a reference to this Client object
     public Client getClient () {return this;}
 
+    //other methods
+
+    //TODO: convert client to List<List<Object>>
+    public List<List<Object>> returnClientAsObjectList() {
+        List<List<Object>> values = Arrays.asList(
+                Arrays.asList(
+                        this.clientName, this.clientPhoneNo, this.clientLocation, this.clientProductID,
+                        this.clientQuantity, this.clientPrice, this.clientPriceAdjust, this.clientUrgency,
+                        this.clientValue, this.clientStatus
+                )
+        );
+        return values;
+    }
+
+    public boolean equalsRevision(Client toCompare) {
+        return this.getRevision().equals(toCompare.getRevision());
+    }
+
+    public String clientDifferences(Client other) {
+        String differencesIndex="";
+
+        if (!this.clientName.equals(other.getClientName())) differencesIndex+=1;
+        else differencesIndex+=0;
+        if (!this.clientPhoneNo.equals(other.getClientPhoneNo())) differencesIndex+=1;
+        else differencesIndex+=0;
+        if (!this.clientLocation.equals(other.getClientLocation())) differencesIndex+=1;
+        else differencesIndex+=0;
+        if (!this.clientProductID.equals(other.getClientProductID())) differencesIndex+=1;
+        else differencesIndex+=0;
+        if (this.clientQuantity != other.getClientQuantity()) differencesIndex+=1;
+        else differencesIndex+=0;
+        if (this.clientPrice != other.getClientPrice()) differencesIndex+=1;
+        else differencesIndex+=0;
+        if (this.clientPriceAdjust != other.getClientPriceAdjust()) differencesIndex+=1;
+        else differencesIndex+=0;
+        if (this.clientUrgency != other.getClientUrgency()) differencesIndex+=1;
+        else differencesIndex+=0;
+        if (this.clientValue != other.getClientValue()) differencesIndex+=1;
+        else differencesIndex+=0;
+        if (!this.clientStatus.equals(other.getClientStatus())) differencesIndex+=1;
+        else differencesIndex+=0;
+
+        return differencesIndex;
+    }
 
     public void showClient () {
         Log.d("THIS_CLIENT NAME", clientName);
@@ -208,6 +280,7 @@ public class Client {
         Log.d("THIS_CLIENT VALUE", String.valueOf(clientValue));
         Log.d("THIS_CLIENT STATUS", clientStatus);
         Log.d("THIS_CLIENT REF CODE", clientReferenceCode);
+        Log.d("THIS_CLIENT REVISION", revision);
     }
 
 }

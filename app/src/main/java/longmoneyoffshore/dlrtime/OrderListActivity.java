@@ -1,5 +1,4 @@
 /* Author: Dan Olaru, (c) 2018 */
-
 package longmoneyoffshore.dlrtime;
 
 import android.Manifest;
@@ -19,9 +18,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.PassDataBackToSheets;
-//import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.SpreadSheetUpdate;
 import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.SpreadSheetUpdate;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -30,8 +36,10 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
-//import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-//import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -46,30 +54,15 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
-//import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-//import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-//import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.PassDataBackToSheets;
 import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.ReadDataFromSheets;
 import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientArray;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientParcel;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientAdapter;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
-
-import static longmoneyoffshore.dlrtime.utils.GlobalValues.APPEND_FIELD;
-import static longmoneyoffshore.dlrtime.utils.GlobalValues.UPDATE_FIELD;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.*;
 
 public class OrderListActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
@@ -88,18 +81,12 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     private int positionOnListClicked;
 
     String sheetID;
-    Client saveClickedOrder;
+    Client backupClickedOrder;
 
     GoogleAccountCredential mCredential;
 
     private Button mCallApiButton;
     private Button goToOrdersList;
-
-
-    static final int REQUEST_ACCOUNT_PICKER = 1000;
-    static final int REQUEST_AUTHORIZATION = 1001;
-    static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
-    static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
@@ -111,14 +98,8 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
     //private static final String[] SCOPES = { SheetsScopes.DRIVE_FILE };
 
-    private static final List<String> SCOPES_LIST= Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
-    //private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
-
-    public static final int INDIVIDUAL_ORDER_CHANGED=1005;
-    public static final int CLICK_INDIVIDUAL_ORDER = 1006;
-    public static final int CREATE_NEW_ORDER=1007;
-
-    final String dummyFileID = "16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
+    //private static final List<String> SCOPES_LIST= Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
+    private static final List<String> SCOPES_LIST = Collections.singletonList(SheetsScopes.SPREADSHEETS);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +120,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
         //TODO: sign out button click references public public signOut method in utils
         signOutButton = (Button) findViewById(R.id.sign_out);
-
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,30 +131,22 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             }
         });
 
-        //clients list is already populated
         goToMapsButton = (Button) findViewById(R.id.btn_go_to_maps);
         goToMapsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //testing
-                for (int k=0;k<destinationLocations.size();k++) {
-                    Log.d("DESTINATIONS EXTRACTED", String.valueOf(k)+ " " + destinationLocations.get(k));
-                }
                 Intent toMapsRoute = new Intent(OrderListActivity.this, MapsRouteActivity.class);
 
                 if (destinationLocations.size() > 0) {
                     MapDestinationsParcel destinationsParcel = new MapDestinationsParcel(destinationLocations);
                     toMapsRoute.putExtra("locations to go to", destinationsParcel);
+                    startActivity(toMapsRoute);
 
-                } else {
-                    //TODO: the list of locations isn't yet populated
-                    }
-                startActivity(toMapsRoute);
+                } else {/*TODO: nothing while the list of locations isn't populated */}
             }
         });
 
         makeNewOrderButton = (Button) findViewById(R.id.btn_make_new_order);
-
         makeNewOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,16 +173,16 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    //position clicked on — visible outside of this scope to the onActivityResult
                     positionOnListClicked = position;
                     Client clickedOrder = new Client((Client) parent.getItemAtPosition(position));
-                    saveClickedOrder = clickedOrder;
+                    backupClickedOrder = new Client(clickedOrder);
 
-                    ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
                     Intent thisIndividualOrder = new Intent(OrderListActivity.this, IndividualClientOrderActivity.class);
+                    ClientParcel clickedOrderParcel = new ClientParcel(clickedOrder);
                     thisIndividualOrder.putExtra("order", clickedOrderParcel);
                     thisIndividualOrder.setAction("individual order");
 
+                    Log.d("CLIENT_CLICKED", " ORIGINAL REVISION " + backupClickedOrder.getRevision());
                     startActivityForResult(thisIndividualOrder,CLICK_INDIVIDUAL_ORDER);
                 }
             });
@@ -279,42 +251,25 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
                     Client returnClient = (Client) data.getParcelableExtra("edited order");
 
-                    //TODO: implement comparison to make sure that something has changed
-                    clients.getClientArray().set(positionOnListClicked, returnClient);
-                    //final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients);
-                    final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
-                    listview.setAdapter(reAdapter);
+                    if (!(returnClient.equalsRevision(backupClickedOrder))) {
 
-                    String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2); //!!!!
+                        clients.getClientArray().set(positionOnListClicked, returnClient);
+                        final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
+                        listview.setAdapter(reAdapter);
 
-                    //Log.d("CLIENT_MODIFIES", " ####################################");
-                    Log.d("CLIENT_MODIFIES", " #################################### and RANGE" + rangeToModify);
-                    returnClient.showClient();
-                    new PassDataBackToSheets(mCredential, returnClient, saveClickedOrder, positionOnListClicked, UPDATE_FIELD).execute(sheetID);
+                        String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2); //!!!!
 
-
-
-
+                        //Log.d("CLIENT_MODIFIES", " ORIGINAL REVISION " + backupClickedOrder.getRevision() + " CHANGED REVISION " + returnClient.getRevision());
+                        //Log.d("CLIENT_MODIFIES", " #################################### and RANGE" + rangeToModify);
+                        //returnClient.showClient();
+                        new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, UPDATE_FIELD).execute(sheetID);
+                    } else {
+                        //TODO: nothing
+                        Log.d("NO_CLIENT_MODIFIES", " #################################### WAS NOT MODIFIED");
+                    }
 
                     /*
-                    List<List<Object>> values = Arrays.asList(
-                            Arrays.asList(
-                                    returnClient.getClientName(),
-                                    returnClient.getClientPhoneNo(),
-                                    returnClient.getClientLocation(),
-                                    returnClient.getClientProductID(),
-                                    returnClient.getClientQuantity(),
-                                    returnClient.getClientPrice(),
-                                    returnClient.getClientPriceAdjust(),
-                                    returnClient.getClientUrgency(),
-                                    returnClient.getClientValue(),
-                                    returnClient.getClientStatus()
-                                    //
-                                    //returnClient.getAnonymizerPrefix(),
-                                    //returnClient.getClientReferenceCode()
-                            )
-                    );
-
+                    List<List<Object>> values = returnClient.returnClientAsObjectList();
                     try {
                         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
                         new SpreadSheetUpdate(sheetID, rangeToModify, values, getCredentials(HTTP_TRANSPORT), OrderListActivity.this);
@@ -328,11 +283,15 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             case CREATE_NEW_ORDER:
                 if (resultCode == RESULT_OK) {
                     Client returnClient = (Client) data.getParcelableExtra("new order");
-                    clients.getClientArray().set(positionOnListClicked, returnClient);
+
+                    Log.d("NEWORDER", " #################################### ");
+                    returnClient.showClient();
+
+                    clients.getClientArray().add(returnClient);
                     final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
                     listview.setAdapter(reAdapter);
 
-                    new PassDataBackToSheets(mCredential, returnClient, saveClickedOrder, positionOnListClicked, APPEND_FIELD).execute(sheetID);
+                    new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, APPEND_FIELD).execute(sheetID);
                 }
         }
     }
@@ -352,8 +311,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
     */
-
-
 
 
     private void getResultsFromApi(String selectedSheetID) {
