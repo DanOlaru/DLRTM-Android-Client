@@ -139,14 +139,16 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 }
             });
 
-            //statusOptionsLength++;
             ordersStates.add(localFeedbackClient.getClientStatus());
+            //ordersStates.add(blankClient.getClientStatus());
+            //ordersStates.add(null);
 
         } else {
             // we're filling in info for a new order
-            ordersStates.add(null);
+            //ordersStates.add(blankClient.getClientStatus());
             localFeedbackClient = new Client(blankClient);
         }
+        ordersStates.add(blankClient.getClientStatus());
 
         //if (orderNameClientField.getText()!=null) clientAsDisplayed.setClientName(orderNameClientField.getText().toString());
         orderNameClientField.addTextChangedListener(new TextWatcher() {
@@ -255,11 +257,11 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         });
 
         String lastState = localFeedbackClient.getClientStatus();
-
         orderStatusClientField.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                if (!localFeedbackClient.getClientStatus().equals(lastState)) ordersStates.add(localFeedbackClient.getClientStatus());
+                //if (!localFeedbackClient.getClientStatus().equals(lastState)) ordersStates.add(localFeedbackClient.getClientStatus());
+                //if (!orderStatusClientField.getText().equals(lastState)) ordersStates.add(localFeedbackClient.getClientStatus());
             }
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -268,17 +270,20 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(s.length() != 0) {
                     localFeedbackClient.setClientStatus(s.toString());
+                    //if (!localFeedbackClient.getClientStatus().equals(lastState)) ordersStates.add(localFeedbackClient.getClientStatus());
                 }
             }
-
         });
-        if (!localFeedbackClient.getClientStatus().equals(lastState)) ordersStates.add(localFeedbackClient.getClientStatus());
 
         //BUTTONS
         issueOrCancelButton.setOnClickListener(new View.OnClickListener() {
             int click_counter=0;
             @Override
             public void onClick(View v) {
+
+                if (!orderStatusClientField.getText().equals(lastState) && !ordersStates.contains(orderStatusClientField.getText()))
+                    ordersStates.add(localFeedbackClient.getClientStatus());
+
                 if (click_counter >= ordersStates.size()) {click_counter = 0;}
 
                 if (!ordersStates.get(click_counter++).equals(blankClient.getClientStatus())) orderStatusClientField.setText(ordersStates.get(click_counter-1));
@@ -295,10 +300,8 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //commitFeedbackClient(command);
-
-                //Log.d("WHATS THERE", "SHOW ME THE CLIENT AS IS, INCLUDING GAPS ");
-                //localFeedbackClient.showClient();
+                if (!orderStatusClientField.getText().equals(lastState) && !ordersStates.contains(orderStatusClientField.getText()))
+                    ordersStates.add(localFeedbackClient.getClientStatus());
 
                 if (command.equals("individual order")) {
                     if (!localFeedbackClient.clientDifferences(myPassedClient).equals("0000000000"))

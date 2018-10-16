@@ -1,4 +1,3 @@
-/* Author: Dan Olaru, (c) 2018 */
 package longmoneyoffshore.dlrtime;
 
 import android.Manifest;
@@ -125,9 +124,9 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             public void onClick(View v) {
                 //Log.i("SIGNOUT", "TRYING TO SIGN OUT");
                 //TODO: Start intent to sign out
-                //Intent signOutIntent = new Intent(OrderListActivity.this, LoginActivity.class);
-                //setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
-                //finish();
+                Intent signOutIntent = new Intent(OrderListActivity.this, SheetsListActivity.class);
+                setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
+                finish();
             }
         });
 
@@ -137,7 +136,15 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             public void onClick(View v) {
                 Intent toMapsRoute = new Intent(OrderListActivity.this, MapsRouteActivity.class);
 
+                //Get an ArrayList of all the destinations where the user needs to go
+                destinationLocations.clear();
+                for (int j = 0; j<clients.getClientArray().size();j++) {
+                    destinationLocations.add(clients.getClientArray().get(j).getClientLocation());
+                    Log.d("MAPS DESTINATIONS", "PLACES GOING" + clients.getClientArray().get(j).getClientLocation());
+                }
+
                 if (destinationLocations.size() > 0) {
+
                     MapDestinationsParcel destinationsParcel = new MapDestinationsParcel(destinationLocations);
                     toMapsRoute.putExtra("locations to go to", destinationsParcel);
                     startActivity(toMapsRoute);
@@ -158,10 +165,8 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
         Intent intentFromSheetsList = getIntent();
         sheetID = intentFromSheetsList.getStringExtra("file selected");
-
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(SCOPES)).setBackOff(new ExponentialBackOff());
-
         getResultsFromApi(sheetID);
 
         listview.setAdapter(null);
@@ -182,9 +187,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     thisIndividualOrder.putExtra("order", clickedOrderParcel);
                     thisIndividualOrder.setAction("individual order");
 
-                    //Log.d("CLIENT_CLICKED", " MMMMMMMM MMMMMMM MM MMMM M MM ORIGINAL REVISION " + backupClickedOrder.getRevision());
-                    //backupClickedOrder.showClient();
-
                     startActivityForResult(thisIndividualOrder,CLICK_INDIVIDUAL_ORDER);
                 }
             });
@@ -195,24 +197,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         getResultsFromApi(sheetID);
     }
 
-    @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
-    private void chooseAccount() {
-        if (EasyPermissions.hasPermissions(this, Manifest.permission.GET_ACCOUNTS)) {
-
-            String accountName = getPreferences(Context.MODE_PRIVATE).getString(PREF_ACCOUNT_NAME, null);
-            if (accountName != null) {
-
-                mCredential.setSelectedAccountName(accountName);
-                getResultsFromApi(sheetID);
-            } else {
-
-                startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
-            }
-        } else {
-            EasyPermissions.requestPermissions(this, "This app needs to access your Google account (via Contacts).",
-                    REQUEST_PERMISSION_GET_ACCOUNTS, Manifest.permission.GET_ACCOUNTS);
-        }
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -250,16 +234,12 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 // this is from IndividualClientOrder
             case CLICK_INDIVIDUAL_ORDER:
                 if (resultCode == RESULT_OK) {
-                    //set the new/edited data on the OrderListActivity and pass it back - to the google sheets document
+                    //new/edited data on the OrderListActivity is passed back to the google sheets document
                     Client returnClient = (Client) data.getParcelableExtra("edited order");
-
-                    Log.d("WHATS THERE", "SHOW ME THE RETURN CLIENT");
-                    returnClient.showClient();
-                    //Log.d("WHATS THERE", "SHOW ME THE BACKUP CLIENT");
-                    //backupClickedOrder.showClient();
+                    //Log.d("WHATS THERE", "SHOW ME THE RETURN CLIENT");
+                    //returnClient.showClient();
 
                     if (!(returnClient.equalsRevision(backupClickedOrder))) {
-
                         clients.getClientArray().set(positionOnListClicked, returnClient);
                         final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
                         listview.setAdapter(reAdapter);
@@ -289,8 +269,8 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
                     if (!returnClient.clientDifferences(blankClient).equals("0000000000")) {
 
-                        Log.d("NEWORDER", "CLIENT BEING ADDED #################################### ");
-                        returnClient.showClient();
+                        //Log.d("NEWORDER", "CLIENT BEING ADDED #################################### ");
+                        //returnClient.showClient();
 
                         clients.getClientArray().add(returnClient);
                         final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
@@ -319,8 +299,8 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     */
 
     private void getResultsFromApi(String selectedSheetID) {
-        if (! isGooglePlayServicesAvailable()) { acquireGooglePlayServices(); }
-        else if (mCredential.getSelectedAccountName() == null) { chooseAccount(); }
+        if (!isGooglePlayServicesAvailable()) { acquireGooglePlayServices(); }
+        else if (mCredential.getSelectedAccountName() == null) { chooseAccount();}
         else if (! isDeviceOnline()) { } else {
             listview.setAdapter(null);
             //clients.clear();
@@ -329,6 +309,27 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             new ReadDataFromSheets(mCredential, clients, destinationLocations, OrderListActivity.this,listview).execute(selectedSheetID);
         }
     }
+
+    @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
+    private void chooseAccount() {
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.GET_ACCOUNTS)) {
+
+            String accountName = getPreferences(Context.MODE_PRIVATE).getString(PREF_ACCOUNT_NAME, null);
+            if (accountName != null) {
+
+                mCredential.setSelectedAccountName(accountName);
+                getResultsFromApi(sheetID);
+            } else {
+
+                startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+            }
+        } else {
+            EasyPermissions.requestPermissions(this, "This app needs to access your Google account (via Contacts).",
+                    REQUEST_PERMISSION_GET_ACCOUNTS, Manifest.permission.GET_ACCOUNTS);
+        }
+    }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
@@ -347,11 +348,13 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         // Do nothing.
     }
 
+
     private boolean isDeviceOnline() {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
+
 
     private boolean isGooglePlayServicesAvailable() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
@@ -372,4 +375,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         Dialog dialog = apiAvailability.getErrorDialog(OrderListActivity.this, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
     }
+
+
 }

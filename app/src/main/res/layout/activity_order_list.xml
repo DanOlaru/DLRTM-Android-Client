@@ -35,7 +35,8 @@
             />
 
         <Button
-            android:id="@+id/btnDownload" android:enabled="false"
+            android:id="@+id/btnDownload"
+            android:enabled="false"
             android:onClick="buttonClickHandler"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

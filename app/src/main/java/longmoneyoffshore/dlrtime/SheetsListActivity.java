@@ -31,6 +31,8 @@ import android.app.Activity;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.Metadata;
 
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.REQUEST_CODE_SIGN_OUT;
+
 
 public class SheetsListActivity extends Activity //AppCompatActivity
 {
@@ -171,6 +173,14 @@ public class SheetsListActivity extends Activity //AppCompatActivity
 
                 } else {
                     mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
+                }
+                break;
+
+            case REQUEST_CODE_SIGN_OUT:
+                if (resultCode == RESULT_OK) {
+                    //revokeAccess(SheetsListActivity.this);
+                    Intent intent = new Intent(SheetsListActivity.this, LoginActivity.class);
+                    startActivity(intent);
                 }
                 break;
         }
