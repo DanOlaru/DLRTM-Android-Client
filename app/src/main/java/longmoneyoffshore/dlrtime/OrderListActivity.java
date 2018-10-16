@@ -34,6 +34,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -41,7 +42,6 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -270,13 +270,14 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     if (!returnClient.clientDifferences(blankClient).equals("0000000000")) {
 
                         //Log.d("NEWORDER", "CLIENT BEING ADDED #################################### ");
-                        //returnClient.showClient();
+                        ///credentials.jsonreturnClient.showClient();
 
                         clients.getClientArray().add(returnClient);
                         final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
                         listview.setAdapter(reAdapter);
+                        int positionToAppend = reAdapter.getCount()+1;
 
-                        new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, APPEND_FIELD).execute(sheetID);
+                        new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionToAppend, APPEND_FIELD).execute(sheetID);
                     } else {/*do nothing*/
                         Log.d("NO_CLIENT_ADDED", " #################################### WAS NOT MODIFIED");}
                 }
