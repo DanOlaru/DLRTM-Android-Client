@@ -42,8 +42,8 @@ import static longmoneyoffshore.dlrtime.utils.GlobalValues.UPDATE_FIELD;
 
 public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
 
-    final static public String USER_INPUT_OPTION_RAW = "RAW";
-    final static public String USER_INPUT_OPTION_USER = "USER_ENTERED";
+    final static public String INPUT_OPTION_RAW = "RAW";
+    final static public String INPUT_OPTION_USER = "USER_ENTERED";
 
     private Sheets service;
     private int position;
@@ -103,14 +103,14 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
             case UPDATE_FIELD:
                 Log.d("UPDATE", "IN UPDATE BRANCH");
                 range = "A"+ (position+2) + ":J" + (position+2);
-                UpdateValuesResponse result1 = updateValues(spreadsheetId, range, USER_INPUT_OPTION_RAW, values);
+                UpdateValuesResponse result1 = updateValues(spreadsheetId, range, INPUT_OPTION_RAW, values);
                 Log.d("UPDATE", result1.toString());
                 break;
 
             case APPEND_FIELD:
                 Log.d("APPEND", "IN APPEND BRANCH");
                 range = "A"+ (position) + ":J" + (position);
-                AppendValuesResponse result2 = appendValues(spreadsheetId, range, USER_INPUT_OPTION_USER, values);
+                AppendValuesResponse result2 = appendValues(spreadsheetId, range, INPUT_OPTION_USER, values);
                 Log.d("APPEND", result2.toString());
                 break;
         }
@@ -128,6 +128,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         List<List<Object>> values = Arrays.asList(Arrays.asList());
         values = _values;
 
+        /*
         //test to see if my list of values is good
         Log.d("TESTING VALS", "RANGE TO BE WRITTEN: " + range + " FILE ID: "+ spreadsheetId);
         Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 0 " + values.get(0).get(0));
@@ -139,7 +140,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 6 " + values.get(0).get(6));
         Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 7 " + values.get(0).get(7));
         Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 8 " + values.get(0).get(8));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 9 " + values.get(0).get(9));
+        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 9 " + values.get(0).get(9)); */
 
         //implementation #1
         try {
