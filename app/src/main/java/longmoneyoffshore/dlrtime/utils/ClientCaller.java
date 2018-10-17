@@ -36,14 +36,14 @@ public class ClientCaller extends ActivityCompat implements ActivityCompat.OnReq
     final static int MY_REQUEST_PERMISSION_CALL_PHONE = 1;
 
     //TODO: debug configuration — optimize this later
-    public static Activity localPassedActivity;
+    private static Activity localPassedActivity;
     public static Intent localDialIntent;
 
 
     public static void dialClient (String basicNumberToCall, String callPrefix, Activity myPassedActivity) {
 
         //set local context
-        localPassedActivity = myPassedActivity;
+        //localPassedActivity = myPassedActivity;
 
         String orderPhoneNum = String.format("tel: %s", callPrefix + basicNumberToCall);
 

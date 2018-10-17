@@ -240,7 +240,13 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     //returnClient.showClient();
 
                     if (!(returnClient.equalsRevision(backupClickedOrder))) {
+
+                        Log.d("SHOWRETURNCLIENT", "########################################################################################################");
+                        //Log.d("SAVESCREENSTATE", "SHOWING ON SCREEN CLIENT: ");
+                        returnClient.showClient();
+
                         clients.getClientArray().set(positionOnListClicked, returnClient);
+
                         final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
                         listview.setAdapter(reAdapter);
 

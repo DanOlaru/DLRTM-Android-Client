@@ -34,6 +34,7 @@ import static longmoneyoffshore.dlrtime.utils.GlobalValues.RC_SIGN_IN;
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.REQUEST_CODE_SIGN_IN;
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.REQUEST_CODE_SIGN_OUT;
 
+//public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "SignInActivity";

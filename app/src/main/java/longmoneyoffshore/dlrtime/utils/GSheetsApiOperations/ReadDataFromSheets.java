@@ -117,7 +117,8 @@ public class ReadDataFromSheets extends AsyncTask<String, Void, ClientArray> {
             //destinationLocations.clear();
             //for (int j = 0; j<clients.getClientArray().size();j++) {destinationLocations.add(clients.getClientArray().get(j).getClientLocation());}
 
-            final ClientAdapter adapter = new ClientAdapter(thisActivity, R.layout.client_item, clients.getClientArray());
+            //final ClientAdapter adapter = new ClientAdapter(thisActivity, R.layout.client_item, clients.getClientArray());
+            final ClientAdapter adapter = new ClientAdapter(thisActivity, R.layout.client_item, new ArrayList<Client>(clients.getClientArray()));
 
             //listview.setAdapter(null);
             listview.setAdapter(adapter);
