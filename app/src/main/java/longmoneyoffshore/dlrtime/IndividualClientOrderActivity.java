@@ -72,7 +72,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
         //other buttons
         Button callButton = (Button) findViewById(R.id.make_call_button);
-        //callButton.setVisibility(View.INVISIBLE);
         callButton.setEnabled(false);
 
         //this makes the text box at the bottom of the screen
@@ -212,7 +211,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 //if (!orderStatusClientField.getText().equals(lastState) && !ordersStates.contains(orderStatusClientField.getText())) ordersStates.add(localFeedbackClient.getClientStatus());
 
                 localFeedbackClient = saveOnScreenState();
-                localFeedbackClient.setRevision(myPassedClient.getRevision());
+                if (command.equals("individual order")) localFeedbackClient.setRevision(myPassedClient.getRevision());
 
                 //Log.d("DIFFERENCES", "BETWEEN RECEIVED AND MODIFIED CLIENT: XXXXXXXXXXXXXXXXXX" + localFeedbackClient.clientDifferences(myPassedClient));
 

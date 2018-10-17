@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.PassDataBackToSheets;
-//import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.SpreadSheetUpdate;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -36,7 +35,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.extensions.android.http.AndroidHttp;
-
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 
@@ -140,7 +138,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 destinationLocations.clear();
                 for (int j = 0; j<clients.getClientArray().size();j++) {
                     destinationLocations.add(clients.getClientArray().get(j).getClientLocation());
-                    Log.d("MAPS DESTINATIONS", "PLACES GOING" + clients.getClientArray().get(j).getClientLocation());
+                    //Log.d("MAPS DESTINATIONS", "PLACES GOING" + clients.getClientArray().get(j).getClientLocation());
                 }
 
                 if (destinationLocations.size() > 0) {
@@ -237,7 +235,16 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     //new/edited data on the OrderListActivity is passed back to the google sheets document
                     Client returnClient = (Client) data.getParcelableExtra("edited order");
 
-                    if (!(returnClient.equalsRevision(backupClickedOrder))) {
+                    if (returnClient.clientDifferences(blankClient).equals("0000000000"))
+                    {
+                        //TODO: we delete the entry in the sheets
+                        clients.getClientArray().remove(positionOnListClicked);
+                        ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
+                        listview.setAdapter(reAdapter);
+
+                        String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2);
+                        new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, DELETE_FIELD).execute(sheetID);
+                    } else if (!(returnClient.equalsRevision(backupClickedOrder))) {
 
                         clients.getClientArray().set(positionOnListClicked, returnClient);
 
@@ -246,17 +253,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
                         String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2);
                         new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, UPDATE_FIELD).execute(sheetID);
-                    } else
-                        if (returnClient.clientDifferences(blankClient).equals("0000000000"))
-                        {
-                            //TODO: we delete the entry in the sheets
-                            clients.getClientArray().remove(positionOnListClicked);
-                            ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
-                            listview.setAdapter(reAdapter);
-
-                            String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2);
-                            new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, DELETE_FIELD).execute(sheetID);
-
                     }
                 }
                 break;
@@ -273,7 +269,8 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
                         new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionToAppend, APPEND_FIELD).execute(sheetID);
                     } else {/*do nothing*/
-                        Log.d("NO_CLIENT_ADDED", " #################################### WAS NOT MODIFIED");}
+                        //Log.d("NO_CLIENT_ADDED", " #################################### WAS NOT MODIFIED");
+                    }
                 }
         }
     }
@@ -324,8 +321,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         }
     }
 
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
@@ -342,7 +337,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     public void onPermissionsDenied(int requestCode, List<String> list) {
         // Do nothing.
     }
-
 
     private boolean isDeviceOnline() {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -370,6 +364,4 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         Dialog dialog = apiAvailability.getErrorDialog(OrderListActivity.this, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
     }
-
-
 }

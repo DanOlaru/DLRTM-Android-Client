@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- <string name="app_name">DLRTM — Digital Logistics Resource Time Management </string>-->
+
+
 <resources>
-    <string name="app_name">DLRTM — Digital Logistics Resource Time Management </string>
+    <string name="app_name"> dlrtm </string>
 
 
     <string name="title_activity_maps_route">Map</string>
