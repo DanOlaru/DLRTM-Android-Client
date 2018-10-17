@@ -83,7 +83,7 @@ public class ClientAdapter extends ArrayAdapter<Client> {
                 //Log.d("INSIDE COLORBROWN", "CLIENT IS " + o.getClientName());
                 //setOrderColor(position, v ,parent, R.color.doneBrown);
 
-                color = R.color.doneBrown;
+                color = R.color.doneBlue;
 
                 orderName.setTextColor(ContextCompat.getColor(context, color));
                 orderLocation.setTextColor(ContextCompat.getColor(context, color));

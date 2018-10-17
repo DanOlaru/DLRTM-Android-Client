@@ -81,6 +81,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         ArrayList<String> ordersStates = new ArrayList<String>(Arrays.asList(getResources().getStringArray (R.array.issue_or_cancel_options)));
 
         if (command.equals("individual order")) {
+
             myPassedClient = new Client(myPassedClientParcel.returnClientFromParcel());
             localFeedbackClient = new Client(myPassedClient);
 
@@ -94,7 +95,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             //orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
             if (!myPassedClient.getClientPhoneNo().equals(blankClient.getClientPhoneNo())) orderPhoneClientField.setText(myPassedClient.getClientPhoneNo());
             else orderPhoneClientField.setText(null);
-
 
             //orderLocationClientField.setText(myPassedClient.getClientLocation());
             if (!myPassedClient.getClientLocation().equals(blankClient.getClientLocation())) orderLocationClientField.setText(myPassedClient.getClientLocation());
@@ -143,8 +143,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             }); */
 
             if (!ordersStates.contains(localFeedbackClient.getClientStatus())) ordersStates.add(localFeedbackClient.getClientStatus());
-            //Log.d("FIRSTDISPLAY", "SHOWING ENTERING CLIENT: ");
-            //saveOnScreenState().showClient();
 
         } else {
             // we're filling in info for a new order
@@ -205,19 +203,22 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         });
 
 
-        String lastState = localFeedbackClient.getClientStatus();
-        //back_button takes the user back to the OrderListActivity
+        //String lastState = localFeedbackClient.getClientStatus();
+
         Button backButton = (Button) findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!orderStatusClientField.getText().equals(lastState) && !ordersStates.contains(orderStatusClientField.getText()))
-                    ordersStates.add(localFeedbackClient.getClientStatus());
+                //if (!orderStatusClientField.getText().equals(lastState) && !ordersStates.contains(orderStatusClientField.getText())) ordersStates.add(localFeedbackClient.getClientStatus());
 
                 localFeedbackClient = saveOnScreenState();
+                localFeedbackClient.setRevision(myPassedClient.getRevision());
+
+                //Log.d("DIFFERENCES", "BETWEEN RECEIVED AND MODIFIED CLIENT: XXXXXXXXXXXXXXXXXX" + localFeedbackClient.clientDifferences(myPassedClient));
 
                 if (command.equals("individual order")) {
-                    if (!localFeedbackClient.clientDifferences(myPassedClient).equals("0000000000"))
+                    //Log.d("BACK BUTTON", "individual order");
+                    if (!(localFeedbackClient.clientDifferences(myPassedClient).equals("0000000000")))
                         localFeedbackClient.setRevision(localFeedbackClient.getRevision()+1);
                 }
 
@@ -295,10 +296,6 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
         if (orderStatusClientField.getText().length()>0) fdbckClient.setClientStatus(orderStatusClientField.getText().toString());
         else fdbckClient.setClientStatus(blankClient.getClientStatus());
-
-        //Log.d("SAVESCREENSTATE", "########################################################################################################");
-        //Log.d("SAVESCREENSTATE", "SHOWING ON SCREEN CLIENT: ");
-        //fdbckClient.showClient();
 
         return fdbckClient;
     }

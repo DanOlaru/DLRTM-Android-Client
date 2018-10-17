@@ -38,6 +38,7 @@ import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientArray;
 
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.APPEND_FIELD;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.DELETE_FIELD;
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.UPDATE_FIELD;
 
 public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
@@ -62,6 +63,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
 
         //originalClient = new Client (savedClickedOrder);
         feedbackClient = feedbackOrder;
+        originalClient = savedClickedOrder;
         position = orderPosition;
         requestCode = reqCode;
         //Log.d ("FEEDBACK CLIENT"," "); feedbackClient.showClient();
@@ -101,17 +103,26 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
 
         switch (requestCode) {
             case UPDATE_FIELD:
-                Log.d("UPDATE", "IN UPDATE BRANCH");
+                //Log.d("UPDATE", "IN UPDATE BRANCH");
                 range = "A"+ (position+2) + ":J" + (position+2);
                 UpdateValuesResponse result1 = updateValues(spreadsheetId, range, INPUT_OPTION_RAW, values);
                 Log.d("UPDATE", result1.toString());
                 break;
 
             case APPEND_FIELD:
-                Log.d("APPEND", "IN APPEND BRANCH");
+                //Log.d("APPEND", "IN APPEND BRANCH");
+                //TODO: isn't it supposed to be position+2?????
+
                 range = "A"+ (position) + ":J" + (position);
                 AppendValuesResponse result2 = appendValues(spreadsheetId, range, INPUT_OPTION_USER, values);
                 Log.d("APPEND", result2.toString());
+                break;
+            case DELETE_FIELD:
+                range = "A"+ (position+2) + ":J" + (position+2);
+                //Log.d("DELETING", "DELETING " + originalClient.getClientName() + " RANGE " + range);
+                values = originalClient.returnClientAsObjectList();
+                ClearValuesResponse result3 = deleteRow(spreadsheetId, range, values);
+
                 break;
         }
         //Log.d("PREV UPDATED", result.toString());
@@ -123,7 +134,6 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
             throws IOException {
 
         Sheets service = this.service;
-
 
         List<List<Object>> values = Arrays.asList(Arrays.asList());
         values = _values;
@@ -186,6 +196,30 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         return result;
     }
 
+    public ClearValuesResponse deleteRow (String spreadsheetId, String range, List<List<Object>> _values)
+            throws IOException {
+
+        Sheets service = this.service;
+        List<List<Object>> values = Arrays.asList(Arrays.asList());
+        values = _values;
+
+        Log.d("DELETING", "DELETING " + values.get(0) + " RANGE " + range);
+
+        ClearValuesRequest requestBody = new ClearValuesRequest();
+        try {
+            //Sheets sheetsService = createSheetsService();
+            Sheets.Spreadsheets.Values.Clear request =
+                    this.mService.spreadsheets().values().clear(spreadsheetId, range, requestBody);
+
+            ClearValuesResponse response = request.execute();
+
+        } catch (Exception e) {
+            Log.d("EXCEPTION CAUGHT", e.getLocalizedMessage());
+        }
+
+        return null;
+    }
+
     public BatchUpdateValuesResponse batchUpdateValues(String spreadsheetId, String range, String valueInputOption, List<List<Object>> _values)
             throws IOException {
         Sheets service = this.service;
@@ -238,6 +272,5 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
                 .setApplicationName("Google-SheetsSample/0.1")
                 .build();
     }
-
 
 }

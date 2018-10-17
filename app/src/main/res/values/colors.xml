@@ -28,10 +28,11 @@
 
     <!--ORDER STATES -->
     <color name="urgentRed">#f45317</color>
-    <color name="doneBrown">#c69d6e</color>
+    <color name="doneBrown">#387b8f</color>
+    <color name="doneBlue">#387b8f</color>
     <color name="pendingGreen">#76ac20</color>
 
-    <color name="orangeNA">#b9b935</color>
+    <color name="orangeNA">#f79329</color>
     orangeNA
 
 

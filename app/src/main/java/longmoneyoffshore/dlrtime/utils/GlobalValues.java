@@ -20,6 +20,7 @@ public class GlobalValues {
     //write back data to Google Sheets
     public static final int UPDATE_FIELD = 2001;
     public static final int APPEND_FIELD = 2002;
+    public static final int DELETE_FIELD = 2003;
 
     public static final int REQUEST_ACCOUNT_PICKER = 1000;
     public static final int REQUEST_AUTHORIZATION = 1001;

@@ -236,36 +236,28 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 if (resultCode == RESULT_OK) {
                     //new/edited data on the OrderListActivity is passed back to the google sheets document
                     Client returnClient = (Client) data.getParcelableExtra("edited order");
-                    //Log.d("WHATS THERE", "SHOW ME THE RETURN CLIENT");
-                    //returnClient.showClient();
 
                     if (!(returnClient.equalsRevision(backupClickedOrder))) {
 
-                        Log.d("SHOWRETURNCLIENT", "########################################################################################################");
-                        //Log.d("SAVESCREENSTATE", "SHOWING ON SCREEN CLIENT: ");
-                        returnClient.showClient();
-
                         clients.getClientArray().set(positionOnListClicked, returnClient);
 
-                        final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
+                        ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
                         listview.setAdapter(reAdapter);
 
                         String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2);
                         new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, UPDATE_FIELD).execute(sheetID);
-                    } else {
-                        //TODO: nothing Log.d("NO_CLIENT_MODIFIES", " #################################### WAS NOT MODIFIED");
-                    }
+                    } else
+                        if (returnClient.clientDifferences(blankClient).equals("0000000000"))
+                        {
+                            //TODO: we delete the entry in the sheets
+                            clients.getClientArray().remove(positionOnListClicked);
+                            ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
+                            listview.setAdapter(reAdapter);
 
-                    /*
-                    List<List<Object>> values = returnClient.returnClientAsObjectList();
-                    try {
-                        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-                        new SpreadSheetUpdate(sheetID, rangeToModify, values, getCredentials(HTTP_TRANSPORT), OrderListActivity.this);
+                            String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2);
+                            new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, DELETE_FIELD).execute(sheetID);
 
-                    } catch (Exception e) {
-                        Log.e("EXCEPTION CAUGHT", e.getMessage());
                     }
-                    */
                 }
                 break;
             case CREATE_NEW_ORDER:
@@ -274,10 +266,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     Client returnClient = (Client) data.getParcelableExtra("edited order");
 
                     if (!returnClient.clientDifferences(blankClient).equals("0000000000")) {
-
-                        //Log.d("NEWORDER", "CLIENT BEING ADDED #################################### ");
-                        ///credentials.jsonreturnClient.showClient();
-
                         clients.getClientArray().add(returnClient);
                         final ClientAdapter reAdapter = new ClientAdapter(this, R.layout.client_item, clients.getClientArray());
                         listview.setAdapter(reAdapter);
