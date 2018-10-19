@@ -4,7 +4,7 @@
 
 
 <resources>
-    <string name="app_name"> dlrtm </string>
+    <string name="app_name"> DLRTM </string>
 
 
     <string name="title_activity_maps_route">Map</string>

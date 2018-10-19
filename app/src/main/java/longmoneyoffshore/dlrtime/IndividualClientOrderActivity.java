@@ -221,6 +221,11 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                         localFeedbackClient.setRevision(localFeedbackClient.getRevision()+1);
                 }
 
+                //format phone number properly
+                if (!(localFeedbackClient.getClientPhoneNo().charAt(2)==' ' && localFeedbackClient.getClientPhoneNo().charAt(5)==' ')) {
+                    localFeedbackClient.formatPhoneNo();
+                }
+
                 ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
                 Intent feedbackIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
                 feedbackIntent.putExtra("edited order", localFeedbackParcel);

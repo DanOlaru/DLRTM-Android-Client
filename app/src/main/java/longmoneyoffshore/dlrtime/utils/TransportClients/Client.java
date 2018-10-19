@@ -268,6 +268,22 @@ public class Client {
         return differencesIndex;
     }
 
+    //TODO: need to test this and its implementation in IndividualClientOrder
+    public void formatPhoneNo() {
+
+        StringBuilder formattingResultNo = new StringBuilder(this.clientPhoneNo);
+
+        for (int k=0; k<clientPhoneNo.length();k++) {
+            if ((k==2)) formattingResultNo.append(' ');
+            if ((k==5)) formattingResultNo.append(' ');
+            formattingResultNo.append(clientPhoneNo.charAt(k));
+        }
+
+        this.clientPhoneNo = formattingResultNo.toString();
+
+        //return formattingResultNo.toString();
+    }
+
     public void showClient () {
         Log.d("THIS_CLIENT NAME", clientName);
         Log.d("THIS_CLIENT PHONE", clientPhoneNo);

@@ -137,9 +137,13 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 //Get an ArrayList of all the destinations where the user needs to go
                 destinationLocations.clear();
                 for (int j = 0; j<clients.getClientArray().size();j++) {
+                    if (!(clients.getClientArray().get(j).getClientStatus().toUpperCase().equals("DONE")
+                    || clients.getClientArray().get(j).getClientStatus().toUpperCase().equals("CANCEL")))
                     destinationLocations.add(clients.getClientArray().get(j).getClientLocation());
                     //Log.d("MAPS DESTINATIONS", "PLACES GOING" + clients.getClientArray().get(j).getClientLocation());
                 }
+
+                //for (int k=0; k<destinationLocations.size();k++) { Log.d("MAPS DESTINATIONS", "PLACES GOING " + destinationLocations.get(k)); }
 
                 if (destinationLocations.size() > 0) {
 
@@ -243,6 +247,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                         listview.setAdapter(reAdapter);
 
                         String rangeToModify = "Sheet1!" + "A" + (positionOnListClicked + 2) + ":J" + (positionOnListClicked + 2);
+
                         new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionOnListClicked, DELETE_FIELD).execute(sheetID);
                     } else if (!(returnClient.equalsRevision(backupClickedOrder))) {
 

@@ -105,8 +105,9 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
             case UPDATE_FIELD:
                 //Log.d("UPDATE", "IN UPDATE BRANCH");
                 range = "A"+ (position+2) + ":J" + (position+2);
-                UpdateValuesResponse result1 = updateValues(spreadsheetId, range, INPUT_OPTION_RAW, values);
-                Log.d("UPDATE", result1.toString());
+                //UpdateValuesResponse result1 = updateValues(spreadsheetId, range, INPUT_OPTION_RAW, values);
+                UpdateValuesResponse result1 = updateValues(spreadsheetId, range, INPUT_OPTION_USER, values);
+                //Log.d("UPDATE", result1.toString());
                 break;
 
             case APPEND_FIELD:
@@ -115,7 +116,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
 
                 range = "A"+ (position) + ":J" + (position);
                 AppendValuesResponse result2 = appendValues(spreadsheetId, range, INPUT_OPTION_USER, values);
-                Log.d("APPEND", result2.toString());
+                //Log.d("APPEND", result2.toString());
                 break;
             case DELETE_FIELD:
                 range = "A"+ (position+2) + ":J" + (position+2);
@@ -203,13 +204,12 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         List<List<Object>> values = Arrays.asList(Arrays.asList());
         values = _values;
 
-        Log.d("DELETING", "DELETING " + values.get(0) + " RANGE " + range);
+        //Log.d("DELETING", "DELETING " + values.get(0) + " RANGE " + range);
 
         ClearValuesRequest requestBody = new ClearValuesRequest();
         try {
             //Sheets sheetsService = createSheetsService();
-            Sheets.Spreadsheets.Values.Clear request =
-                    this.mService.spreadsheets().values().clear(spreadsheetId, range, requestBody);
+            Sheets.Spreadsheets.Values.Clear request = this.mService.spreadsheets().values().clear(spreadsheetId, range, requestBody);
 
             ClearValuesResponse response = request.execute();
 
@@ -237,7 +237,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
                 .setValueInputOption(valueInputOption)
                 .setData(data);
         BatchUpdateValuesResponse result = service.spreadsheets().values().batchUpdate(spreadsheetId, body).execute();
-        System.out.printf("%d cells updated.", result.getTotalUpdatedCells());
+        //System.out.printf("%d cells updated.", result.getTotalUpdatedCells());
         return result;
     }
 
