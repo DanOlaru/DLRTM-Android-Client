@@ -12,7 +12,9 @@ public class GlobalValues {
     public static final String THE_FIRST_DOWNLOAD_SHEET = "https://spreadsheets.google.com/tq?key=16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
 
     public static final int RC_SIGN_IN = 9001;
-    public static final int RC_RECOVERABLE = 9002;
+    public static final int RC_SIGN_OUT = 9002;
+    public static final int RC_RECOVERABLE = 9003;
+    //public static final int RC_RECOVERABLE = 9002;
 
     public static final int REQUEST_CODE_SIGN_IN = 0;
     public static final int REQUEST_CODE_SIGN_OUT = 5;
@@ -27,7 +29,7 @@ public class GlobalValues {
     public static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     public static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-    //TODO: OrderListActivity & IndividualClientActivity
+    //OrderListActivity & IndividualClientActivity
     public static final int INDIVIDUAL_ORDER_CHANGED=1005;
     public static final int CLICK_INDIVIDUAL_ORDER = 1006;
     public static final int CREATE_NEW_ORDER=1007;

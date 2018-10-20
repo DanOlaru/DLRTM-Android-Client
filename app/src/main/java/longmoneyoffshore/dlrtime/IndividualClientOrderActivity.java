@@ -222,8 +222,10 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 }
 
                 //format phone number properly
-                if (!(localFeedbackClient.getClientPhoneNo().charAt(2)==' ' && localFeedbackClient.getClientPhoneNo().charAt(5)==' ')) {
+                if (!(localFeedbackClient.getClientPhoneNo().charAt(2)== ' ' && localFeedbackClient.getClientPhoneNo().charAt(5)== ' ')) {
+                    //Log.d("FORMATTING", "CLIENT PHONE NOT PROPERLY FORMATTED: XXXXXXXXXXXXXXXXXX" + localFeedbackClient.getClientPhoneNo() + " ");
                     localFeedbackClient.formatPhoneNo();
+                    localFeedbackClient.setRevision(localFeedbackClient.getRevision()+1);
                 }
 
                 ClientParcel localFeedbackParcel = new ClientParcel(localFeedbackClient);
@@ -248,6 +250,9 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
                 //TODO: Start intent to sign out
                 Intent signOutIntent = new Intent(IndividualClientOrderActivity.this, LoginActivity.class);
                 setResult(RC_SIGN_IN, signOutIntent);
+
+                //setResult(RC, signOutIntent);
+
                 //finish();
             }
        });

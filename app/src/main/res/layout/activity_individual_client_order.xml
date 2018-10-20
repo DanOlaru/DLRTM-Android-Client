@@ -298,6 +298,7 @@
                 android:textSize="12dp"
                 android:onClick="dialNumber"
                 tools:ignore="OnClick"
+
                 />
 
             <Button
@@ -306,7 +307,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="@dimen/activity_horizontal_margin"
-                android:background="@color/buttonYellow"
+                android:background="@color/doneBrown"
                 android:text="@string/issue_or_cancel"
                 android:textSize="12sp" />
 

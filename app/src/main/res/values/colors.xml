@@ -28,7 +28,7 @@
 
     <!--ORDER STATES -->
     <color name="urgentRed">#f45317</color>
-    <color name="doneBrown">#387b8f</color>
+    <color name="doneBrown">#734a22</color>
     <color name="doneBlue">#387b8f</color>
     <color name="pendingGreen">#76ac20</color>
 
