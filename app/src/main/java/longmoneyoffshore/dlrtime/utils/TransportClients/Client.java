@@ -270,13 +270,20 @@ public class Client {
 
     //formats the number imputted to standard US spacing/format
     public void formatPhoneNo() {
-
         StringBuilder formattingResultNo = new StringBuilder();
+        int resultLen = 0;
 
         for (int k=0; k<clientPhoneNo.length();k++) {
-            //if ((k==2) || (k==5)) formattingResultNo.append(" ");
-            if ((k==3) || (k==6)) formattingResultNo.append(" ");
-            formattingResultNo.append(clientPhoneNo.charAt(k));
+            if (clientPhoneNo.charAt(k) != ' ')
+            {
+                if ((resultLen==3) || (resultLen==7)) {
+                    if (clientPhoneNo.charAt(k) != ' ') formattingResultNo.append(" ");
+                    resultLen++;
+                }
+                formattingResultNo.append(clientPhoneNo.charAt(k));
+                resultLen++;
+            }
+
             //Log.d ("APPENDING", "CHARACTER TO BE APPENDED IS: " + clientPhoneNo.charAt(k) + " ");
         }
 

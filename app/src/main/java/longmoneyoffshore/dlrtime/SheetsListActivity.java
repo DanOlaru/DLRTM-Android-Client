@@ -173,9 +173,8 @@ public class SheetsListActivity extends Activity //AppCompatActivity
                     startActivityForResult(goToOrdersList,requestCode);
 
                 } else if (resultCode == REQUEST_CODE_SIGN_OUT) {
-                    Log.i("EXCEPTION", "ON RETURN FROM orders list ACTIVITY " + resultCode);
+                    //Log.i("EXCEPTION", "ON RETURN FROM orders list ACTIVITY " + resultCode);
                     revokeAccess(SheetsListActivity.this);
-
                 }
                 else {
                     //Log.i("EXCEPTION", "ON RETURN FROM orders list ACTIVITY " + resultCode);

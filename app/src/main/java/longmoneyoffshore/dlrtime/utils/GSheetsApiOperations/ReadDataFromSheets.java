@@ -92,6 +92,7 @@ public class ReadDataFromSheets extends AsyncTask<String, Void, ClientArray> {
                 iterationClient.setClientReferenceCode(++counter);
 
                 //resultsArray.getClientArray().add(++counter ,new Client(iterationClient));
+                iterationClient.formatPhoneNo();
                 resultsArray.getClientArray().add(counter ,new Client(iterationClient));
                 //Log.d ("READING_CUSTOMER", "# " +  counter);
                 //resultsArray.getClientArray().get(counter).showClient();

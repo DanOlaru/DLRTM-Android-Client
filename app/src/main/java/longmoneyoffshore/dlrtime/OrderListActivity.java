@@ -236,7 +236,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 // this is from IndividualClientOrder
             case CLICK_INDIVIDUAL_ORDER:
                 if (resultCode == REQUEST_CODE_SIGN_OUT) {
-                    Log.i("SIGNOUT", "TRYING TO SIGN OUT FROM UPDATE");
+                    //Log.i("SIGNOUT", "TRYING TO SIGN OUT FROM UPDATE");
 
                     Intent signOutIntent = new Intent(OrderListActivity.this, SheetsListActivity.class);
                     setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
@@ -269,7 +269,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 break;
             case CREATE_NEW_ORDER:
                 if (resultCode == REQUEST_CODE_SIGN_OUT) {
-                    Log.i("SIGNOUT", "TRYING TO SIGN OUT FROM CREATE");
+                    //Log.i("SIGNOUT", "TRYING TO SIGN OUT FROM CREATE");
 
                     Intent signOutIntent = new Intent(OrderListActivity.this, SheetsListActivity.class);
                     setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
