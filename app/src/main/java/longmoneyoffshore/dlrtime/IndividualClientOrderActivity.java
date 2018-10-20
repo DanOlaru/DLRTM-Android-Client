@@ -248,12 +248,13 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             @Override
             public void onClick(View v) {
                 //TODO: Start intent to sign out
-                Intent signOutIntent = new Intent(IndividualClientOrderActivity.this, LoginActivity.class);
-                setResult(RC_SIGN_IN, signOutIntent);
+                //Intent signOutIntent = new Intent(IndividualClientOrderActivity.this, LoginActivity.class);
+                //setResult(RC_SIGN_OUT, signOutIntent);
 
-                //setResult(RC, signOutIntent);
+                Intent signOutIntent = new Intent(IndividualClientOrderActivity.this, OrderListActivity.class);
+                setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
 
-                //finish();
+                finish();
             }
        });
 

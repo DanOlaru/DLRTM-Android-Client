@@ -235,7 +235,13 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 break;
                 // this is from IndividualClientOrder
             case CLICK_INDIVIDUAL_ORDER:
-                if (resultCode == RESULT_OK) {
+                if (resultCode == REQUEST_CODE_SIGN_OUT) {
+                    Log.i("SIGNOUT", "TRYING TO SIGN OUT FROM UPDATE");
+
+                    Intent signOutIntent = new Intent(OrderListActivity.this, SheetsListActivity.class);
+                    setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
+                    finish();
+                } else if (resultCode == RESULT_OK) {
                     //new/edited data on the OrderListActivity is passed back to the google sheets document
                     Client returnClient = (Client) data.getParcelableExtra("edited order");
 
@@ -262,7 +268,13 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 }
                 break;
             case CREATE_NEW_ORDER:
-                if (resultCode == RESULT_OK) {
+                if (resultCode == REQUEST_CODE_SIGN_OUT) {
+                    Log.i("SIGNOUT", "TRYING TO SIGN OUT FROM CREATE");
+
+                    Intent signOutIntent = new Intent(OrderListActivity.this, SheetsListActivity.class);
+                    setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
+                    finish();
+                } else if (resultCode == RESULT_OK) {
                     //Client returnClient = (Client) data.getParcelableExtra("new order");
                     Client returnClient = (Client) data.getParcelableExtra("edited order");
 
@@ -277,6 +289,8 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                         //Log.d("NO_CLIENT_ADDED", " #################################### WAS NOT MODIFIED");
                     }
                 }
+                break;
+
         }
     }
 

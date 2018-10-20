@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -46,7 +47,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView mStatusTextView;
     private TextView mDetailTextView;
 
-    private SignInButton signInButton;
+    //private SignInButton signInButton;
+    private ImageButton signInButton;
     private Button signOutBtn;
     private Button disconnectBtn;
 
@@ -67,7 +69,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
+        //findViewById(R.id.sign_out_button).setOnClickListener(this);
         //findViewById(R.id.disconnect_button).setOnClickListener(this);
 
         /*
@@ -88,8 +90,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        //SignInButton signInButton = findViewById(R.id.sign_in_button);
+        //signInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton = findViewById(R.id.sign_in_button);
+
         //signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
     }
 
@@ -106,8 +110,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             updateUI(account);
             //Launch SheetsListActivity
             Intent intent = new Intent(this, SheetsListActivity.class);
-            startActivity(intent);
+            //startActivity(intent);
             //startActivityForResult(intent, RC_SIGN_IN);
+            startActivityForResult(intent, REQUEST_CODE_SIGN_IN);
         }
         /*
         if (account != null && GoogleSignIn.hasPermissions(account, new Scope(Scopes.DRIVE_APPFOLDER))) {
@@ -133,36 +138,39 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /*
+        //Log.i("SIGNOUT", "ON RETURN FROM SHEETS list ACTIVITY " + " REQUEST CODE " + requestCode + " RESULT CODE " + resultCode);
         switch(requestCode) {
             case REQUEST_CODE_SIGN_IN:
                 Log.i(TAG, "Sign in request code");
-                break;
-            case REQUEST_CODE_SIGN_OUT:
-                //signOut();
-                revokeAccess();
-                break;
-        }*/
+                if (resultCode == RESULT_OK) {
 
-        if (requestCode == REQUEST_CODE_SIGN_IN) {
-            Log.i(TAG, "Sign in request code");
-            // Called after user is signed in.
-            if (resultCode == RESULT_OK) {
-
-                Log.i(TAG, "Signed in successfully.");
-                //GoogleSignInOptions gso = GoogleSignInOptions.DEFAULT_SIGN_IN;
-                //GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
-                //Launch of SheetsListActivity
-                Intent intent = new Intent(this, SheetsListActivity.class);
-                startActivity(intent);
+                    Log.i(TAG, "Signed in successfully.");
+                    //GoogleSignInOptions gso = GoogleSignInOptions.DEFAULT_SIGN_IN;
+                    //GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+                    //Launch of SheetsListActivity
+                    Intent intent = new Intent(this, SheetsListActivity.class);
+                    //startActivity(intent);
+                    startActivityForResult(intent, REQUEST_CODE_SIGN_IN);
 //                intent.putExtra("googleDrive", mDriveClient);
 
-                // The Task returned from this call is always completed, no need to attach
+                    // The Task returned from this call is always completed, no need to attach
 //                // a listener.
 //                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 //                handleSignInResult(task);
-            }
+                } else if (resultCode == REQUEST_CODE_SIGN_OUT) {
+                    //Log.i("LOGGING OUT", "LOGGING OUT!!!!!!!!!!!!!!!!!.");
+                    //signOut();
+                    revokeAccess();
+                    break;
+                }
+                break;
+            case REQUEST_CODE_SIGN_OUT:
+                //Log.i("LOGGING OUT", "LOGGING OUT!!!!!!!!!!!!!!!!!.");
+                //signOut();
+                revokeAccess();
+                break;
         }
+
     }
 
 
@@ -215,13 +223,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             // mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
 
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
+            //findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
 
         } else {
             //mStatusTextView.setText(R.string.signed_out);
 
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+            //findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
 

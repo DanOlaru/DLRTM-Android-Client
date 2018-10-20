@@ -169,11 +169,19 @@ public class SheetsListActivity extends Activity //AppCompatActivity
 
                     Intent goToOrdersList = new Intent (SheetsListActivity.this, OrderListActivity.class);
                     goToOrdersList.putExtra("file selected", myChosenFileId);
-                    startActivity(goToOrdersList);
+                    //startActivity(goToOrdersList);
+                    startActivityForResult(goToOrdersList,requestCode);
 
-                } else {
+                } else if (resultCode == REQUEST_CODE_SIGN_OUT) {
+                    Log.i("EXCEPTION", "ON RETURN FROM orders list ACTIVITY " + resultCode);
+                    revokeAccess(SheetsListActivity.this);
+
+                }
+                else {
+                    //Log.i("EXCEPTION", "ON RETURN FROM orders list ACTIVITY " + resultCode);
                     mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
                 }
+
                 break;
 
             case REQUEST_CODE_SIGN_OUT:
