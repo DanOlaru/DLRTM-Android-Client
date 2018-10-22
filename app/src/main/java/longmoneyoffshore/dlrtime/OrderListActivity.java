@@ -121,7 +121,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             @Override
             public void onClick(View v) {
                 //Log.i("SIGNOUT", "TRYING TO SIGN OUT");
-                //TODO: Start intent to sign out
                 Intent signOutIntent = new Intent(OrderListActivity.this, SheetsListActivity.class);
                 setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
                 finish();
@@ -167,6 +166,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
         Intent intentFromSheetsList = getIntent();
         sheetID = intentFromSheetsList.getStringExtra("file selected");
+        //Log.i("FILE PICKED", "FILE ID IS " + sheetID);
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(SCOPES)).setBackOff(new ExponentialBackOff());
         getResultsFromApi(sheetID);

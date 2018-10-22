@@ -11,20 +11,6 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
-/*
-import com.google.api.services.sheets.v4.model.AppendValuesResponse;
-import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
-import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
-import com.google.api.services.sheets.v4.model.FindReplaceRequest;
-import com.google.api.services.sheets.v4.model.FindReplaceResponse;
-import com.google.api.services.sheets.v4.model.Request;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
-import com.google.api.services.sheets.v4.model.SpreadsheetProperties;
-import com.google.api.services.sheets.v4.model.UpdateSpreadsheetPropertiesRequest;
-import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
-import com.google.api.services.sheets.v4.model.ValueRange; */
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -37,9 +23,7 @@ import longmoneyoffshore.dlrtime.utils.CompositeType;
 import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientArray;
 
-import static longmoneyoffshore.dlrtime.utils.GlobalValues.APPEND_FIELD;
-import static longmoneyoffshore.dlrtime.utils.GlobalValues.DELETE_FIELD;
-import static longmoneyoffshore.dlrtime.utils.GlobalValues.UPDATE_FIELD;
+import static longmoneyoffshore.dlrtime.utils.GlobalValues.*;
 
 public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
 
@@ -114,7 +98,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
                 //Log.d("APPEND", "IN APPEND BRANCH");
                 //TODO: isn't it supposed to be position+2?????
 
-                range = "A"+ (position) + ":J" + (position);
+                range = "A"+ (position+2) + ":J" + (position+2);
                 AppendValuesResponse result2 = appendValues(spreadsheetId, range, INPUT_OPTION_USER, values);
                 //Log.d("APPEND", result2.toString());
                 break;
@@ -122,7 +106,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
                 range = "A"+ (position+2) + ":J" + (position+2);
                 //Log.d("DELETING", "DELETING " + originalClient.getClientName() + " RANGE " + range);
                 values = originalClient.returnClientAsObjectList();
-                ClearValuesResponse result3 = deleteRow(spreadsheetId, range, values);
+                ClearValuesResponse result3 = clearRow(spreadsheetId, range, values);
 
                 break;
         }
@@ -197,7 +181,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         return result;
     }
 
-    public ClearValuesResponse deleteRow (String spreadsheetId, String range, List<List<Object>> _values)
+    public ClearValuesResponse clearRow (String spreadsheetId, String range, List<List<Object>> _values)
             throws IOException {
 
         Sheets service = this.service;
@@ -212,6 +196,23 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
             Sheets.Spreadsheets.Values.Clear request = this.mService.spreadsheets().values().clear(spreadsheetId, range, requestBody);
 
             ClearValuesResponse response = request.execute();
+
+        } catch (Exception e) {
+            Log.d("EXCEPTION CAUGHT", e.getLocalizedMessage());
+        }
+
+        return null;
+    }
+
+    public DeleteRangeRequest deleteRow (String spreadsheetId, String range)
+            throws IOException {
+
+        Sheets service = this.service;
+        //TODO: implement the ability to delete a row
+        //Log.d("DELETING", "DELETING " + values.get(0) + " RANGE " + range);
+
+        DeleteRangeRequest requestBody = new DeleteRangeRequest();
+        try {
 
         } catch (Exception e) {
             Log.d("EXCEPTION CAUGHT", e.getLocalizedMessage());

@@ -47,7 +47,6 @@ public class SheetsListActivity extends Activity //AppCompatActivity
     private static final int REQUEST_CODE_OPENER = NEXT_AVAILABLE_REQUEST_CODE + 1;
     private static final String TAG = "SheetsListActivity";
     private static final String MIME_TYPE_TEXT = "text/plain";
-    private static final int RC_SIGN_IN = 9001;
     private static final int REQ_PICKFILE = 4;
 
     private TaskCompletionSource<DriveId> mOpenItemTaskSource;
@@ -166,6 +165,8 @@ public class SheetsListActivity extends Activity //AppCompatActivity
                     mCurrentDriveId = data.getParcelableExtra(OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID);
                     DriveFile mySelectedFile = mCurrentDriveId.asDriveFile();
                     myChosenFileId = mCurrentDriveId.getResourceId();
+
+                    //Log.i("FILE PICKED", "FILE ID IS " + myChosenFileId);
 
                     Intent goToOrdersList = new Intent (SheetsListActivity.this, OrderListActivity.class);
                     goToOrdersList.putExtra("file selected", myChosenFileId);
