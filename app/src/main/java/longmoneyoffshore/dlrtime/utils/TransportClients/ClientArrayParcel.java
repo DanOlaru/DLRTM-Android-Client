@@ -1,7 +1,6 @@
 package longmoneyoffshore.dlrtime.utils.TransportClients;
 
-
-//TODO: currently does NOT work as such
+//TODO: Needs debugging, currently does NOT work as such
 
 import android.os.Parcel;
 import android.os.Parcelable;

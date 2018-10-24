@@ -19,7 +19,7 @@ public class ClientParcel extends Client implements Parcelable {
     //simple constructor
     public ClientParcel () { super(); }
 
-    //constructor of ClientParcel from Client object — is this right? Does it do what I want it to do?
+    //constructor of ClientParcel from Client object
     public ClientParcel (Client thisClient) { super (thisClient); }
 
     //Parcellation
@@ -89,7 +89,6 @@ public class ClientParcel extends Client implements Parcelable {
         outClient.writeString(this.getRevision());
     }
 
-    //implement describeContents
     @Override
     public int describeContents() { return 0; }
 

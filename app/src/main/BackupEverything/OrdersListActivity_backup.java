@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import longmoneyoffshore.dlrtime.utils.AsyncResult;
 import longmoneyoffshore.dlrtime.utils.Client;
-import longmoneyoffshore.dlrtime.utils.DownloadAsyncTask;
 import longmoneyoffshore.dlrtime.utils.ClientAdapter;
 
 public class OrderListActivity extends AppCompatActivity {

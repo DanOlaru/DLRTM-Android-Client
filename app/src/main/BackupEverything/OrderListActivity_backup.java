@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import longmoneyoffshore.dlrtime.utils.AsyncResult;
 import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientParcel;
-import longmoneyoffshore.dlrtime.utils.DownloadAsyncTask;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientAdapter;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
 

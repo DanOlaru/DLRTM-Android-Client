@@ -18,11 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import longmoneyoffshore.dlrtime.OrderListActivity;
-import longmoneyoffshore.dlrtime.utils.CompositeType;
 import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientArray;
-
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.*;
 
 public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
@@ -36,7 +33,6 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
 
     private com.google.api.services.sheets.v4.Sheets mService = null;
     private Exception mLastError = null;
-    ClientArray feedbackClients;
     Client feedbackClient, originalClient;
 
     public PassDataBackToSheets(GoogleAccountCredential credential, Client feedbackOrder, Client savedClickedOrder, int orderPosition, int reqCode) {
@@ -79,38 +75,24 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
 
     private void writeChangesToApi (String spreadsheetId) throws IOException {
         String range; // = "A2:J";
-        ValueRange feedback;
-
-        //range = "A"+ (position+2) + ":J" + (position+2);
-
         List<List<Object>> values = feedbackClient.returnClientAsObjectList();
 
         switch (requestCode) {
             case UPDATE_FIELD:
-                //Log.d("UPDATE", "IN UPDATE BRANCH");
                 range = "A"+ (position+2) + ":J" + (position+2);
-                //UpdateValuesResponse result1 = updateValues(spreadsheetId, range, INPUT_OPTION_RAW, values);
                 UpdateValuesResponse result1 = updateValues(spreadsheetId, range, INPUT_OPTION_USER, values);
-                //Log.d("UPDATE", result1.toString());
                 break;
 
             case APPEND_FIELD:
-                //Log.d("APPEND", "IN APPEND BRANCH");
-                //TODO: isn't it supposed to be position+2?????
-
                 range = "A"+ (position+2) + ":J" + (position+2);
                 AppendValuesResponse result2 = appendValues(spreadsheetId, range, INPUT_OPTION_USER, values);
-                //Log.d("APPEND", result2.toString());
                 break;
             case DELETE_FIELD:
                 range = "A"+ (position+2) + ":J" + (position+2);
-                //Log.d("DELETING", "DELETING " + originalClient.getClientName() + " RANGE " + range);
                 values = originalClient.returnClientAsObjectList();
                 ClearValuesResponse result3 = clearRow(spreadsheetId, range, values);
-
                 break;
         }
-        //Log.d("PREV UPDATED", result.toString());
     }
 
 
@@ -123,20 +105,6 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         List<List<Object>> values = Arrays.asList(Arrays.asList());
         values = _values;
 
-        /*
-        //test to see if my list of values is good
-        Log.d("TESTING VALS", "RANGE TO BE WRITTEN: " + range + " FILE ID: "+ spreadsheetId);
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 0 " + values.get(0).get(0));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 1 " + values.get(0).get(1));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 2 " + values.get(0).get(2));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 3 " + values.get(0).get(3));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 4 " + values.get(0).get(4));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 5 " + values.get(0).get(5));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 6 " + values.get(0).get(6));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 7 " + values.get(0).get(7));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 8 " + values.get(0).get(8));
-        Log.d("TESTING VALS", "VALUES TO BE WRITTEN: 9 " + values.get(0).get(9)); */
-
         //implementation #1
         try {
 
@@ -148,7 +116,7 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
             return result;
 
         } catch (Exception e) {
-            Log.d("EXCEPTIONALLY CAUGHT", e.getLocalizedMessage());
+            Log.d("EX CAUGHT", e.getLocalizedMessage());
             return null;
         }
     }
@@ -159,20 +127,6 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         // [START sheets_append_values]
         List<List<Object>> values = Arrays.asList(Arrays.asList());
         values = _values;
-
-        /*
-        Log.d("TESTING VALS", "RANGE TO BE APPENDED: " + range + " FILE ID: "+ spreadsheetId);
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 0 " + values.get(0).get(0));
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 1 " + values.get(0).get(1));
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 2 " + values.get(0).get(2));
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 3 " + values.get(0).get(3));
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 4 " + values.get(0).get(4));
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 5 " + values.get(0).get(5));
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 6 " + values.get(0).get(6));
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 7 " + values.get(0).get(7));
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 8 " + values.get(0).get(8));
-        Log.d("TESTING VALS", "VALUES TO BE APPENDED: 9 " + values.get(0).get(9)); */
-
 
         ValueRange body = new ValueRange().setValues(values);
         AppendValuesResponse result = this.mService.spreadsheets().values().append(spreadsheetId, range, body)
@@ -203,6 +157,9 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
 
         return null;
     }
+
+
+    //TODO: currently unused
 
     public DeleteRangeRequest deleteRow (String spreadsheetId, String range)
             throws IOException {
@@ -254,24 +211,6 @@ public class PassDataBackToSheets extends AsyncTask<String, Void, Void> {
         System.out.println("Spreadsheet ID: " + spreadsheet.getSpreadsheetId());
         // [END sheets_create]
         return spreadsheet.getSpreadsheetId();
-    }
-
-    public static Sheets createSheetsService() throws IOException, GeneralSecurityException {
-        HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-
-        // TODO: Change placeholder below to generate authentication credentials. See
-        // https://developers.google.com/sheets/quickstart/java#step_3_set_up_the_sample
-        //
-        // Authorize using one of the following scopes:
-        //   "https://www.googleapis.com/auth/drive"
-        //   "https://www.googleapis.com/auth/drive.file"
-        //   "https://www.googleapis.com/auth/spreadsheets"
-        GoogleCredential credential = null;
-
-        return new Sheets.Builder(httpTransport, jsonFactory, credential)
-                .setApplicationName("Google-SheetsSample/0.1")
-                .build();
     }
 
 }

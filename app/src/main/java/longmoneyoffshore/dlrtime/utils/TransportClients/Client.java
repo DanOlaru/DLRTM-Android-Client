@@ -1,7 +1,6 @@
 package longmoneyoffshore.dlrtime.utils.TransportClients;
 
 import android.util.Log;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,9 +32,6 @@ public class Client {
     private String anonymizerPrefix = USanonymizerPrefix;
     private String clientReferenceCode = "0";
     private String revision = "0";
-
-
-    //Note: by convention only for the name of the classes the first letter is uppercase
 
     /****************************************Constructors******************/
     // 1° constructor -  basic
@@ -225,15 +221,13 @@ public class Client {
 
     //other methods
 
-    //TODO: convert client to List<List<Object>>
+    //convert client to List<List<Object>>
     public List<List<Object>> returnClientAsObjectList() {
         List<List<Object>> values = Arrays.asList(
                 Arrays.asList(
                         this.clientName, this.clientPhoneNo, this.clientLocation, this.clientProductID,
                         this.clientQuantity, this.clientPrice, this.clientPriceAdjust, this.clientUrgency,
-                        this.clientValue, this.clientStatus
-                )
-        );
+                        this.clientValue, this.clientStatus));
         return values;
     }
 
@@ -283,8 +277,6 @@ public class Client {
                 formattingResultNo.append(clientPhoneNo.charAt(k));
                 resultLen++;
             }
-
-            //Log.d ("APPENDING", "CHARACTER TO BE APPENDED IS: " + clientPhoneNo.charAt(k) + " ");
         }
 
         this.clientPhoneNo = formattingResultNo.toString();

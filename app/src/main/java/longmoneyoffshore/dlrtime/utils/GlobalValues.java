@@ -1,6 +1,8 @@
 package longmoneyoffshore.dlrtime.utils;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 
 import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 
@@ -37,5 +39,12 @@ public class GlobalValues {
     //
     public final String dummyFileID = "16ujt55GOJVgcgxox1NrGT_iKf2LIVlEU7ywxtzOtngY";
     public final static Client blankClient = new Client("N/A","N/A","N/A","N/A",0,0,0,0,0,"N/A");
+
+
+    //leftover
+    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    private static final String APPLICATION_NAME = "DLRTM - Digital Logistics Resource Time Management";
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
 }

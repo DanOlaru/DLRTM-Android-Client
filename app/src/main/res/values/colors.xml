@@ -31,6 +31,7 @@
     <color name="doneBrown">#734a22</color>
     <color name="doneBlue">#387b8f</color>
     <color name="pendingGreen">#76ac20</color>
+    <color name="cancelGrey">#a6ab9e</color>
 
     <color name="orangeNA">#f79329</color>
     orangeNA

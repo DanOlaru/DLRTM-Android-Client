@@ -8,50 +8,29 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.PassDataBackToSheets;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
-import com.google.api.client.util.store.FileDataStoreFactory;
-import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.AppendValuesResponse;
-import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
-import com.google.api.services.sheets.v4.model.ValueRange;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 
 import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.ReadDataFromSheets;
 import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
@@ -59,14 +38,12 @@ import longmoneyoffshore.dlrtime.utils.TransportClients.ClientArray;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientParcel;
 import longmoneyoffshore.dlrtime.utils.TransportClients.ClientAdapter;
 import longmoneyoffshore.dlrtime.utils.MapDestinationsParcel;
+import longmoneyoffshore.dlrtime.utils.GSheetsApiOperations.PassDataBackToSheets;
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.*;
 
 public class OrderListActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
-    private static final String DEBUG_TAG = "HttpExample";
-    private static final int REQUEST_CODE_1 = 1;
     private ClientArray clients = new ClientArray();
-    //private volatile ArrayList<String> destinationLocations = new ArrayList<String>();
     public volatile ArrayList<String> destinationLocations = new ArrayList<String>();
 
     private ListView listview;
@@ -82,20 +59,10 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
     GoogleAccountCredential mCredential;
 
-    private Button mCallApiButton;
-    private Button goToOrdersList;
-
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
-    private static final String APPLICATION_NAME = "DLRTM - Digital Logistics Resource Time Management";
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
-    //private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
-    //private static final String[] SCOPES = { SheetsScopes.DRIVE_FILE };
 
-    //private static final List<String> SCOPES_LIST= Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
     private static final List<String> SCOPES_LIST = Collections.singletonList(SheetsScopes.SPREADSHEETS);
 
     @Override
@@ -115,12 +82,10 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             btnDownload.setEnabled(false);
         }
 
-        //TODO: sign out button click references public public signOut method in utils
         signOutButton = (Button) findViewById(R.id.sign_out);
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Log.i("SIGNOUT", "TRYING TO SIGN OUT");
                 Intent signOutIntent = new Intent(OrderListActivity.this, SheetsListActivity.class);
                 setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
                 finish();
@@ -139,10 +104,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                     if (!(clients.getClientArray().get(j).getClientStatus().toUpperCase().equals("DONE")
                     || clients.getClientArray().get(j).getClientStatus().toUpperCase().equals("CANCEL")))
                     destinationLocations.add(clients.getClientArray().get(j).getClientLocation());
-                    //Log.d("MAPS DESTINATIONS", "PLACES GOING" + clients.getClientArray().get(j).getClientLocation());
                 }
-
-                //for (int k=0; k<destinationLocations.size();k++) { Log.d("MAPS DESTINATIONS", "PLACES GOING " + destinationLocations.get(k)); }
 
                 if (destinationLocations.size() > 0) {
 
@@ -166,13 +128,11 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
 
         Intent intentFromSheetsList = getIntent();
         sheetID = intentFromSheetsList.getStringExtra("file selected");
-        //Log.i("FILE PICKED", "FILE ID IS " + sheetID);
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(SCOPES)).setBackOff(new ExponentialBackOff());
         getResultsFromApi(sheetID);
 
         listview.setAdapter(null);
-        //clients.clear();
         clients.getClientArray().clear();
 
         if(listview!=null)
@@ -236,7 +196,6 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 // this is from IndividualClientOrder
             case CLICK_INDIVIDUAL_ORDER:
                 if (resultCode == REQUEST_CODE_SIGN_OUT) {
-                    //Log.i("SIGNOUT", "TRYING TO SIGN OUT FROM UPDATE");
 
                     Intent signOutIntent = new Intent(OrderListActivity.this, SheetsListActivity.class);
                     setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
@@ -269,13 +228,10 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 break;
             case CREATE_NEW_ORDER:
                 if (resultCode == REQUEST_CODE_SIGN_OUT) {
-                    //Log.i("SIGNOUT", "TRYING TO SIGN OUT FROM CREATE");
-
                     Intent signOutIntent = new Intent(OrderListActivity.this, SheetsListActivity.class);
                     setResult(REQUEST_CODE_SIGN_OUT, signOutIntent);
                     finish();
                 } else if (resultCode == RESULT_OK) {
-                    //Client returnClient = (Client) data.getParcelableExtra("new order");
                     Client returnClient = (Client) data.getParcelableExtra("edited order");
 
                     if (!returnClient.clientDifferences(blankClient).equals("0000000000")) {
@@ -285,38 +241,19 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                         int positionToAppend = reAdapter.getCount()+1;
 
                         new PassDataBackToSheets(mCredential, returnClient, backupClickedOrder, positionToAppend, APPEND_FIELD).execute(sheetID);
-                    } else {/*do nothing*/
-                        //Log.d("NO_CLIENT_ADDED", " #################################### WAS NOT MODIFIED");
-                    }
+                    } else {/*do nothing*/}
                 }
                 break;
 
         }
     }
 
-    /*
-    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-        // Load client secrets.
-        InputStream in = OrderListActivity.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES_LIST)
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                .setAccessType("offline")
-                .build();
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-    }
-    */
-
     private void getResultsFromApi(String selectedSheetID) {
         if (!isGooglePlayServicesAvailable()) { acquireGooglePlayServices(); }
         else if (mCredential.getSelectedAccountName() == null) { chooseAccount();}
         else if (! isDeviceOnline()) { } else {
             listview.setAdapter(null);
-            //clients.clear();
             clients.getClientArray().clear();
-            //new OrderListActivity.RequestDataTask(mCredential).execute(selectedSheetID);
             new ReadDataFromSheets(mCredential, clients, destinationLocations, OrderListActivity.this,listview).execute(selectedSheetID);
         }
     }

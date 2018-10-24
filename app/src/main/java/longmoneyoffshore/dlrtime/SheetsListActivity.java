@@ -1,5 +1,3 @@
-/* Alexandru Enache & Dan Olaru, (c) 2018 */
-
 package longmoneyoffshore.dlrtime;
 
 import android.content.Context;
@@ -70,7 +68,6 @@ public class SheetsListActivity extends Activity //AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sheets_list);
 
-        //signIn();
         gso = GoogleSignInOptions.DEFAULT_SIGN_IN;
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
@@ -89,14 +86,11 @@ public class SheetsListActivity extends Activity //AppCompatActivity
 
     private void setDrive()
     {
-        // Why it works? https://stackoverflow.com/questions/25031669/passing-the-googleapiclient-obj-from-one-activity-to-another
-        // After the login the account will be available throughout the project
         try
         {
             initializeDriveClient(googleSignInAccount);
 
             OpenFileActivityOptions openOptions = new OpenFileActivityOptions.Builder()
-                    //.setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain")) //TODO: select sheet files specifically
                     .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "application/vnd.google-apps.spreadsheet"))
                     .setActivityTitle(getString(R.string.select_file)).build();
 
@@ -146,8 +140,7 @@ public class SheetsListActivity extends Activity //AppCompatActivity
             case REQUEST_CODE_SIGN_IN:
                 if (resultCode != RESULT_OK) {
                     // Sign-in may fail or be cancelled by the user. For this sample, sign-in is
-                    // required and is fatal. For apps where sign-in is optional, handle
-                    // appropriately
+                    // required and is fatal.
                     Log.e(TAG, "Sign-in failed.");
                     finish();
                     return;
@@ -166,19 +159,14 @@ public class SheetsListActivity extends Activity //AppCompatActivity
                     DriveFile mySelectedFile = mCurrentDriveId.asDriveFile();
                     myChosenFileId = mCurrentDriveId.getResourceId();
 
-                    //Log.i("FILE PICKED", "FILE ID IS " + myChosenFileId);
-
                     Intent goToOrdersList = new Intent (SheetsListActivity.this, OrderListActivity.class);
                     goToOrdersList.putExtra("file selected", myChosenFileId);
-                    //startActivity(goToOrdersList);
                     startActivityForResult(goToOrdersList,requestCode);
 
                 } else if (resultCode == REQUEST_CODE_SIGN_OUT) {
-                    //Log.i("EXCEPTION", "ON RETURN FROM orders list ACTIVITY " + resultCode);
                     revokeAccess(SheetsListActivity.this);
                 }
                 else {
-                    //Log.i("EXCEPTION", "ON RETURN FROM orders list ACTIVITY " + resultCode);
                     mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
                 }
 
@@ -207,12 +195,6 @@ public class SheetsListActivity extends Activity //AppCompatActivity
                         startActivity(intent);
                     }
                 });
-    }
-
-    private void Logout()
-    {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
     }
 
 }

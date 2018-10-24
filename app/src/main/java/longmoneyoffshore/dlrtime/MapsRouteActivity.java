@@ -150,7 +150,7 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         } */
         } else {
             //TODO: when we don't have any coordinates selected
-            Log.d("LOCATIONS","ARE NULL!!!!!!!!!!!!!!!!!!!!!");
+            Log.d("LOCATIONS","ARE NULL!");
         }
 
     }
@@ -291,8 +291,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             ArrayList<LatLng> reorderedList = new ArrayList<LatLng>();
             reorderedList.clear();
 
-            //for (int k =0; k<unorderedLocations.size(); k++) Log.d ("OPTIMIZE_ROUTE", "LATITUDE" + unorderedLocations.get(k).latitude + " LONGITUDE" + unorderedLocations.get(k).longitude);
-
             if (unorderedLocations.size()<=2) {
                 //array is null or has only one element
                 return unorderedLocations;
@@ -306,8 +304,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             int counter = 1, indexClosestNeighbor = 0;
 
             while (unorderedLocations.size()>1) {
-
-                //Log.d ("UNORDERD LIST ", " size " + unorderedLocations.size());
                 min = pythagoreanDistance(reorderedList.get(counter-1), unorderedLocations.get(0));
                 indexClosestNeighbor = 0;
 
@@ -331,12 +327,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         protected void onPostExecute(ArrayList<LatLng> resultOrderedList) {
             ArrayList<LatLng> orderedResult = resultOrderedList;
             ArrayList<LatLng> orderedList = new ArrayList<LatLng>(orderedResult);
-
-            //Log.d ("RESULT LIST", "SHOWING REORDERED LIST OF LOCATIONS size " + resultOrderedList.size());
-            for (int k=0; k<resultOrderedList.size(); k++) {
-                //Log.d ("UNORDERD LIST", "LATITUDE" + unorderedLocations.get(k).latitude + " LONGITUDE" + unorderedLocations.get(k).longitude);
-                //Log.d ("REORDERD LIST", "LATITUDE " + resultOrderedList.get(k).latitude + " LONGITUDE" + resultOrderedList.get(k).longitude);
-            }
 
             //here we display the re-arranged coordinates
             LatLng  prev, nex;
@@ -368,7 +358,6 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
 
                     // Getting URL to the Google Directions API
                     String url = getDirectionsUrl(origin, dest);
-                    Log.d("ROUTE_URL", url + "&key=" + APP_API_KEY);
 
                     DownloadTask downloadTask = new DownloadTask();
 
@@ -436,24 +425,19 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            //TODO: routes is where the locations for my route are stored???
+            //TODO: routes is where the locations for my route are stored
             return routes;
         }
 
 
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            //ArrayList points = null;
             ArrayList<LatLng> points = new ArrayList<>();
-            //PolylineOptions lineOptions = null;
             PolylineOptions lineOptions = new PolylineOptions();
 
             MarkerOptions markerOptions = new MarkerOptions();
 
             for (int i = 0; i < result.size(); i++) {
-                //points = new ArrayList();
-                //lineOptions = new PolylineOptions();
-
                 List<HashMap<String, String>> path = result.get(i);
 
                 for (int j = 0; j < path.size(); j++) {
@@ -469,10 +453,10 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
 
             lineOptions.addAll(points);
             lineOptions.width(10);
-            lineOptions.color(Color.CYAN);
+            lineOptions.color(Color.GREEN);
             lineOptions.geodesic(true);
 
-            // Drawing polyline in the Google Map for the i-th route
+            // Drawing polyline in the Google Map for the route
             mMap.addPolyline(lineOptions);
         }
     }
@@ -550,16 +534,11 @@ public class MapsRouteActivity extends FragmentActivity implements OnMapReadyCal
         }
 
         String locality = coords.getLocality();
-        Log.e("LOCALITY", locality);
 
         double lat = coords.getLatitude();
         double lng = coords.getLongitude();
 
         LatLng actualLocation = new LatLng(lat, lng);
-
-        //Toast.makeText(this, locality, Toast.LENGTH_LONG).show();
-        //mMap.addMarker(new MarkerOptions().position(actualLocation).title("Marker "));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(actualLocation, 10));
 
         return actualLocation;
     }

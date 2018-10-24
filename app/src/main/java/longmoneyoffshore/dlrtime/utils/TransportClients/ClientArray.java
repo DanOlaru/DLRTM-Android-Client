@@ -28,14 +28,11 @@ public class ClientArray extends Client {
     }
 
     public void setClientArray(ArrayList<Client> inputClientArray) {
-        //clientList.clear();
-        //clientList.addAll(inputClientArray);
         clientList = new ArrayList<Client>(inputClientArray);
     }
 
     public void setClientArray(ClientArray inputClientArray) {
-        //clientList.clear();
-        //clientList.addAll(inputClientArray.getClientArray());
+
         clientList = new ArrayList<Client>(inputClientArray.getClientArray());
     }
 

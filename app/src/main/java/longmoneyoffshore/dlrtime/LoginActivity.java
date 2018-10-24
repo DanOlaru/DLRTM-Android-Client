@@ -4,10 +4,8 @@
 
 package longmoneyoffshore.dlrtime;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -21,10 +19,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveClient;
 import com.google.android.gms.drive.DriveResourceClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,7 +31,6 @@ import static longmoneyoffshore.dlrtime.utils.GlobalValues.RC_SIGN_IN;
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.REQUEST_CODE_SIGN_IN;
 import static longmoneyoffshore.dlrtime.utils.GlobalValues.REQUEST_CODE_SIGN_OUT;
 
-//public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "SignInActivity";
@@ -63,14 +58,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Views
-        //mStatusTextView = findViewById(R.id.status);
-        //mDetailTextView = findViewById(R.id.detail);
-
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        //findViewById(R.id.sign_out_button).setOnClickListener(this);
-        //findViewById(R.id.disconnect_button).setOnClickListener(this);
 
         /*
         //this is the original one that worked
@@ -90,11 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        //SignInButton signInButton = findViewById(R.id.sign_in_button);
-        //signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton = findViewById(R.id.sign_in_button);
-
-        //signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
     }
 
     @Override
@@ -110,16 +95,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             updateUI(account);
             //Launch SheetsListActivity
             Intent intent = new Intent(this, SheetsListActivity.class);
-            //startActivity(intent);
-            //startActivityForResult(intent, RC_SIGN_IN);
             startActivityForResult(intent, REQUEST_CODE_SIGN_IN);
         }
-        /*
-        if (account != null && GoogleSignIn.hasPermissions(account, new Scope(Scopes.DRIVE_APPFOLDER))) {
-            updateUI(account);
-        } else {
-            updateUI(null);
-        }*/
     }
 
     /*
@@ -138,35 +115,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //Log.i("SIGNOUT", "ON RETURN FROM SHEETS list ACTIVITY " + " REQUEST CODE " + requestCode + " RESULT CODE " + resultCode);
         switch(requestCode) {
             case REQUEST_CODE_SIGN_IN:
-                Log.i(TAG, "Sign in request code");
                 if (resultCode == RESULT_OK) {
-
-                    Log.i(TAG, "Signed in successfully.");
-                    //GoogleSignInOptions gso = GoogleSignInOptions.DEFAULT_SIGN_IN;
-                    //GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
-                    //Launch of SheetsListActivity
                     Intent intent = new Intent(this, SheetsListActivity.class);
-                    //startActivity(intent);
                     startActivityForResult(intent, REQUEST_CODE_SIGN_IN);
-//                intent.putExtra("googleDrive", mDriveClient);
 
-                    // The Task returned from this call is always completed, no need to attach
-//                // a listener.
-//                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-//                handleSignInResult(task);
                 } else if (resultCode == REQUEST_CODE_SIGN_OUT) {
-                    //Log.i("LOGGING OUT", "LOGGING OUT!!!!!!!!!!!!!!!!!.");
-                    //signOut();
                     revokeAccess();
                     break;
                 }
                 break;
             case REQUEST_CODE_SIGN_OUT:
-                //Log.i("LOGGING OUT", "LOGGING OUT!!!!!!!!!!!!!!!!!.");
-                //signOut();
                 revokeAccess();
                 break;
         }
@@ -220,16 +180,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void updateUI(@Nullable GoogleSignInAccount account) {
         if (account != null) {
-            // mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
-
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            //findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-
         } else {
-            //mStatusTextView.setText(R.string.signed_out);
-
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            //findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
 
@@ -242,9 +195,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.sign_out_button:
                 signOut();
                 break;
-            //case R.id.disconnect_button:
-            //    revokeAccess();
-            //    break;
         }
     }
 

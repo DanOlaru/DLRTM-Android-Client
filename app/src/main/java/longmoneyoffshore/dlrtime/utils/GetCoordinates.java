@@ -150,5 +150,3 @@ public class GetCoordinates extends AsyncTask<String, Void, String> {
 
 
 }
-
-//extra code

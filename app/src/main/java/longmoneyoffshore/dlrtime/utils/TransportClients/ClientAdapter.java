@@ -12,7 +12,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import longmoneyoffshore.dlrtime.R;
-import longmoneyoffshore.dlrtime.utils.TransportClients.Client;
 
 public class ClientAdapter extends ArrayAdapter<Client> {
 
@@ -37,7 +36,7 @@ public class ClientAdapter extends ArrayAdapter<Client> {
         }
 
         Client o = clients.get(position);
-        int color;
+        int color = R.color.orangeNA;
 
         if (o != null)
         {
@@ -49,60 +48,24 @@ public class ClientAdapter extends ArrayAdapter<Client> {
             TextView orderProductID = (TextView) v.findViewById(R.id.order_product_id);
             TextView orderStatus = (TextView) v.findViewById(R.id.order_status);
 
-            if (o.getClientUrgency() >= 4 || o.getClientValue() >= 4) {
-                //Log.d("INSIDE COLORRED", "CLIENT IS " + o.getClientName());
-                //setOrderColor(position, v,parent, R.color.urgentRed);
-                color = R.color.urgentRed;
-
-                orderName.setTextColor(ContextCompat.getColor(context, color));
-                orderLocation.setTextColor(ContextCompat.getColor(context, color));
-                orderPhoneNum.setTextColor(ContextCompat.getColor(context, color));
-                orderPrice.setTextColor(ContextCompat.getColor(context, color));
-                orderPriceAdjust.setTextColor(ContextCompat.getColor(context, color));
-                orderProductID.setTextColor(ContextCompat.getColor(context, color));
-                orderStatus.setTextColor(ContextCompat.getColor(context, color));
+            if (o.getClientStatus().equalsIgnoreCase("PENDING")) {
+                color = R.color.pendingGreen;
             }
 
+            if (o.getClientUrgency() >= 4 || o.getClientValue() >= 4) {
+                color = R.color.urgentRed;
+            }
 
-            String clStat = o.getClientStatus().toUpperCase();
-
-            if (clStat.equals("PENDING")) {
-                //Log.d("INSIDE COLORRED", "CLIENT IS " + o.getClientName());
-                //setOrderColor(position, v,parent, R.color.urgentRed);
-
-                color = R.color.pendingGreen;
-
-                orderName.setTextColor(ContextCompat.getColor(context, color));
-                orderLocation.setTextColor(ContextCompat.getColor(context, color));
-                orderPhoneNum.setTextColor(ContextCompat.getColor(context, color));
-                orderPrice.setTextColor(ContextCompat.getColor(context, color));
-                orderPriceAdjust.setTextColor(ContextCompat.getColor(context, color));
-                orderProductID.setTextColor(ContextCompat.getColor(context, color));
-                orderStatus.setTextColor(ContextCompat.getColor(context, color));
-            } else if (clStat.equals("DONE")) {
-                //Log.d("INSIDE COLORBROWN", "CLIENT IS " + o.getClientName());
-                //setOrderColor(position, v ,parent, R.color.doneBrown);
+            if (o.getClientStatus().equalsIgnoreCase("DONE")) {
 
                 color = R.color.doneBlue;
-
-                orderName.setTextColor(ContextCompat.getColor(context, color));
-                orderLocation.setTextColor(ContextCompat.getColor(context, color));
-                orderPhoneNum.setTextColor(ContextCompat.getColor(context, color));
-                orderPrice.setTextColor(ContextCompat.getColor(context, color));
-                orderPriceAdjust.setTextColor(ContextCompat.getColor(context, color));
-                orderProductID.setTextColor(ContextCompat.getColor(context, color));
-                orderStatus.setTextColor(ContextCompat.getColor(context, color));
-            } else if (o.getClientUrgency() < 4 && o.getClientValue() < 4){
-                color = R.color.orangeNA;
-
-                orderName.setTextColor(ContextCompat.getColor(context, color));
-                orderLocation.setTextColor(ContextCompat.getColor(context, color));
-                orderPhoneNum.setTextColor(ContextCompat.getColor(context, color));
-                orderPrice.setTextColor(ContextCompat.getColor(context, color));
-                orderPriceAdjust.setTextColor(ContextCompat.getColor(context, color));
-                orderProductID.setTextColor(ContextCompat.getColor(context, color));
-                orderStatus.setTextColor(ContextCompat.getColor(context, color));
             }
+            if (o.getClientStatus().equalsIgnoreCase("CANCEL")) {
+
+                color = R.color.cancelGrey;
+            }
+
+            v = setOrderColor (v, color);
 
             orderName.setText(String.valueOf(o.getClientName()) + " |");
             orderLocation.setText(String.valueOf(o.getClientLocation()) + " |");
@@ -116,7 +79,7 @@ public class ClientAdapter extends ArrayAdapter<Client> {
         return v;
     }
 
-    public void setOrderColor (int position, View convertView, ViewGroup parent, int color ) {
+    public View setOrderColor (View convertView, int color ) {
 
         View v = convertView;
 
@@ -135,6 +98,8 @@ public class ClientAdapter extends ArrayAdapter<Client> {
         orderPriceAdjust.setTextColor(ContextCompat.getColor(context, color));
         orderProductID.setTextColor(ContextCompat.getColor(context, color));
         orderStatus.setTextColor(ContextCompat.getColor(context, color));
+
+        return v;
 
     }
 }
