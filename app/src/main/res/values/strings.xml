@@ -141,4 +141,11 @@
          from https://console.developers.google.com/ -->
     <string name="server_client_id">17227574658-i4tmn3k22tmevimucbjoc3mv69b8qqso.apps.googleusercontent.com </string>
 
+
+    <string name="scan_item_code">Scan Item</string>
+    <string name="scan_client_code">Scan Client</string>
+    <string name="camera_and_location_rationale">Grant Camera Access</string>
+    <string name="scanned_code_image">Scanned Image</string>
+
+
 </resources>
