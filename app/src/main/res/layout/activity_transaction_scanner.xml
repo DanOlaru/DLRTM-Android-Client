@@ -23,8 +23,8 @@
         <ImageView
             android:id="@+id/photo_taken_display"
             android:contentDescription="@string/scanned_code_image"
-            android:layout_width="200px"
-            android:layout_height="200px" />
+            android:layout_width="500px"
+            android:layout_height="500px" />
 
     </LinearLayout>
 
