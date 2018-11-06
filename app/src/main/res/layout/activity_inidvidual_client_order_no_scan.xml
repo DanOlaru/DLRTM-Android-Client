@@ -309,7 +309,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:layout_margin="@dimen/activity_horizontal_margin"
-                android:background="@color/blue_grey_700"
+                android:background="@color/doneBrown"
                 android:contentDescription="@string/issue_or_cancel"
                 android:textSize="12sp"  />
 
@@ -322,7 +322,8 @@
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="@color/azure"
                 android:contentDescription="@string/perform_scan_text"
-                android:textSize="12sp"/>
+                android:textSize="12sp"
+                android:visibility="gone"/>
 
             <ImageButton
                 android:id="@+id/back_button"

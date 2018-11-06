@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="longmoneyoffshore.dlrtime"
-    android:installLocation="auto"
-    >
+    android:installLocation="auto">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -19,46 +18,49 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.DIAL_PHONE" />
 
+    <!-- Dan: permissions for MapsRouteActivity -->
 
-    <!-- Dan: permissions for MapsRouteActivity-->
-
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+
     <uses-feature android:name="android.hardware.location.gps" />
 
-    <!--Dan: for Sheets-->
+    <!-- Dan: for Sheets -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <!--Dan: for Barcode/QR code Scanner-->
+    <!-- Dan: for Barcode/QR code Scanner -->
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.FLASHLIGHT"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <!-- unavailable in API 23 -->
-    <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-    <uses-feature android:name="android.hardware.camera.any"/>
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
-    <uses-feature android:name="android.hardware.screen.landscape"/>
-    <uses-feature android:name="android.hardware.wifi" android:required="false"/>
-
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature android:name="android.hardware.camera.any" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.screen.landscape" />
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
-
-
-
     <uses-feature
         android:glEsVersion="0x00020000"
-        android:required="true"/>
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -69,6 +71,7 @@
         android:theme="@style/Theme.AppCompat">
 
         <!-- android:theme="@style/Theme.Black.NoTitleBar.Fullscreen.AppNoActionBar" -->
+
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -81,8 +84,6 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -90,10 +91,10 @@
             android:name="com.google.android.google_maps_api.xml.API_KEY"
             android:value="@string/AIzaSyDCos2tFqSvd80yDcIZgl1_x9Zk1zWQ1RI" />
 
-        <!--this is the "paid" API key-->
+        <!-- this is the "paid" API key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDCos2tFqSvd80yDcIZgl1_x9Zk1zWQ1RI"/>
+            android:value="AIzaSyDCos2tFqSvd80yDcIZgl1_x9Zk1zWQ1RI" />
 
         <activity android:name=".LoginActivity">
             <intent-filter>
@@ -125,14 +126,11 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-
-       <activity android:name="longmoneyoffshore.dlrtime.MapsRouteActivity">
-           <intent-filter>
-               <action android:name="android.intent.action.MAIN" />
-           </intent-filter>
-       </activity>
-
-
+        <activity android:name=".MapsRouteActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
         <activity android:name=".TransactionScannerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -146,105 +144,154 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.CaptureActivity"
-            android:screenOrientation="sensorLandscape"
+        <activity
+            android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.CaptureActivity"
             android:clearTaskOnLaunch="true"
+            android:screenOrientation="sensorLandscape"
             android:stateNotNeeded="true"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
             <intent-filter>
-                <action android:name="longmoneyoffshore.dlrtime.android.SCAN"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="longmoneyoffshore.dlrtime.android.SCAN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <!-- Allow web apps to launch Barcode Scanner by linking to http://zxing.appspot.com/scan. -->
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="http" android:host="zxing.appspot.com" android:path="/scan"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="zxing.appspot.com"
+                    android:path="/scan"
+                    android:scheme="http" />
             </intent-filter>
             <!-- We also support a Google Product Search URL. -->
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="http" android:host="www.google.com" android:path="/m/products/scan"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="www.google.com"
+                    android:path="/m/products/scan"
+                    android:scheme="http" />
             </intent-filter>
             <!-- And the UK version. -->
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="http" android:host="www.google.co.uk" android:path="/m/products/scan"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="www.google.co.uk"
+                    android:path="/m/products/scan"
+                    android:scheme="http" />
             </intent-filter>
             <!-- Support zxing://scan/?... like iPhone app -->
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="zxing" android:host="scan" android:path="/"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="scan"
+                    android:path="/"
+                    android:scheme="zxing" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.PreferencesActivity"
+        <activity
+            android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.PreferencesActivity"
             android:label="@string/preferences_name"
-            android:stateNotNeeded="true"/>
-        <activity android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.encode.EncodeActivity"
+            android:stateNotNeeded="true" />
+        <activity
+            android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.encode.EncodeActivity"
             android:stateNotNeeded="true">
             <intent-filter>
-                <action android:name="longmoneyoffshore.dlrtime.android.ENCODE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="longmoneyoffshore.dlrtime.android.ENCODE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <!-- This allows us to handle the Share button in Contacts. -->
             <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/x-vcard"/>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/x-vcard" />
             </intent-filter>
             <!-- This allows us to handle sharing any plain text . -->
             <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/plain"/>
-            </intent-filter>
-        </activity>
+                <action android:name="android.intent.action.SEND" />
 
-        <activity android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.book.SearchBookContentsActivity"
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.book.SearchBookContentsActivity"
             android:label="@string/sbc_name"
-            android:stateNotNeeded="true"
-            android:screenOrientation="sensorLandscape">
+            android:screenOrientation="sensorLandscape"
+            android:stateNotNeeded="true">
             <intent-filter>
-                <action android:name="longmoneyoffshore.dlrtime.android.SEARCH_BOOK_CONTENTS"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="longmoneyoffshore.dlrtime.android.SEARCH_BOOK_CONTENTS" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.share.ShareActivity"
-            android:stateNotNeeded="true"
-            android:screenOrientation="user">
+        <activity
+            android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.share.ShareActivity"
+            android:screenOrientation="user"
+            android:stateNotNeeded="true">
             <intent-filter>
-                <action android:name="longmoneyoffshore.dlrtime.android.SHARE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="longmoneyoffshore.dlrtime.android.SHARE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.history.HistoryActivity"
+        <activity
+            android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.history.HistoryActivity"
             android:label="@string/history_title"
-            android:stateNotNeeded="true"/>
-        <activity android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.share.BookmarkPickerActivity"
+            android:stateNotNeeded="true" />
+        <activity
+            android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.share.BookmarkPickerActivity"
             android:label="@string/bookmark_picker_name"
-            android:stateNotNeeded="true"/>
-        <activity android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.share.AppPickerActivity"
+            android:stateNotNeeded="true" />
+        <activity
+            android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.share.AppPickerActivity"
             android:label="@string/app_picker_name"
-            android:stateNotNeeded="true"/>
-        <activity android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.HelpActivity"
+            android:stateNotNeeded="true" />
+        <activity
+            android:name=".utils.CodeScanner.android.src.com.google.zxing.client.android.HelpActivity"
             android:label="@string/menu_help"
             android:screenOrientation="user"
-            android:stateNotNeeded="true"/>
+            android:stateNotNeeded="true" />
+        <activity
+            android:name=".AppSettings"
+            android:label="@string/title_activity_app_settings"
+            android:parentActivityName=".OrderListActivity">
 
+            <intent-filter>
+                <action android:name="longmoneyoffshore.dlrtime.android.SHARE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="longmoneyoffshore.dlrtime.OrderListActivity" />
+        </activity>
 
     </application>
 

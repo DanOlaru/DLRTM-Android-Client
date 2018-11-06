@@ -14,46 +14,66 @@
         android:layout_gravity="center"
         >
 
-        <Button
+        <ImageButton
             android:id="@+id/btn_make_new_order"
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
-            android:text="@string/make_new_order"
+            android:src="@drawable/ic_add_black_24dp"
+            android:contentDescription="@string/make_new_order"
             android:background="@color/buttonGreen"
             android:textSize="12sp"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_weight=".10"/>
 
-        <Button
-            android:id="@+id/btn_go_to_maps"
-            android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/app_settings"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
-            android:text="@string/go_to_map"
-            android:layout_weight=".40"
-            android:textSize="12sp"
-            android:background="@color/buttonViolet"
+            android:background="@color/blue_grey_600"
+            android:src="@drawable/ic_settings_black_24dp"
+            style="?android:attr/buttonBarButtonStyle"
+            android:contentDescription="@string/app_settings_text"
+            android:layout_weight=".15"
             />
 
-        <Button
-            android:id="@+id/btnDownload"
+
+        <ImageButton
+            android:id="@+id/btn_go_to_maps"
+            android:src="@drawable/ic_directions_car_black_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/go_to_map"
+            android:layout_weight=".15"
+            android:textSize="12sp"
+            android:background="@color/buttonViolet"
+            style="?android:attr/buttonBarButtonStyle"/>
+
+        <ImageButton
+            android:id="@+id/btnOrdersSync"
             android:enabled="false"
             android:onClick="buttonClickHandler"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/download_orders_list"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_sync_black_24dp"
+            android:contentDescription="@string/download_orders_list"
             style="?android:attr/buttonBarButtonStyle"
             android:background="@color/buttonGrey"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_weight=".15"
+            />
 
-        <Button
+        <ImageButton
             android:id="@+id/sign_out"
             android:enabled="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_sign_out_black_24dp"
+            android:layout_weight=".15"
             android:background="@color/buttonYellow"
-            android:text="@string/sign_out_text"
+            android:contentDescription="@string/sign_out_text"
             android:textSize="12sp"
-            style="?android:attr/buttonBarButtonStyle" />
+            style="?android:attr/buttonBarButtonStyle"  />
+
 
     </LinearLayout>
 

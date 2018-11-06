@@ -1,5 +1,6 @@
 package longmoneyoffshore.dlrtime;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.text.Editable;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.content.Intent;
 import android.app.Activity;
@@ -36,12 +38,38 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
     volatile RatingBar orderValueClientField;
     EditText orderStatusClientField;
 
+    //TODO these have to be set according to setting activity
     String anonymizerPrefix = US_ANONYMIZER_PREFIX;
+    private boolean scanCapability = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_individual_client_order);
+
+        ///TODO: get the settings as established in settting view
+
+        Log.d("SCANNER ON OR OFF?", "the prefix is: " + GLOBAL_ANONYMIZER_PREFIX + " and the scanner setting is " + GLOBAL_SCANNER_SETTING);
+
+        int BUTTON_VISIBILITY;
+
+        if (GLOBAL_SCANNER_SETTING) {
+
+            setContentView(R.layout.activity_individual_client_order);
+
+        } else {
+
+            setContentView(R.layout.activity_inidvidual_client_order_no_scan);
+        }
+
+        ImageButton scanButton = (ImageButton) findViewById(R.id.perform_scan_button);
+
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent settingsIntent = new Intent(IndividualClientOrderActivity.this, TransactionScannerActivity.class);
+                startActivity(settingsIntent);
+            }
+        });
 
         // Get the transferred data from source activity.
         Intent passedIntent = getIntent();
@@ -61,12 +89,13 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
         orderStatusClientField = (EditText) findViewById(R.id.individualOrderIssueOrComment);
 
         //other buttons
-        Button callButton = (Button) findViewById(R.id.make_call_button);
+
+        ImageButton callButton = (ImageButton) findViewById(R.id.make_call_button);
         callButton.setEnabled(false);
 
         //this makes the text box at the bottom of the screen
         //cycle through the possible messages to display upon clicking the Done/Issue/Cancel button
-        final Button issueOrCancelButton = (Button) findViewById(R.id.issue_or_cancel_button);
+        final ImageButton issueOrCancelButton = (ImageButton) findViewById(R.id.issue_or_cancel_button);
         ArrayList<String> ordersStates = new ArrayList<String>(Arrays.asList(getResources().getStringArray (R.array.issue_or_cancel_options)));
 
         if (command.equals("individual order")) {
@@ -162,7 +191,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             }
         });
 
-        Button backButton = (Button) findViewById(R.id.back_button);
+        ImageButton backButton = (ImageButton) findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,7 +216,7 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
             }
         });
 
-        Button signOutButton = (Button) findViewById(R.id.sign_out_button);
+        ImageButton signOutButton = (ImageButton) findViewById(R.id.sign_out_button);
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -210,7 +239,9 @@ public class IndividualClientOrderActivity extends Activity implements ActivityC
 
     public void placeCall () {
         String basicNumberToCall = orderPhoneClientField.getText().toString();
-        ClientCaller.dialClient(basicNumberToCall, anonymizerPrefix, IndividualClientOrderActivity.this);
+        //ClientCaller.dialClient(basicNumberToCall, anonymizerPrefix, IndividualClientOrderActivity.this);
+        ClientCaller.dialClient(basicNumberToCall, GLOBAL_ANONYMIZER_PREFIX, IndividualClientOrderActivity.this);
+
     }
 
     public Client saveOnScreenState () {

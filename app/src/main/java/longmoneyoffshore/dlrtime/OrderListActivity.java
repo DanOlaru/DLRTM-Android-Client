@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.Collections;
@@ -47,10 +48,11 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
     public volatile ArrayList<String> destinationLocations = new ArrayList<String>();
 
     private ListView listview;
-    private Button btnDownload;
-    private Button signOutButton;
-    private Button goToMapsButton;
-    private Button makeNewOrderButton;
+    private ImageButton btnDownload;
+    private ImageButton signOutButton;
+    private ImageButton goToMapsButton;
+    private ImageButton makeNewOrderButton;
+    private ImageButton settingsButton;
 
     private int positionOnListClicked;
 
@@ -70,8 +72,19 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_list);
 
+        //read saved preferences
+
+        SharedPreferences pref;
+        pref = getApplicationContext().getSharedPreferences("preferences.xml", 0); // 0 - for private mode
+
+        GLOBAL_ANONYMIZER_PREFIX = pref.getString("anonymizer_prefix", US_ANONYMIZER_PREFIX); // getting String
+        //Log.d("ANON PREF SETTING", anonPrefSetting);
+
+        GLOBAL_SCANNER_SETTING = pref.getBoolean("scanner_preference", true); // getting boolean
+
+
         listview = (ListView) findViewById(R.id.listview);
-        btnDownload = (Button) findViewById(R.id.btnDownload);
+        btnDownload = (ImageButton) findViewById(R.id.btnOrdersSync);
 
         // Internet connection
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -82,7 +95,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             btnDownload.setEnabled(false);
         }
 
-        signOutButton = (Button) findViewById(R.id.sign_out);
+        signOutButton = (ImageButton) findViewById(R.id.sign_out);
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +105,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             }
         });
 
-        goToMapsButton = (Button) findViewById(R.id.btn_go_to_maps);
+        goToMapsButton = (ImageButton) findViewById(R.id.btn_go_to_maps);
         goToMapsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +129,7 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
             }
         });
 
-        makeNewOrderButton = (Button) findViewById(R.id.btn_make_new_order);
+        makeNewOrderButton = (ImageButton) findViewById(R.id.btn_make_new_order);
         makeNewOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,6 +166,23 @@ public class OrderListActivity extends AppCompatActivity implements EasyPermissi
                 }
             });
         }
+
+
+        settingsButton = (ImageButton) findViewById(R.id.app_settings);
+
+        //TODO: button visibility depends on settings
+
+        int BUTTON_VISIBILITY = View.VISIBLE;
+        settingsButton.setVisibility(BUTTON_VISIBILITY);
+
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent settingsIntent = new Intent(OrderListActivity.this, AppSettings.class);
+                startActivity(settingsIntent);
+            }
+        });
+
     }
 
     public void buttonClickHandler(View view) {
